@@ -18,8 +18,8 @@ package de.perdian.apps.podcentral.ui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.model.preferences.Preferences;
-import de.perdian.apps.podcentral.model.preferences.PreferencesFactory;
+import de.perdian.apps.podcentral.preferences.Preferences;
+import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

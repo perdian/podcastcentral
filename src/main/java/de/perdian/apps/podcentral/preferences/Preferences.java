@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.model.preferences;
+package de.perdian.apps.podcentral.preferences;
 
 import java.util.Objects;
 import java.util.Optional;

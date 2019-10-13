@@ -33,11 +33,14 @@
 
     <properties>
         <commons-lang3.version>3.9</commons-lang3.version>
+        <dom4j.version>2.1.1</dom4j.version>
         <java.version>12</java.version>
         <javafx.version>12</javafx.version>
+        <jaxen.version>1.2.0</jaxen.version>
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <logback.version>1.2.3</logback.version>
         <mockito.version>3.1.0</mockito.version>
+        <okhttp.version>4.2.2</okhttp.version>
         <slf4j.version>1.7.28</slf4j.version>
     </properties>
 
@@ -51,6 +54,21 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>${dom4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <version>${jaxen.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

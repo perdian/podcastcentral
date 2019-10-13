@@ -13,14 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui;
+package de.perdian.apps.podcentral.core.model;
 
-import de.perdian.apps.podcentral.preferences.Preferences;
-import javafx.scene.layout.BorderPane;
-
-public class PodCentralMainPane extends BorderPane {
-
-    public PodCentralMainPane(Preferences preferences) {
-    }
+public class Episode {
 
 }

@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui;
+package de.perdian.apps.podcentral.database.entities;
 
-import de.perdian.apps.podcentral.preferences.Preferences;
-import javafx.scene.layout.BorderPane;
+import java.io.Serializable;
 
-public class PodCentralMainPane extends BorderPane {
+public class ChannelEntity implements Serializable {
 
-    public PodCentralMainPane(Preferences preferences) {
-    }
+    static final long serialVersionUID = 1L;
+
+    private Long id = null;
+    private String feedUrl = null;
+    private String websiteUrl = null;
+    private String title = null;
+    private String subtitle = null;
+    private String description = null;
+    private String owner = null;
+    private String ownerUrl = null;
+    private String languageCode = null;
+    private String imageUrl = null;
+    private String category = null;
 
 }

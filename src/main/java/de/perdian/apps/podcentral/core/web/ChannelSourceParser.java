@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui;
+package de.perdian.apps.podcentral.core.web;
 
-import de.perdian.apps.podcentral.preferences.Preferences;
-import javafx.scene.layout.BorderPane;
+import de.perdian.apps.podcentral.core.model.Channel;
 
-public class PodCentralMainPane extends BorderPane {
+public interface ChannelSourceParser {
 
-    public PodCentralMainPane(Preferences preferences) {
-    }
+    Channel parseChannel(String content, String contentType, String sourceUrl);
 
 }

@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui;
+package de.perdian.apps.podcentral.core.model;
 
-import de.perdian.apps.podcentral.preferences.Preferences;
-import javafx.scene.layout.BorderPane;
+import javafx.collections.ObservableList;
 
-public class PodCentralMainPane extends BorderPane {
+public class Library {
 
-    public PodCentralMainPane(Preferences preferences) {
-    }
+    private ObservableList<Channel> channels = null;
 
 }
