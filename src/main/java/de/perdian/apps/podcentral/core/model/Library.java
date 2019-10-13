@@ -17,8 +17,8 @@ package de.perdian.apps.podcentral.core.model;
 
 import javafx.collections.ObservableList;
 
-public class Library {
+public interface Library {
 
-    private ObservableList<Channel> channels = null;
+    ObservableList<Channel> getChannels();
 
 }

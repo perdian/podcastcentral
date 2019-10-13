@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.web;
+package de.perdian.apps.podcentral.database;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.perdian.apps.podcentral.core.model.Library;
+import de.perdian.apps.podcentral.core.web.ChannelLoader;
 
-import de.perdian.apps.podcentral.core.model.Channel;
+public class DatabaseBackedLibraryFactory {
 
-public class ChannelLoaderExample {
-
-    private static final Logger log = LoggerFactory.getLogger(ChannelLoaderExample.class);
-
-    public static void main(String[] args) throws Exception {
+    public static Library createLibrary() {
 
         ChannelLoader channelLoader = new ChannelLoader();
-        Channel channel = channelLoader.loadChannel("https://podcasts.files.bbci.co.uk/w13xttx2.rss");
-        log.info("Loaded channel: {}", channel);
+
+        DatabaseBackedLibrary library = new DatabaseBackedLibrary();
+try {
+    library.getChannels().add(channelLoader.loadChannel("https://podcasts.files.bbci.co.uk/w13xttx2.rss"));
+    library.getChannels().add(channelLoader.loadChannel("https://www1.wdr.de/mediathek/audio/zeitzeichen/zeitzeichen-podcast-100.podcast"));
+} catch (Exception e) {
+    e.printStackTrace();
+}
+        return library;
 
     }
 

@@ -18,9 +18,14 @@ package de.perdian.apps.podcentral.ui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.podcentral.core.model.Library;
+import de.perdian.apps.podcentral.database.DatabaseBackedLibraryFactory;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
+import de.perdian.apps.podcentral.ui.components.library.LibraryPane;
+import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -35,7 +40,9 @@ public class PodCentralApplication extends Application {
         Preferences preferences = PreferencesFactory.loadPreferences();
 
         log.info("Creating JavaFX UI");
-        PodCentralMainPane mainPane = new PodCentralMainPane(preferences);
+        Localization localization = new Localization() {};
+        PodCentralExecutor executor = new PodCentralExecutor();
+        PodCentralMainPane mainPane = new PodCentralMainPane(preferences, localization);
 
         log.info("Opening JavaFX stage");
 //        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
@@ -48,6 +55,14 @@ public class PodCentralApplication extends Application {
         primaryStage.setHeight(800);
         primaryStage.show();
         log.info("JavaFX stage setup completed");
+
+        log.info("Loading library");
+        executor.submit(() -> {
+            Library library = DatabaseBackedLibraryFactory.createLibrary();
+            log.info("Loaded library: {}", library);
+            LibraryPane libraryPane = new LibraryPane(library, localization);
+            Platform.runLater(() -> mainPane.setCenter(libraryPane));
+        });
 
     }
 

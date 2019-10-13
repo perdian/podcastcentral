@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.web;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package de.perdian.apps.podcentral.database;
 
 import de.perdian.apps.podcentral.core.model.Channel;
+import de.perdian.apps.podcentral.core.model.Library;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
-public class ChannelLoaderExample {
+class DatabaseBackedLibrary implements Library {
 
-    private static final Logger log = LoggerFactory.getLogger(ChannelLoaderExample.class);
+    private ObservableList<Channel> channels = FXCollections.observableArrayList();
 
-    public static void main(String[] args) throws Exception {
-
-        ChannelLoader channelLoader = new ChannelLoader();
-        Channel channel = channelLoader.loadChannel("https://podcasts.files.bbci.co.uk/w13xttx2.rss");
-        log.info("Loaded channel: {}", channel);
-
+    @Override
+    public ObservableList<Channel> getChannels() {
+        return this.channels;
+    }
+    void setChannels(ObservableList<Channel> channels) {
+        this.channels = channels;
     }
 
 }

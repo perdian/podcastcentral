@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.web;
+package de.perdian.apps.podcentral.ui.localization;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public interface Localization {
 
-import de.perdian.apps.podcentral.core.model.Channel;
+    default String loadingLibrary() {
+        return "Loading library...";
+    }
 
-public class ChannelLoaderExample {
-
-    private static final Logger log = LoggerFactory.getLogger(ChannelLoaderExample.class);
-
-    public static void main(String[] args) throws Exception {
-
-        ChannelLoader channelLoader = new ChannelLoader();
-        Channel channel = channelLoader.loadChannel("https://podcasts.files.bbci.co.uk/w13xttx2.rss");
-        log.info("Loaded channel: {}", channel);
-
+    default String title() {
+        return "Title";
     }
 
 }

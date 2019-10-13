@@ -48,7 +48,7 @@ public class RssChannelSourceParser implements ChannelSourceParser {
 
     private static final Logger log = LoggerFactory.getLogger(RssChannelSourceParser.class);
 
-    private List<String> validContentTypes = List.of("application/rss+xml");
+    private List<String> validContentTypes = List.of("application/rss+xml", "application/xml");
 
     @Override
     public String toString() {
@@ -57,7 +57,9 @@ public class RssChannelSourceParser implements ChannelSourceParser {
 
     @Override
     public Channel parseChannel(String content, String contentType, String sourceUrl) {
-        if (this.getValidContentTypes().contains(contentType)) {
+        int indexOfSemicolon = contentType.indexOf(";");
+        String checkContentType = indexOfSemicolon > -1 ? contentType.substring(0, indexOfSemicolon) : contentType;
+        if (this.getValidContentTypes().contains(checkContentType)) {
             try {
                 SAXReader saxReader = new SAXReader();
                 Document document = saxReader.read(new StringReader(content));
@@ -99,7 +101,8 @@ public class RssChannelSourceParser implements ChannelSourceParser {
     }
 
     private Episode parseChannelEpisodeFromItemNode(Node itemNode) {
-        throw new UnsupportedOperationException();
+        Episode episode = new Episode();
+        return episode;
     }
 
     public List<String> getValidContentTypes() {

@@ -30,31 +30,18 @@ public class ChannelLoader {
 
     private static final Logger log = LoggerFactory.getLogger(ChannelLoader.class);
 
-    private String url = null;
-
-    public ChannelLoader(String url) {
-        this.setUrl(url);
-    }
-
-    public Channel loadChannel() throws Exception {
+    public Channel loadChannel(String url) throws Exception {
         for (ChannelSourceFormat format : ChannelSourceFormat.values()) {
-            log.debug("Trying to load content using format {} for channel: {}", format.name(), this.getUrl());
-            Channel channelFromFormat = format.loadChannelFromUrl(this.getUrl());
+            log.debug("Trying to load content using format {} for channel: {}", format.name(), url);
+            Channel channelFromFormat = format.loadChannelFromUrl(url);
             if (channelFromFormat != null) {
-                log.info("Loaded information using format {} from channel: {}", format.name(), this.getUrl());
+                log.info("Loaded information using format {} from channel: {}", format.name(), url);
                 return channelFromFormat;
             } else {
-                log.debug("Cannot load information using format {} from fom channel: {}", format.name(), this.getUrl());
+                log.debug("Cannot load information using format {} from fom channel: {}", format.name(), url);
             }
         }
-        throw new IllegalArgumentException("Cannot determine format of input retrieved from URL: " + this.getUrl());
-    }
-
-    private String getUrl() {
-        return this.url;
-    }
-    private void setUrl(String url) {
-        this.url = url;
+        throw new IllegalArgumentException("Cannot determine format of input retrieved from URL: " + url);
     }
 
 }
