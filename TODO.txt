@@ -1,0 +1,1 @@
+Rename "Channel" to "Feed" (and all references)
