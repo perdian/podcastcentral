@@ -17,8 +17,32 @@ package de.perdian.apps.podcentral.ui.localization;
 
 public interface Localization {
 
+    default String addFeed() {
+        return "Add feed";
+    }
+
+    default String cannotLoadFeedFromUrl(String feedUrl) {
+        return "Cannot load feed from URL: " + feedUrl;
+    }
+
+    default String feedUrl() {
+        return "Feed URL";
+    }
+
+    default String loadFeed() {
+        return "Load feed";
+    }
+
+    default String loadingFeedFrom() {
+        return "Loading feed from:";
+    }
+
     default String loadingLibrary() {
         return "Loading library...";
+    }
+
+    default String noFeedLoadedYet() {
+        return "No feed loaded yet";
     }
 
     default String title() {

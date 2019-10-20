@@ -45,7 +45,7 @@ public class PodCentralApplication extends Application {
         log.info("Creating JavaFX UI");
         Localization localization = new Localization() {};
         TaskExecutor taskExecutor = new TaskExecutor();
-        PodCentralMainPane mainPane = new PodCentralMainPane(preferences, localization);
+        PodCentralMainPane mainPane = new PodCentralMainPane(taskExecutor, preferences, localization);
 
         log.info("Opening JavaFX stage");
 //        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
