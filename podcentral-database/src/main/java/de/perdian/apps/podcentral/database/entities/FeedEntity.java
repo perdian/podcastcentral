@@ -17,7 +17,7 @@ package de.perdian.apps.podcentral.database.entities;
 
 import java.io.Serializable;
 
-public class ChannelEntity implements Serializable {
+public class FeedEntity implements Serializable {
 
     static final long serialVersionUID = 1L;
 

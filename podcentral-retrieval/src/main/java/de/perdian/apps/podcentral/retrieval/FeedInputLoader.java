@@ -15,11 +15,11 @@
  */
 package de.perdian.apps.podcentral.retrieval;
 
-import de.perdian.apps.podcentral.core.model.ChannelInput;
+import de.perdian.apps.podcentral.core.model.FeedInput;
 import okhttp3.Response;
 
-public interface ChannelInputLoader {
+public interface FeedInputLoader {
 
-    ChannelInput loadChannelInput(Response feedResponse) throws Exception;
+    FeedInput loadFeedInput(Response feedResponse) throws Exception;
 
 }

@@ -15,31 +15,31 @@
  */
 package de.perdian.apps.podcentral.ui.components.library;
 
-import de.perdian.apps.podcentral.core.model.Channel;
 import de.perdian.apps.podcentral.core.model.Episode;
+import de.perdian.apps.podcentral.core.model.Feed;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 interface LibraryTreeValue {
 
-    static class ChannelTreeValue implements LibraryTreeValue {
+    static class FeedTreeValue implements LibraryTreeValue {
 
-        private Channel channel = null;
+        private Feed feed = null;
 
-        ChannelTreeValue(Channel channel) {
-            this.setChannel(channel);
+        FeedTreeValue(Feed feed) {
+            this.setFeed(feed);
         }
 
         @Override
         public StringProperty getTitle() {
-            return this.getChannel().getTitle();
+            return this.getFeed().getTitle();
         }
 
-        private Channel getChannel() {
-            return this.channel;
+        private Feed getFeed() {
+            return this.feed;
         }
-        private void setChannel(Channel channel) {
-            this.channel = channel;
+        private void setFeed(Feed feed) {
+            this.feed = feed;
         }
 
     }

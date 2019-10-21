@@ -19,6 +19,6 @@ import javafx.collections.ObservableList;
 
 public interface Library {
 
-    ObservableList<Channel> getChannels();
+    ObservableList<Feed> getFeeds();
 
 }

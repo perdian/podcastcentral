@@ -30,22 +30,22 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.model.ChannelInput;
 import de.perdian.apps.podcentral.core.model.EpisodeInput;
-import de.perdian.apps.podcentral.retrieval.ChannelInputLoader;
+import de.perdian.apps.podcentral.core.model.FeedInput;
+import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
 import de.perdian.apps.podcentral.retrieval.support.XmlHelper;
 import okhttp3.Response;
 
 /**
- * Implementation of the {@code ChannelInputLoader} interface that evaluates the incoming input using the RSS
+ * Implementation of the {@code FeedInputLoader} interface that evaluates the incoming input using the RSS
  * specification as template.
  *
  * @author Christian Seifert
  */
 
-public class RssChannelInputLoader implements ChannelInputLoader {
+public class RssFeedInputLoader implements FeedInputLoader {
 
-    private static final Logger log = LoggerFactory.getLogger(RssChannelInputLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(RssFeedInputLoader.class);
 
     private List<String> validContentTypes = List.of("application/rss+xml", "application/xml");
 
@@ -55,12 +55,12 @@ public class RssChannelInputLoader implements ChannelInputLoader {
     }
 
     @Override
-    public ChannelInput loadChannelInput(Response feedResponse) throws Exception {
+    public FeedInput loadFeedInput(Response feedResponse) throws Exception {
         if (this.getValidContentTypes().contains(feedResponse.body().contentType().type() + "/" + feedResponse.body().contentType().subtype())) {
             try {
                 SAXReader saxReader = new SAXReader();
                 Document document = saxReader.read(new StringReader(feedResponse.body().string()));
-                return this.parseChannelInputFromDocument(document, feedResponse.request().url().toString());
+                return this.parseFeedInputFromDocument(document, feedResponse.request().url().toString());
             } catch (DocumentException e) {
                 log.debug("Cannot parser XML document", e);
                 throw new IllegalArgumentException("Invalid XML content found", e);
@@ -71,25 +71,25 @@ public class RssChannelInputLoader implements ChannelInputLoader {
         }
     }
 
-    private ChannelInput parseChannelInputFromDocument(Document document, String sourceUrl) {
-        log.debug("Parsing channel response for channel: {}", sourceUrl);
-        ChannelInput channelInput = new ChannelInput();
-        channelInput.setFeedUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:new-feed-url")).orElse(sourceUrl));
-        channelInput.setWebsiteUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/link")).orElse(null));
-        channelInput.setTitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/title")).orElse(null));
-        channelInput.setSubtitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/subtitle", "//channel/itunes:subtitle")).orElse(null));
-        channelInput.setDescription(XmlHelper.getFirstMatchingValue(document, List.of("//channel/description", "//channel/itunes:summary")).orElse(null));
-        channelInput.setOwner(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:owner/itunes:name")).orElse(null));
-        channelInput.setLanguageCode(XmlHelper.getFirstMatchingValue(document, List.of("//channel/language")).orElse(null));
-        channelInput.setImageUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/image/url23", "//channel/itunes:image/@href")).orElse(null));
-        channelInput.setCategory(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:category")).orElse(null));
-        channelInput.setEpisodes(this.parseEpisodeInputListFromDocument(document, sourceUrl));
-        return channelInput;
+    private FeedInput parseFeedInputFromDocument(Document document, String sourceUrl) {
+        log.debug("Parsing feed response for feed: {}", sourceUrl);
+        FeedInput feedInput = new FeedInput();
+        feedInput.setUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:new-feed-url")).orElse(sourceUrl));
+        feedInput.setWebsiteUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/link")).orElse(null));
+        feedInput.setTitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/title")).orElse(null));
+        feedInput.setSubtitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/subtitle", "//channel/itunes:subtitle")).orElse(null));
+        feedInput.setDescription(XmlHelper.getFirstMatchingValue(document, List.of("//channel/description", "//channel/itunes:summary")).orElse(null));
+        feedInput.setOwner(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:owner/itunes:name")).orElse(null));
+        feedInput.setLanguageCode(XmlHelper.getFirstMatchingValue(document, List.of("//channel/language")).orElse(null));
+        feedInput.setImageUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/image/url", "//channel/itunes:image/@href")).orElse(null));
+        feedInput.setCategory(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:category")).orElse(null));
+        feedInput.setEpisodes(this.parseEpisodeInputListFromDocument(document, sourceUrl));
+        return feedInput;
     }
 
     private List<EpisodeInput> parseEpisodeInputListFromDocument(Document document, String sourceUrl) {
         List<Node> itemNodes = Optional.ofNullable(document.selectNodes("//channel/item")).orElseGet(Collections::emptyList);
-        log.debug("Parsing {} episodes retrieved for channel: {}", itemNodes.size(), sourceUrl);
+        log.debug("Parsing {} episodes retrieved for feed: {}", itemNodes.size(), sourceUrl);
         List<EpisodeInput> episodes = new ArrayList<>();
         for (Node itemNode : itemNodes) {
             episodes.add(this.parseEpisodeInputFromItemNode(itemNode));

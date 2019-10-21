@@ -15,21 +15,21 @@
  */
 package de.perdian.apps.podcentral.database.model;
 
-import de.perdian.apps.podcentral.core.model.Channel;
+import de.perdian.apps.podcentral.core.model.Feed;
 import de.perdian.apps.podcentral.core.model.Library;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 class DatabaseBackedLibrary implements Library {
 
-    private ObservableList<Channel> channels = FXCollections.observableArrayList();
+    private ObservableList<Feed> feeds = FXCollections.observableArrayList();
 
     @Override
-    public ObservableList<Channel> getChannels() {
-        return this.channels;
+    public ObservableList<Feed> getFeeds() {
+        return this.feeds;
     }
-    void setChannels(ObservableList<Channel> channels) {
-        this.channels = channels;
+    void setFeeds(ObservableList<Feed> feeds) {
+        this.feeds = feeds;
     }
 
 }

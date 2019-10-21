@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.components.feeds.input;
+package de.perdian.apps.podcentral.core.model;
 
-import de.perdian.apps.podcentral.core.model.FeedInput;
-import de.perdian.apps.podcentral.ui.localization.Localization;
-import javafx.scene.layout.BorderPane;
+import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
 
-public class FeedInputPane extends BorderPane {
+public interface Feed {
 
-    public FeedInputPane(FeedInput feedInput, Localization localization) {
-
-    }
+    StringProperty getUrl();
+    StringProperty getWebsiteUrl();
+    StringProperty getTitle();
+    StringProperty getSubtitle();
+    StringProperty getDescription();
+    StringProperty getOwner();
+    StringProperty getOwnerUrl();
+    StringProperty getLanguageCode();
+    StringProperty getImageUrl();
+    StringProperty getCategory();
+    ObservableList<Episode> getEpisodes();
 
 }

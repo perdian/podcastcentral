@@ -15,8 +15,8 @@
  */
 package de.perdian.apps.podcentral.ui.components.library;
 
-import de.perdian.apps.podcentral.core.model.Channel;
 import de.perdian.apps.podcentral.core.model.Episode;
+import de.perdian.apps.podcentral.core.model.Feed;
 import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.support.TreeTableHelper;
@@ -31,13 +31,13 @@ public class LibraryPane extends BorderPane {
     public LibraryPane(Library library, Localization localization) {
 
         TreeItem<LibraryTreeValue> rootItem = new TreeItem<>(null);
-        for (Channel channel : library.getChannels()) {
-            LibraryTreeItem channelTreeItem = new LibraryTreeItem(new LibraryTreeValue.ChannelTreeValue(channel));
-            for (Episode episode : channel.getEpisodes()) {
-                channelTreeItem.setExpanded(true);
-                channelTreeItem.getChildren().add(new LibraryTreeItem(new LibraryTreeValue.EpisodeTreeValue(episode)));
+        for (Feed feed : library.getFeeds()) {
+            LibraryTreeItem feedTreeItem = new LibraryTreeItem(new LibraryTreeValue.FeedTreeValue(feed));
+            for (Episode episode : feed.getEpisodes()) {
+                feedTreeItem.setExpanded(true);
+                feedTreeItem.getChildren().add(new LibraryTreeItem(new LibraryTreeValue.EpisodeTreeValue(episode)));
             }
-            rootItem.getChildren().add(channelTreeItem);
+            rootItem.getChildren().add(feedTreeItem);
         }
 
         TreeTableColumn<LibraryTreeValue, String> titleColumn = new TreeTableColumn<>();

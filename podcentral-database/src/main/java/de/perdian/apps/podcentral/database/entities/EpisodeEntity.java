@@ -26,7 +26,7 @@ public class EpisodeEntity implements Serializable {
     static final long serialVersionUID = 1L;
 
     private Long id = null;
-    private ChannelEntity channelEntity = null;
+    private FeedEntity feed = null;
     private String title = null;
     private String subtitle = null;
     private String description = null;

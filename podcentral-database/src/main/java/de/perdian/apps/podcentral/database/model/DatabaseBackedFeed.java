@@ -18,16 +18,16 @@ package de.perdian.apps.podcentral.database.model;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import de.perdian.apps.podcentral.core.model.Channel;
 import de.perdian.apps.podcentral.core.model.Episode;
+import de.perdian.apps.podcentral.core.model.Feed;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class DatabaseBackedChannel implements Channel {
+public class DatabaseBackedFeed implements Feed {
 
-    private final StringProperty feedUrl = new SimpleStringProperty();
+    private final StringProperty url = new SimpleStringProperty();
     private final StringProperty websiteUrl = new SimpleStringProperty();
     private final StringProperty title = new SimpleStringProperty();
     private final StringProperty subtitle = new SimpleStringProperty();
@@ -45,8 +45,8 @@ public class DatabaseBackedChannel implements Channel {
     }
 
     @Override
-    public StringProperty getFeedUrl() {
-        return this.feedUrl;
+    public StringProperty getUrl() {
+        return this.url;
     }
 
     @Override

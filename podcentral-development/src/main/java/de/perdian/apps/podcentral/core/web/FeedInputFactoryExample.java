@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.model;
+package de.perdian.apps.podcentral.core.web;
 
-import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface Channel {
+import de.perdian.apps.podcentral.core.model.FeedInput;
+import de.perdian.apps.podcentral.retrieval.FeedInputFactory;
 
-    StringProperty getFeedUrl();
-    StringProperty getWebsiteUrl();
-    StringProperty getTitle();
-    StringProperty getSubtitle();
-    StringProperty getDescription();
-    StringProperty getOwner();
-    StringProperty getOwnerUrl();
-    StringProperty getLanguageCode();
-    StringProperty getImageUrl();
-    StringProperty getCategory();
-    ObservableList<Episode> getEpisodes();
+public class FeedInputFactoryExample {
+
+    private static final Logger log = LoggerFactory.getLogger(FeedInputFactoryExample.class);
+
+    public static void main(String[] args) throws Exception {
+
+        FeedInput feedInput = FeedInputFactory.getFeedInput("https://podcasts.files.bbci.co.uk/w13xttx2.rss");
+        log.info("Loaded feed: {}", feedInput);
+
+    }
 
 }

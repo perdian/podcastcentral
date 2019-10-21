@@ -26,16 +26,16 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.model.ChannelInput;
+import de.perdian.apps.podcentral.core.model.FeedInput;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class ChannelInputFactory {
+public class FeedInputFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(ChannelInputLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(FeedInputLoader.class);
 
-    public static ChannelInput getChannelInput(String feedUrl) throws Exception {
+    public static FeedInput getFeedInput(String feedUrl) throws Exception {
         try {
             OkHttpClient httpClient = new OkHttpClient.Builder().build();
             Request httpRequest = new Request.Builder().get().url(feedUrl).build();
@@ -43,22 +43,22 @@ public class ChannelInputFactory {
             try (Response httpResponse = httpClient.newCall(httpRequest).execute()) {
 
                 log.debug("Loaded content (took {}) from feed URL: {}", Duration.between(startTime, Instant.now()), feedUrl);
-                List<Provider<ChannelInputLoader>> channelInputLoaders = ServiceLoader.load(ChannelInputLoader.class).stream().collect(Collectors.toList());
-                log.debug("Processing {} channel input loaders for feed from URL: {}", channelInputLoaders.size(), feedUrl);
-                for (Provider<ChannelInputLoader> channelInputLoader : channelInputLoaders) {
-                    ChannelInput channelInput = channelInputLoader.get().loadChannelInput(httpResponse);
-                    if (channelInput == null) {
-                        log.debug("Cannot load channel input using {} from feed URL: {}", channelInputLoader.get(), feedUrl);
+                List<Provider<FeedInputLoader>> feedInputLoaders = ServiceLoader.load(FeedInputLoader.class).stream().collect(Collectors.toList());
+                log.debug("Processing {} feed input loaders for feed from URL: {}", feedInputLoaders.size(), feedUrl);
+                for (Provider<FeedInputLoader> feedInputLoader : feedInputLoaders) {
+                    FeedInput feedInput = feedInputLoader.get().loadFeedInput(httpResponse);
+                    if (feedInput == null) {
+                        log.debug("Cannot load feed input using {} from feed URL: {}", feedInputLoader.get(), feedUrl);
                     } else {
-                        log.info("Loaded channel input using {} from feed URL: {}", channelInputLoader.get(), feedUrl);
-                        return channelInput;
+                        log.info("Loaded feed input using {} from feed URL: {}", feedInputLoader.get(), feedUrl);
+                        return feedInput;
                     }
                 }
                 throw new IllegalArgumentException("Cannot analyze response for content type '" + httpResponse.body().contentType() + "' from feed URL: " + feedUrl);
 
             }
         } catch (IOException e) {
-            throw new IOException("Cannot load channel from feed URL: " + feedUrl, e);
+            throw new IOException("Cannot load feed from feed URL: " + feedUrl, e);
         }
     }
 

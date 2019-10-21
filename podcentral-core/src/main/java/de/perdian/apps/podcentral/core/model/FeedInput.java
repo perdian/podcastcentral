@@ -21,11 +21,11 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class ChannelInput implements Serializable {
+public class FeedInput implements Serializable {
 
     static final long serialVersionUID = 1L;
 
-    private String feedUrl = null;
+    private String url = null;
     private String websiteUrl = null;
     private String title = null;
     private String subtitle = null;
@@ -42,11 +42,11 @@ public class ChannelInput implements Serializable {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public String getFeedUrl() {
-        return this.feedUrl;
+    public String getUrl() {
+        return this.url;
     }
-    public void setFeedUrl(String feedUrl) {
-        this.feedUrl = feedUrl;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getWebsiteUrl() {

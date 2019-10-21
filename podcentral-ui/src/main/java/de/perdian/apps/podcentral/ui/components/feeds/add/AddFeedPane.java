@@ -21,9 +21,9 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.model.ChannelInput;
+import de.perdian.apps.podcentral.core.model.FeedInput;
 import de.perdian.apps.podcentral.core.tasks.TaskExecutor;
-import de.perdian.apps.podcentral.retrieval.ChannelInputFactory;
+import de.perdian.apps.podcentral.retrieval.FeedInputFactory;
 import de.perdian.apps.podcentral.ui.components.errors.ExceptionDialogBuilder;
 import de.perdian.apps.podcentral.ui.components.feeds.input.FeedInputPane;
 import de.perdian.apps.podcentral.ui.localization.Localization;
@@ -107,7 +107,7 @@ public class AddFeedPane extends GridPane {
         this.getTaskExecutor().submit(() -> {
             try {
                 Platform.runLater(() -> this.getDetailsWrapperPane().setCenter(this.createLoadFeedBusyPane(feedUrl)));
-                ChannelInput feedInput = ChannelInputFactory.getChannelInput(feedUrl);
+                FeedInput feedInput = FeedInputFactory.getFeedInput(feedUrl);
                 FeedInputPane feedInputPane = new FeedInputPane(feedInput, this.getLocalization());
                 Platform.runLater(() -> this.getDetailsWrapperPane().setCenter(feedInputPane));
             } catch (Exception e) {
