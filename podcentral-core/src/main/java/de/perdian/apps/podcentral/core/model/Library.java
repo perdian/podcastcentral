@@ -21,4 +21,6 @@ public interface Library {
 
     ObservableList<Feed> getFeeds();
 
+    void addFeedForInput(FeedInput feedInput);
+
 }

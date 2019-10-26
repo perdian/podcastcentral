@@ -22,13 +22,11 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.core.model.LibraryFactory;
-import de.perdian.apps.podcentral.core.tasks.TaskExecutor;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
-import de.perdian.apps.podcentral.ui.components.library.LibraryPane;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.TaskExecutor;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -42,10 +40,14 @@ public class PodCentralApplication extends Application {
         log.info("Loading preferences");
         Preferences preferences = PreferencesFactory.loadPreferences();
 
+        log.info("Loading library");
+        LibraryFactory libraryFactory = ServiceLoader.load(LibraryFactory.class).findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryFactory.class.getName()));
+        Library library = libraryFactory.createLibrary();
+
         log.info("Creating JavaFX UI");
         Localization localization = new Localization() {};
         TaskExecutor taskExecutor = new TaskExecutor();
-        PodCentralMainPane mainPane = new PodCentralMainPane(taskExecutor, preferences, localization);
+        PodCentralMainPane mainPane = new PodCentralMainPane(library, taskExecutor, preferences, localization);
 
         log.info("Opening JavaFX stage");
 //        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
@@ -58,15 +60,6 @@ public class PodCentralApplication extends Application {
         primaryStage.setHeight(800);
         primaryStage.show();
         log.info("JavaFX stage setup completed");
-
-        log.info("Loading library");
-        taskExecutor.submit(() -> {
-            LibraryFactory libraryFactory = ServiceLoader.load(LibraryFactory.class).findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryFactory.class.getName()));
-            Library library = libraryFactory.createLibrary();
-            log.info("Loaded library: {}", library);
-            LibraryPane libraryPane = new LibraryPane(library, localization);
-            Platform.runLater(() -> mainPane.setCenter(libraryPane));
-        });
 
     }
 

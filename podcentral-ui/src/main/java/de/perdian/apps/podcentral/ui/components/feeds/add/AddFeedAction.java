@@ -15,8 +15,12 @@
  */
 package de.perdian.apps.podcentral.ui.components.feeds.add;
 
-import de.perdian.apps.podcentral.core.tasks.TaskExecutor;
+import java.util.function.Consumer;
+
+import de.perdian.apps.podcentral.core.model.FeedInput;
+import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.TaskExecutor;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -27,10 +31,12 @@ import javafx.stage.StageStyle;
 
 public class AddFeedAction implements EventHandler<ActionEvent> {
 
+    private Library library = null;
     private TaskExecutor taskExecutor = null;
     private Localization localization = null;
 
-    public AddFeedAction(TaskExecutor taskExecutor, Localization localization) {
+    public AddFeedAction(Library library, TaskExecutor taskExecutor, Localization localization) {
+        this.setLibrary(library);
         this.setTaskExecutor(taskExecutor);
         this.setLocalization(localization);
     }
@@ -38,18 +44,31 @@ public class AddFeedAction implements EventHandler<ActionEvent> {
     @Override
     public void handle(ActionEvent event) {
 
-        DialogPane dialogPane = new DialogPane();
-        dialogPane.setContent(new AddFeedPane(this.getTaskExecutor(), this.getLocalization()));
-        dialogPane.setMinSize(640, 480);
-
         Stage dialogStage = new Stage(StageStyle.UTILITY);
+        dialogStage.sizeToScene();
         dialogStage.setTitle(this.getLocalization().addFeed());
         dialogStage.initModality(Modality.APPLICATION_MODAL);
+
+        Consumer<FeedInput> feedInputConsumer = feedInput -> {
+            dialogStage.close();
+            this.getTaskExecutor().submit(() -> this.getLibrary().addFeedForInput(feedInput));
+        };
+
+        DialogPane dialogPane = new DialogPane();
+        dialogPane.setContent(new AddFeedPane(this.getTaskExecutor(), this.getLocalization(), feedInputConsumer));
+        dialogPane.setMinSize(640, 400);
+
         dialogStage.setScene(new Scene(dialogPane));
         dialogStage.show();
 
     }
 
+    private Library getLibrary() {
+        return this.library;
+    }
+    private void setLibrary(Library library) {
+        this.library = library;
+    }
 
     private TaskExecutor getTaskExecutor() {
         return this.taskExecutor;

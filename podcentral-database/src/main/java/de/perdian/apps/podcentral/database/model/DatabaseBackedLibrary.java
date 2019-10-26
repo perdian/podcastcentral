@@ -16,6 +16,7 @@
 package de.perdian.apps.podcentral.database.model;
 
 import de.perdian.apps.podcentral.core.model.Feed;
+import de.perdian.apps.podcentral.core.model.FeedInput;
 import de.perdian.apps.podcentral.core.model.Library;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +24,11 @@ import javafx.collections.ObservableList;
 class DatabaseBackedLibrary implements Library {
 
     private ObservableList<Feed> feeds = FXCollections.observableArrayList();
+
+    @Override
+    public void addFeedForInput(FeedInput feedInput) {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public ObservableList<Feed> getFeeds() {

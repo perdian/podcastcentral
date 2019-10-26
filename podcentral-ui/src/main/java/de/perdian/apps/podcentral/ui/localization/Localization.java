@@ -25,8 +25,16 @@ public interface Localization {
         return "Cannot load feed from URL: " + feedUrl;
     }
 
+    default String description() {
+        return "Description";
+    }
+
     default String feedUrl() {
         return "Feed URL";
+    }
+
+    default String language() {
+        return "Language";
     }
 
     default String loadFeed() {
@@ -43,6 +51,10 @@ public interface Localization {
 
     default String noFeedLoadedYet() {
         return "No feed loaded yet";
+    }
+
+    default String owner() {
+        return "Owner";
     }
 
     default String title() {

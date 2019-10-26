@@ -15,10 +15,11 @@
  */
 package de.perdian.apps.podcentral.ui;
 
-import de.perdian.apps.podcentral.core.tasks.TaskExecutor;
+import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.ui.components.toolbar.ToolbarPane;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.TaskExecutor;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -31,11 +32,11 @@ class PodCentralMainPane extends GridPane {
 
     private BorderPane centerPane = null;
 
-    PodCentralMainPane(TaskExecutor taskExecutor, Preferences preferences, Localization localization) {
+    PodCentralMainPane(Library library, TaskExecutor taskExecutor, Preferences preferences, Localization localization) {
 
         BorderPane topPane = new BorderPane();
         topPane.setPadding(new Insets(8, 0, 8, 0));
-        topPane.setCenter(new ToolbarPane(taskExecutor, localization));
+        topPane.setCenter(new ToolbarPane(library, taskExecutor, localization));
         GridPane.setHgrow(topPane, Priority.ALWAYS);
 
         BorderPane bottomPane = new BorderPane(new Label("BOTTOM PANE GOES HERE"));
