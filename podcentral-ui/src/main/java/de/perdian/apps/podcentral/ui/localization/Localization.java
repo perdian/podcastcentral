@@ -37,6 +37,10 @@ public interface Localization {
         return "Language";
     }
 
+    default String library() {
+        return "Library";
+    }
+
     default String loadFeed() {
         return "Load feed";
     }
@@ -63,6 +67,10 @@ public interface Localization {
 
     default String podCentral() {
         return "PodCentral";
+    }
+
+    default String scheduler() {
+        return "Scheduler";
     }
 
     default String title() {

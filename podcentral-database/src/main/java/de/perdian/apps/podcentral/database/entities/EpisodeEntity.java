@@ -19,8 +19,13 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import de.perdian.apps.podcentral.core.model.EpisodeLocalState;
 
+@Entity
+@Table(name = "eposide")
 public class EpisodeEntity implements Serializable {
 
     static final long serialVersionUID = 1L;

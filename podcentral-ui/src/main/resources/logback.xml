@@ -1,0 +1,21 @@
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyyMMdd HHmmss} | %-5level @ %logger{1} | %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.hibernate" level="INFO" />
+    <logger name="org.hibernate.annotations" level="WARN" />
+    <logger name="org.hibernate.dialect" level="WARN" />
+    <logger name="org.hibernate.engine" level="WARN" />
+    <logger name="org.hibernate.orm" level="WARN" />
+    <logger name="org.hibernate.Version" level="WARN" />
+    <logger name="org.jboss.logging" level="INFO" />
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>

@@ -20,6 +20,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import de.perdian.apps.podcentral.core.model.Episode;
 import de.perdian.apps.podcentral.core.model.Feed;
+import de.perdian.apps.podcentral.database.entities.FeedEntity;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -27,6 +28,7 @@ import javafx.collections.ObservableList;
 
 public class DatabaseBackedFeed implements Feed {
 
+    private FeedEntity entity = null;
     private final StringProperty url = new SimpleStringProperty();
     private final StringProperty websiteUrl = new SimpleStringProperty();
     private final StringProperty title = new SimpleStringProperty();
@@ -39,9 +41,25 @@ public class DatabaseBackedFeed implements Feed {
     private final StringProperty category = new SimpleStringProperty();
     private final ObservableList<Episode> episodes = FXCollections.observableArrayList();
 
+    DatabaseBackedFeed(FeedEntity entity) {
+        this.setEntity(entity);
+        this.updateFrom(entity);
+    }
+
+    void updateFrom(FeedEntity feedEntity) {
+        this.getTitle().setValue(feedEntity.getTitle());
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    FeedEntity getEntity() {
+        return this.entity;
+    }
+    private void setEntity(FeedEntity entity) {
+        this.entity = entity;
     }
 
     @Override

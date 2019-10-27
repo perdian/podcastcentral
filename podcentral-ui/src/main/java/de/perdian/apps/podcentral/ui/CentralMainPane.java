@@ -15,29 +15,39 @@
  */
 package de.perdian.apps.podcentral.ui;
 
-import de.perdian.apps.podcentral.ui.components.library.LibraryPane;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.modules.library.LibraryPane;
+import de.perdian.apps.podcentral.ui.modules.scheduler.SchedulerPane;
+import de.perdian.apps.podcentral.ui.modules.scheduler.SchedulerToolbarPane;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 
-class CentralMainPane extends GridPane {
+class CentralMainPane extends BorderPane {
 
     public CentralMainPane(Central central, Localization localization) {
 
-        BorderPane bottomPane = new BorderPane(new Label("BOTTOM PANE GOES HERE"));
-        bottomPane.setPadding(new Insets(0, 0, 0, 0));
-        GridPane.setHgrow(bottomPane, Priority.ALWAYS);
-
         LibraryPane libraryPane = new LibraryPane(central.getLibrary(), localization);
-        libraryPane.setPadding(new Insets(0, 0, 0, 0));
-        GridPane.setVgrow(libraryPane, Priority.ALWAYS);
-        GridPane.setHgrow(libraryPane, Priority.ALWAYS);
+        libraryPane.setPadding(new Insets(8, 8, 8, 8));
+        Tab libraryTab = new Tab(localization.library(), libraryPane);
+        libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
+        libraryTab.setClosable(false);
 
-        this.add(libraryPane, 0, 0, 1, 1);
-        this.add(bottomPane, 0, 1, 1, 1);
+        SchedulerPane schedulerPane = new SchedulerPane(central.getScheduler(), localization);
+        schedulerPane.setPadding(new Insets(8, 8, 8, 8));
+        Tab schedulerTab = new Tab(localization.scheduler(), schedulerPane);
+        schedulerTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
+        schedulerTab.setClosable(false);
+
+        SchedulerToolbarPane schedulerToolbarPane = new SchedulerToolbarPane(central.getScheduler(), localization);
+        schedulerToolbarPane.setPadding(new Insets(0, 8, 8, 8));
+
+        TabPane tabPane = new TabPane(libraryTab, schedulerTab);
+        this.setCenter(tabPane);
+        this.setBottom(schedulerToolbarPane);
 
     }
 
