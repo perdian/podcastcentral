@@ -29,6 +29,11 @@
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-fontawesome</artifactId>
+            <version>${fontawesomefx.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -40,7 +45,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.perdian.apps.podcentral.ui.PodCentralUiLauncher</mainClass>
+                            <mainClass>de.perdian.apps.podcentral.ui.CentralApplicationLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -76,7 +81,7 @@
                         <configuration>
                             <plist>
                                 <CFBundleIconFile>src/bundle/macos/resources/podcentral.icns</CFBundleIconFile>
-                                <JVMMainClassName>de.perdian.apps.podcentral.ui.PodCentralUiLauncher</JVMMainClassName>
+                                <JVMMainClassName>de.perdian.apps.podcentral.ui.CentralApplicationLauncher</JVMMainClassName>
                                 <JVMVersion>${java.version}+</JVMVersion>
                                 <JVMOptions>
                                     <string>-Dapple.laf.useScreenMenuBar=true</string>

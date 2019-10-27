@@ -18,9 +18,8 @@ package de.perdian.apps.podcentral.ui.components.feeds.add;
 import java.util.function.Consumer;
 
 import de.perdian.apps.podcentral.core.model.FeedInput;
-import de.perdian.apps.podcentral.core.model.Library;
+import de.perdian.apps.podcentral.ui.Central;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.support.tasks.TaskExecutor;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -31,13 +30,11 @@ import javafx.stage.StageStyle;
 
 public class AddFeedAction implements EventHandler<ActionEvent> {
 
-    private Library library = null;
-    private TaskExecutor taskExecutor = null;
+    private Central central = null;
     private Localization localization = null;
 
-    public AddFeedAction(Library library, TaskExecutor taskExecutor, Localization localization) {
-        this.setLibrary(library);
-        this.setTaskExecutor(taskExecutor);
+    public AddFeedAction(Central central, Localization localization) {
+        this.setCentral(central);
         this.setLocalization(localization);
     }
 
@@ -51,11 +48,11 @@ public class AddFeedAction implements EventHandler<ActionEvent> {
 
         Consumer<FeedInput> feedInputConsumer = feedInput -> {
             dialogStage.close();
-            this.getTaskExecutor().submit(() -> this.getLibrary().addFeedForInput(feedInput));
+            new Thread(() -> this.getCentral().getLibrary().addFeedForInput(feedInput)).start();
         };
 
         DialogPane dialogPane = new DialogPane();
-        dialogPane.setContent(new AddFeedPane(this.getTaskExecutor(), this.getLocalization(), feedInputConsumer));
+        dialogPane.setContent(new AddFeedPane(this.getLocalization(), feedInputConsumer));
         dialogPane.setMinSize(640, 400);
 
         dialogStage.setScene(new Scene(dialogPane));
@@ -63,18 +60,11 @@ public class AddFeedAction implements EventHandler<ActionEvent> {
 
     }
 
-    private Library getLibrary() {
-        return this.library;
+    private Central getCentral() {
+        return this.central;
     }
-    private void setLibrary(Library library) {
-        this.library = library;
-    }
-
-    private TaskExecutor getTaskExecutor() {
-        return this.taskExecutor;
-    }
-    private void setTaskExecutor(TaskExecutor taskExecutor) {
-        this.taskExecutor = taskExecutor;
+    private void setCentral(Central central) {
+        this.central = central;
     }
 
     private Localization getLocalization() {

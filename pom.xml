@@ -43,6 +43,7 @@
     <properties>
         <commons-lang3.version>3.9</commons-lang3.version>
         <dom4j.version>2.1.1</dom4j.version>
+        <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
         <java.version>12</java.version>
         <javafx.version>12</javafx.version>
         <jaxen.version>1.2.0</jaxen.version>

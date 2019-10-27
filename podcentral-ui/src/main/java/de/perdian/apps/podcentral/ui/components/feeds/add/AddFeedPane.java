@@ -27,7 +27,6 @@ import de.perdian.apps.podcentral.retrieval.FeedInputFactory;
 import de.perdian.apps.podcentral.ui.components.errors.ExceptionDialogBuilder;
 import de.perdian.apps.podcentral.ui.components.feeds.input.FeedInputPane;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.support.tasks.TaskExecutor;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -52,16 +51,14 @@ public class AddFeedPane extends GridPane {
 
     private static final Logger log = LoggerFactory.getLogger(AddFeedPane.class);
 
-    private TaskExecutor taskExecutor = null;
     private BooleanProperty busyProperty = null;
     private StringProperty feedUrlProperty = null;
     private Localization localization = null;
     private BorderPane detailsWrapperPane = null;
     private Consumer<FeedInput> feedInputConsumer = null;
 
-    public AddFeedPane(TaskExecutor taskExecutor, Localization localization, Consumer<FeedInput> feedInputConsumer) {
+    public AddFeedPane(Localization localization, Consumer<FeedInput> feedInputConsumer) {
 
-        this.setTaskExecutor(taskExecutor);
         this.setBusyProperty(new SimpleBooleanProperty(false));
         this.setLocalization(localization);
         this.setFeedInputConsumer(feedInputConsumer);
@@ -111,7 +108,7 @@ public class AddFeedPane extends GridPane {
 
     private synchronized void loadFeedUrl(String feedUrl) {
         Platform.runLater(() -> this.getBusyProperty().setValue(Boolean.TRUE));
-        this.getTaskExecutor().submit(() -> {
+        new Thread(() -> {
             try {
 
                 Platform.runLater(() -> AddFeedPane.this.getDetailsWrapperPane().setCenter(AddFeedPane.this.createLoadFeedBusyPane(feedUrl)));
@@ -140,7 +137,7 @@ public class AddFeedPane extends GridPane {
             } finally {
                 Platform.runLater(() -> AddFeedPane.this.getBusyProperty().setValue(Boolean.FALSE));
             }
-        });
+        }).start();
     }
 
     private Pane createLoadFeedBusyPane(String feedUrl) {
@@ -167,13 +164,6 @@ public class AddFeedPane extends GridPane {
         loadingPane.add(progressBar, 0, 2, 1, 1);
         return loadingPane;
 
-    }
-
-    private TaskExecutor getTaskExecutor() {
-        return this.taskExecutor;
-    }
-    private void setTaskExecutor(TaskExecutor taskExecutor) {
-        this.taskExecutor = taskExecutor;
     }
 
     private Localization getLocalization() {

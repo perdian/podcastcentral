@@ -15,59 +15,40 @@
  */
 package de.perdian.apps.podcentral.ui;
 
-import de.perdian.apps.podcentral.core.model.Library;
-import de.perdian.apps.podcentral.preferences.Preferences;
+import de.perdian.apps.podcentral.ui.components.library.LibraryPane;
 import de.perdian.apps.podcentral.ui.components.toolbar.ToolbarPane;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.support.tasks.TaskExecutor;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
-class PodCentralMainPane extends GridPane {
+class CentralMainPane extends GridPane {
 
-    private BorderPane centerPane = null;
-
-    PodCentralMainPane(Library library, TaskExecutor taskExecutor, Preferences preferences, Localization localization) {
+    public CentralMainPane(Central central, Localization localization) {
 
         BorderPane topPane = new BorderPane();
         topPane.setPadding(new Insets(8, 0, 8, 0));
-        topPane.setCenter(new ToolbarPane(library, taskExecutor, localization));
+        topPane.setCenter(new ToolbarPane(central, localization));
         GridPane.setHgrow(topPane, Priority.ALWAYS);
 
         BorderPane bottomPane = new BorderPane(new Label("BOTTOM PANE GOES HERE"));
         bottomPane.setPadding(new Insets(8, 0, 8, 0));
         GridPane.setHgrow(bottomPane, Priority.ALWAYS);
 
-        Label libraryLoadingLabel = new Label(localization.loadingLibrary());
-        BorderPane libraryLoadingPane = new BorderPane(libraryLoadingLabel);
-        BorderPane centerPane = new BorderPane(libraryLoadingPane);
-        centerPane.setPadding(new Insets(8, 8, 8, 8));
-        GridPane.setVgrow(centerPane, Priority.ALWAYS);
-        GridPane.setHgrow(centerPane, Priority.ALWAYS);
-        this.setCenterPane(centerPane);
+        LibraryPane libraryPane = new LibraryPane(central.getLibrary(), localization);
+        libraryPane.setPadding(new Insets(8, 8, 8, 8));
+        GridPane.setVgrow(libraryPane, Priority.ALWAYS);
+        GridPane.setHgrow(libraryPane, Priority.ALWAYS);
 
         this.add(topPane, 0, 0, 1, 1);
         this.add(new Separator(), 0, 1, 1, 1);
-        this.add(centerPane, 0, 2, 1, 1);
+        this.add(libraryPane, 0, 2, 1, 1);
         this.add(new Separator(), 0, 3, 1, 1);
         this.add(bottomPane, 0, 4, 1, 1);
 
-    }
-
-    public void setCenter(Node node) {
-        this.getCenterPane().setCenter(node);
-    }
-
-    private BorderPane getCenterPane() {
-        return this.centerPane;
-    }
-    private void setCenterPane(BorderPane centerPane) {
-        this.centerPane = centerPane;
     }
 
 }

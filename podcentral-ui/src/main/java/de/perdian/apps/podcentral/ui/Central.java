@@ -15,18 +15,26 @@
  */
 package de.perdian.apps.podcentral.ui;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.perdian.apps.podcentral.core.model.Library;
+import de.perdian.apps.podcentral.preferences.Preferences;
 
-import javafx.application.Application;
+public class Central {
 
-public class PodCentralUiLauncher {
+    private Preferences preferences = null;
+    private Library library = null;
 
-    private static final Logger log = LoggerFactory.getLogger(PodCentralUiLauncher.class);
+    public Preferences getPreferences() {
+        return this.preferences;
+    }
+    void setPreferences(Preferences preferences) {
+        this.preferences = preferences;
+    }
 
-    public static void main(String[] args) {
-        log.info("Launching application");
-        Application.launch(PodCentralApplication.class, args);
+    public Library getLibrary() {
+        return this.library;
+    }
+    void setLibrary(Library library) {
+        this.library = library;
     }
 
 }

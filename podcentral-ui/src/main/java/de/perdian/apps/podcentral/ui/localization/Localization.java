@@ -41,6 +41,10 @@ public interface Localization {
         return "Load feed";
     }
 
+    default String loadingApplicationData() {
+        return "Loading application data...";
+    }
+
     default String loadingFeedFrom() {
         return "Loading feed from:";
     }
@@ -55,6 +59,10 @@ public interface Localization {
 
     default String owner() {
         return "Owner";
+    }
+
+    default String podCentral() {
+        return "PodCentral";
     }
 
     default String title() {
