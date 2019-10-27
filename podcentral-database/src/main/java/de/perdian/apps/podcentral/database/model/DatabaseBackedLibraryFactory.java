@@ -18,8 +18,15 @@ package de.perdian.apps.podcentral.database.model;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -29,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.core.model.LibraryFactory;
+import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
 
 public class DatabaseBackedLibraryFactory implements LibraryFactory {
@@ -40,7 +48,32 @@ public class DatabaseBackedLibraryFactory implements LibraryFactory {
 
         SessionFactory sessionFactory = this.createHibernateSessionFactory(properties);
         DatabaseBackedLibrary library = new DatabaseBackedLibrary(sessionFactory);
+        library.getFeeds().setAll(this.loadFeeds(sessionFactory));
         return library;
+
+    }
+
+    private List<DatabaseBackedFeed> loadFeeds(SessionFactory sessionFactory) {
+        try (Session session = sessionFactory.openSession()) {
+
+            List<FeedEntity> feedEntities = session.createQuery("from FeedEntity").list();
+            feedEntities.sort(Comparator.comparing(feedEntity -> feedEntity.getData().getTitle()));
+
+            List<EpisodeEntity> episodeEntities = session.createQuery("from EpisodeEntity").list();
+            Map<FeedEntity, List<EpisodeEntity>> episodeEntitiesByFeed = new HashMap<>();
+            for (EpisodeEntity episodeEntity : episodeEntities) {
+                episodeEntitiesByFeed.compute(episodeEntity.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episodeEntity);
+            }
+
+            List<DatabaseBackedFeed> feeds = new ArrayList<>();
+            for (FeedEntity feedEntity : feedEntities) {
+                List<EpisodeEntity> episodeEntitiesForFeed = Optional.ofNullable(episodeEntitiesByFeed.get(feedEntity)).orElseGet(ArrayList::new);
+                episodeEntitiesForFeed.sort(Comparator.comparing(episodeEntity -> episodeEntity.getData().getPublicationDate()));
+                feeds.add(new DatabaseBackedFeed(feedEntity, episodeEntitiesForFeed, sessionFactory));
+            }
+            return feeds;
+
+        }
 
     }
 
@@ -56,6 +89,7 @@ public class DatabaseBackedLibraryFactory implements LibraryFactory {
         hibernateConfiguration.setProperty(Environment.SHOW_SQL, "true");
         hibernateConfiguration.setProperty(Environment.FORMAT_SQL, "true");
         hibernateConfiguration.addAnnotatedClass(FeedEntity.class);
+        hibernateConfiguration.addAnnotatedClass(EpisodeEntity.class);
 
         log.info("Creating database connection using URL: {}", hibernateConfiguration.getProperty(Environment.URL));
         ServiceRegistry hibernateServiceRegistry = new StandardServiceRegistryBuilder().applySettings(hibernateConfiguration.getProperties()).build();

@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.model;
+package de.perdian.apps.podcentral.retrieval.support;
 
-import java.io.Serializable;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-public class EpisodeInput implements Serializable {
+public class DateHelper {
 
-    static final long serialVersionUID = 1L;
+    public static Instant parseInstant(String inputValue) {
+        return ZonedDateTime.parse(inputValue, DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss xx").withLocale(Locale.ENGLISH)).toInstant();
+    }
 
 }

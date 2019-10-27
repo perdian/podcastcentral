@@ -16,33 +16,83 @@
 package de.perdian.apps.podcentral.database.entities;
 
 import java.io.Serializable;
-import java.time.Duration;
 import java.time.Instant;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import de.perdian.apps.podcentral.core.model.EpisodeData;
 import de.perdian.apps.podcentral.core.model.EpisodeLocalState;
 
 @Entity
-@Table(name = "eposide")
+@Table(name = "episode")
 public class EpisodeEntity implements Serializable {
 
     static final long serialVersionUID = 1L;
 
     private Long id = null;
     private FeedEntity feed = null;
-    private String title = null;
-    private String subtitle = null;
-    private String description = null;
-    private Duration duration = null;
-    private Long size = null;
-    private Instant creationDate = null;
-    private Instant publicationDate = null;
+    private EpisodeData data = null;
     private Instant downloadDate = null;
-    private EpisodeLocalState episodeLocalState = null;
-    private String contentUrl = null;
-    private String contentType = null;
-    private String websiteUrl = null;
+    private EpisodeLocalState localState = null;
+
+    @Override
+    public int hashCode() {
+        return this.getId() == null ? 0 : this.getId().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof EpisodeEntity) {
+            return this.getId() != null && this.getId().equals(((EpisodeEntity)that).getId());
+        } else {
+            return false;
+        }
+    }
+
+    @Id @GeneratedValue
+    public Long getId() {
+        return this.id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @ManyToOne
+    public FeedEntity getFeed() {
+        return this.feed;
+    }
+    public void setFeed(FeedEntity feed) {
+        this.feed = feed;
+    }
+
+    @Embedded
+    public EpisodeData getData() {
+        return this.data;
+    }
+    public void setData(EpisodeData data) {
+        this.data = data;
+    }
+
+    public Instant getDownloadDate() {
+        return this.downloadDate;
+    }
+    public void setDownloadDate(Instant downloadDate) {
+        this.downloadDate = downloadDate;
+    }
+
+    public EpisodeLocalState getLocalState() {
+        return this.localState;
+    }
+    public void setLocalState(EpisodeLocalState localState) {
+        this.localState = localState;
+    }
+
 
 }

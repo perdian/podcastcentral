@@ -15,13 +15,16 @@
  */
 package de.perdian.apps.podcentral.database.model;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.SessionFactory;
 
 import de.perdian.apps.podcentral.core.model.Episode;
 import de.perdian.apps.podcentral.core.model.Feed;
+import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,25 +32,35 @@ import javafx.collections.ObservableList;
 public class DatabaseBackedFeed implements Feed {
 
     private FeedEntity entity = null;
-    private final StringProperty url = new SimpleStringProperty();
-    private final StringProperty websiteUrl = new SimpleStringProperty();
-    private final StringProperty title = new SimpleStringProperty();
-    private final StringProperty subtitle = new SimpleStringProperty();
-    private final StringProperty description = new SimpleStringProperty();
-    private final StringProperty owner = new SimpleStringProperty();
-    private final StringProperty ownerUrl = new SimpleStringProperty();
-    private final StringProperty languageCode = new SimpleStringProperty();
-    private final StringProperty imageUrl = new SimpleStringProperty();
-    private final StringProperty category = new SimpleStringProperty();
-    private final ObservableList<Episode> episodes = FXCollections.observableArrayList();
+    private StringProperty url = null;
+    private StringProperty websiteUrl = null;
+    private StringProperty title = null;
+    private StringProperty subtitle = null;
+    private StringProperty description = null;
+    private StringProperty owner = null;
+    private StringProperty ownerUrl = null;
+    private StringProperty languageCode = null;
+    private StringProperty imageUrl = null;
+    private StringProperty category = null;
+    private ObservableList<Episode> episodes = null;
 
-    DatabaseBackedFeed(FeedEntity entity) {
-        this.setEntity(entity);
-        this.updateFrom(entity);
-    }
+    DatabaseBackedFeed(FeedEntity feedEntity, List<EpisodeEntity> episodeEntities, SessionFactory sessionFactory) {
+        this.setEntity(feedEntity);
 
-    void updateFrom(FeedEntity feedEntity) {
-        this.getTitle().setValue(feedEntity.getTitle());
+        DatabasePropertyFactory propertyFactory = new DatabasePropertyFactory(sessionFactory);
+//        this.setCategory(propertyFactory.createProperty(feedEntity, feedEntity -> feedEntity.getData()::getCategory, FeedEntity::setCategory));
+//        this.setDescription(propertyFactory.createProperty(feedEntity, FeedEntity::getDescription, FeedEntity::setDescription));
+//        this.setImageUrl(propertyFactory.createProperty(feedEntity, FeedEntity::getImageUrl, FeedEntity::setImageUrl));
+//        this.setLanguageCode(propertyFactory.createProperty(feedEntity, FeedEntity::getLanguageCode, FeedEntity::setLanguageCode));
+//        this.setOwner(propertyFactory.createProperty(feedEntity, FeedEntity::getOwner, FeedEntity::setOwner));
+//        this.setOwnerUrl(propertyFactory.createProperty(feedEntity, FeedEntity::getOwnerUrl, FeedEntity::setOwnerUrl));
+//        this.setSubtitle(propertyFactory.createProperty(feedEntity, FeedEntity::getSubtitle, FeedEntity::setSubtitle));
+//        this.setTitle(propertyFactory.createProperty(feedEntity, FeedEntity::getTitle, FeedEntity::setTitle));
+//        this.setUrl(propertyFactory.createProperty(feedEntity, FeedEntity::getUrl, FeedEntity::setUrl));
+//        this.setWebsiteUrl(propertyFactory.createProperty(feedEntity, FeedEntity::getWebsiteUrl, FeedEntity::setWebsiteUrl));
+//        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(episodeEntity, sessionFactory)).collect(Collectors.toList())));
+this.setEpisodes(FXCollections.observableArrayList());
+
     }
 
     @Override
@@ -66,55 +79,88 @@ public class DatabaseBackedFeed implements Feed {
     public StringProperty getUrl() {
         return this.url;
     }
+    private void setUrl(StringProperty url) {
+        this.url = url;
+    }
 
     @Override
     public StringProperty getWebsiteUrl() {
         return this.websiteUrl;
+    }
+    private void setWebsiteUrl(StringProperty websiteUrl) {
+        this.websiteUrl = websiteUrl;
     }
 
     @Override
     public StringProperty getTitle() {
         return this.title;
     }
+    private void setTitle(StringProperty title) {
+        this.title = title;
+    }
 
     @Override
     public StringProperty getSubtitle() {
         return this.subtitle;
+    }
+    private void setSubtitle(StringProperty subtitle) {
+        this.subtitle = subtitle;
     }
 
     @Override
     public StringProperty getDescription() {
         return this.description;
     }
+    private void setDescription(StringProperty description) {
+        this.description = description;
+    }
 
     @Override
     public StringProperty getOwner() {
         return this.owner;
+    }
+    private void setOwner(StringProperty owner) {
+        this.owner = owner;
     }
 
     @Override
     public StringProperty getOwnerUrl() {
         return this.ownerUrl;
     }
+    private void setOwnerUrl(StringProperty ownerUrl) {
+        this.ownerUrl = ownerUrl;
+    }
 
     @Override
     public StringProperty getLanguageCode() {
         return this.languageCode;
+    }
+    private void setLanguageCode(StringProperty languageCode) {
+        this.languageCode = languageCode;
     }
 
     @Override
     public StringProperty getImageUrl() {
         return this.imageUrl;
     }
+    private void setImageUrl(StringProperty imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     @Override
     public StringProperty getCategory() {
         return this.category;
     }
+    private void setCategory(StringProperty category) {
+        this.category = category;
+    }
 
     @Override
     public ObservableList<Episode> getEpisodes() {
         return this.episodes;
+    }
+    private void setEpisodes(ObservableList<Episode> episodes) {
+        this.episodes = episodes;
     }
 
 }

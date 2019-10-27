@@ -50,6 +50,7 @@
         <hibernate.version>5.4.7.Final</hibernate.version>
         <java.version>12</java.version>
         <javafx.version>12</javafx.version>
+        <javax.persistence.version>2.2</javax.persistence.version>
         <jaxen.version>1.2.0</jaxen.version>
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <logback.version>1.2.3</logback.version>

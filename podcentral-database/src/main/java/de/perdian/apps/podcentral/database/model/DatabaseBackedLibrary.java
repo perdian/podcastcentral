@@ -15,9 +15,9 @@
  */
 package de.perdian.apps.podcentral.database.model;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 import javax.persistence.criteria.CriteriaQuery;
 
@@ -25,9 +25,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import de.perdian.apps.podcentral.core.model.EpisodeData;
+import de.perdian.apps.podcentral.core.model.EpisodeLocalState;
 import de.perdian.apps.podcentral.core.model.Feed;
 import de.perdian.apps.podcentral.core.model.FeedInput;
 import de.perdian.apps.podcentral.core.model.Library;
+import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,7 +43,6 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     public DatabaseBackedLibrary(SessionFactory sessionFactory) {
         this.setSessionFactory(sessionFactory);
         this.setFeeds(FXCollections.observableArrayList());
-        this.loadFeeds();
     }
 
     @Override
@@ -56,56 +58,33 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
 
     @Override
     public void addFeedForInput(FeedInput feedInput) {
-        FeedEntity feedEntity = this.doWithinTransaction(session -> {
-
+        this.doWithinTransaction(session -> {
             CriteriaQuery<FeedEntity> feedQuery = session.getCriteriaBuilder().createQuery(FeedEntity.class);
-            feedQuery.where(session.getCriteriaBuilder().equal(feedQuery.from(FeedEntity.class).get("url"), feedInput.getUrl()));
-            List<FeedEntity> feeds = session.createQuery(feedQuery).list();
-
-            FeedEntity feed = feeds == null || feeds.isEmpty() ? new FeedEntity() : feeds.get(0);
-            feed.setCategory(feedInput.getCategory());
-            feed.setDescription(feedInput.getDescription());
-            feed.setImageUrl(feedInput.getImageUrl());
-            feed.setLanguageCode(feedInput.getLanguageCode());
-            feed.setOwner(feedInput.getOwner());
-            feed.setOwnerUrl(feedInput.getOwnerUrl());
-            feed.setSubtitle(feedInput.getSubtitle());
-            feed.setTitle(feedInput.getTitle());
-            feed.setUrl(feedInput.getUrl());
-            feed.setWebsiteUrl(feedInput.getWebsiteUrl());
-            session.saveOrUpdate(feed);
-            return feed;
-
+            feedQuery.where(session.getCriteriaBuilder().equal(feedQuery.from(FeedEntity.class).get("data").get("url"), feedInput.getData().getUrl()));
+            FeedEntity feedEntity = session.createQuery(feedQuery).uniqueResultOptional().orElse(null);
+            if (feedEntity == null) {
+                feedEntity = new FeedEntity();
+                feedEntity.setData(feedInput.getData());
+                session.save(feedEntity);
+                List<EpisodeEntity> episodeEntities = new ArrayList<>();
+                for (EpisodeData episodeData : feedInput.getEpisodes()) {
+                    EpisodeEntity episodeEntity = new EpisodeEntity();
+                    episodeEntity.setFeed(feedEntity);
+                    episodeEntity.setData(episodeData);
+                    episodeEntity.setLocalState(EpisodeLocalState.NEW);
+                    session.save(episodeEntity);
+                    episodeEntities.add(episodeEntity);
+                }
+                this.getFeeds().add(new DatabaseBackedFeed(feedEntity, episodeEntities, this.getSessionFactory()));
+            }
         });
-        this.synchronizeFeedEntity(feedEntity);
     }
 
-    private void loadFeeds() {
-        try (Session session = this.getSessionFactory().openSession()) {
-            CriteriaQuery<FeedEntity> feedQuery = session.getCriteriaBuilder().createQuery(FeedEntity.class);
-            feedQuery.orderBy(session.getCriteriaBuilder().asc(feedQuery.from(FeedEntity.class).get("title")));
-            List<DatabaseBackedFeed> dbFeeds = session.createQuery(feedQuery).stream().map(DatabaseBackedFeed::new).collect(Collectors.toList());
-            this.getFeeds().addAll(dbFeeds);
-        }
-    }
-
-    private void synchronizeFeedEntity(FeedEntity feedEntity) {
-        DatabaseBackedFeed dbFeed = this.getFeeds().stream().map(feed -> (DatabaseBackedFeed)feed).filter(feed -> feed.getEntity().equals(feedEntity)).findFirst().orElse(null);
-        if (dbFeed == null) {
-            dbFeed = new DatabaseBackedFeed(feedEntity);
-            dbFeed.updateFrom(feedEntity);
-            this.getFeeds().add(dbFeed);
-        } else {
-            dbFeed.updateFrom(feedEntity);
-        }
-    }
-
-    private <T> T doWithinTransaction(Function<Session, T> sessionConsumer) {
+    private void doWithinTransaction(Consumer<Session> sessionConsumer) {
         try (Session session = this.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            T returnValue = sessionConsumer.apply(session);
+            sessionConsumer.accept(session);
             transaction.commit();
-            return returnValue;
         }
     }
 

@@ -15,7 +15,7 @@
  */
 package de.perdian.apps.podcentral.ui.modules.feeds.input;
 
-import de.perdian.apps.podcentral.core.model.FeedInput;
+import de.perdian.apps.podcentral.core.model.FeedData;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
@@ -33,21 +33,21 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 
-public class FeedInputPane extends GridPane {
+public class FeedDataPane extends GridPane {
 
-    public FeedInputPane(FeedInput feedInput, Localization localization) {
+    public FeedDataPane(FeedData feedData, Localization localization) {
 
-        TextField titleField = new TextField(feedInput.getTitle());
+        TextField titleField = new TextField(feedData.getTitle());
         titleField.setEditable(false);
         GridPane.setHgrow(titleField, Priority.ALWAYS);
         GridPane.setMargin(titleField, new Insets(2, 0, 8, 0));
 
-        TextField ownerField = new TextField(feedInput.getOwner());
+        TextField ownerField = new TextField(feedData.getOwner());
         ownerField.setEditable(false);
         GridPane.setHgrow(ownerField, Priority.ALWAYS);
         GridPane.setMargin(ownerField, new Insets(2, 0, 8, 0));
 
-        TextArea descriptionArea = new TextArea(feedInput.getDescription());
+        TextArea descriptionArea = new TextArea(feedData.getDescription());
         descriptionArea.setWrapText(true);
         descriptionArea.setPrefHeight(75);
         descriptionArea.setEditable(false);
@@ -55,7 +55,7 @@ public class FeedInputPane extends GridPane {
         GridPane.setVgrow(descriptionArea, Priority.ALWAYS);
         GridPane.setMargin(descriptionArea, new Insets(2, 0, 0, 0));
 
-        Image image = new Image(feedInput.getImageUrl(), 150, 150, true, true);
+        Image image = new Image(feedData.getImageUrl(), 150, 150, true, true);
         Label imageLabel = new Label();
         imageLabel.setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         imageLabel.setGraphic(image.getWidth() > 0 && image.getHeight() > 0 ? new ImageView(image) : null);

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import de.perdian.apps.podcentral.core.model.FeedInput;
 import de.perdian.apps.podcentral.retrieval.FeedInputFactory;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.modules.feeds.input.FeedInputPane;
+import de.perdian.apps.podcentral.ui.modules.feeds.input.FeedDataPane;
 import de.perdian.apps.podcentral.ui.support.errors.ExceptionDialogBuilder;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -113,9 +113,9 @@ public class AddFeedPane extends GridPane {
 
                 Platform.runLater(() -> AddFeedPane.this.getDetailsWrapperPane().setCenter(AddFeedPane.this.createLoadFeedBusyPane(feedUrl)));
                 FeedInput feedInput = FeedInputFactory.getFeedInput(feedUrl);
-                FeedInputPane feedInputPane = new FeedInputPane(feedInput, AddFeedPane.this.getLocalization());
-                GridPane.setHgrow(feedInputPane, Priority.ALWAYS);
-                GridPane.setVgrow(feedInputPane, Priority.ALWAYS);
+                FeedDataPane feedDataPane = new FeedDataPane(feedInput.getData(), AddFeedPane.this.getLocalization());
+                GridPane.setHgrow(feedDataPane, Priority.ALWAYS);
+                GridPane.setVgrow(feedDataPane, Priority.ALWAYS);
 
                 Separator feedInputSeparator = new Separator();
                 GridPane.setMargin(feedInputSeparator, new Insets(8, 0, 8, 0));
@@ -126,7 +126,7 @@ public class AddFeedPane extends GridPane {
                 buttonBox.setAlignment(Pos.CENTER);
 
                 GridPane feedInputWrapperPane = new GridPane();
-                feedInputWrapperPane.add(feedInputPane, 0, 0, 1, 1);
+                feedInputWrapperPane.add(feedDataPane, 0, 0, 1, 1);
                 feedInputWrapperPane.add(feedInputSeparator, 0, 1, 1, 1);
                 feedInputWrapperPane.add(buttonBox, 0, 2, 1, 1);
                 Platform.runLater(() -> AddFeedPane.this.getDetailsWrapperPane().setCenter(feedInputWrapperPane));

@@ -16,6 +16,7 @@
 package de.perdian.apps.podcentral.retrieval.impl;
 
 import java.io.StringReader;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,9 +31,11 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.model.EpisodeInput;
+import de.perdian.apps.podcentral.core.model.EpisodeData;
+import de.perdian.apps.podcentral.core.model.FeedData;
 import de.perdian.apps.podcentral.core.model.FeedInput;
 import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
+import de.perdian.apps.podcentral.retrieval.support.DateHelper;
 import de.perdian.apps.podcentral.retrieval.support.XmlHelper;
 import okhttp3.Response;
 
@@ -72,34 +75,48 @@ public class RssFeedInputLoader implements FeedInputLoader {
     }
 
     private FeedInput parseFeedInputFromDocument(Document document, String sourceUrl) {
-        log.debug("Parsing feed response for feed: {}", sourceUrl);
         FeedInput feedInput = new FeedInput();
-        feedInput.setUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:new-feed-url")).orElse(sourceUrl));
-        feedInput.setWebsiteUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/link")).orElse(null));
-        feedInput.setTitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/title")).orElse(null));
-        feedInput.setSubtitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/subtitle", "//channel/itunes:subtitle")).orElse(null));
-        feedInput.setDescription(XmlHelper.getFirstMatchingValue(document, List.of("//channel/description", "//channel/itunes:summary")).orElse(null));
-        feedInput.setOwner(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:owner/itunes:name")).orElse(null));
-        feedInput.setLanguageCode(XmlHelper.getFirstMatchingValue(document, List.of("//channel/language")).orElse(null));
-        feedInput.setImageUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/image/url", "//channel/itunes:image/@href")).orElse(null));
-        feedInput.setCategory(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:category")).orElse(null));
-        feedInput.setEpisodes(this.parseEpisodeInputListFromDocument(document, sourceUrl));
+        feedInput.setData(this.parseFeedDataFromDocument(document, sourceUrl));
+        feedInput.setEpisodes(this.parseEpisodeDataListFromDocument(document, sourceUrl));
         return feedInput;
     }
 
-    private List<EpisodeInput> parseEpisodeInputListFromDocument(Document document, String sourceUrl) {
+    private FeedData parseFeedDataFromDocument(Document document, String sourceUrl) {
+        log.debug("Parsing feed response for feed: {}", sourceUrl);
+        FeedData feedData = new FeedData();
+        feedData.setUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:new-feed-url")).orElse(sourceUrl));
+        feedData.setWebsiteUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/link")).orElse(null));
+        feedData.setTitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/title")).orElse(null));
+        feedData.setSubtitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/subtitle", "//channel/itunes:subtitle")).orElse(null));
+        feedData.setDescription(XmlHelper.getFirstMatchingValue(document, List.of("//channel/description", "//channel/itunes:summary")).orElse(null));
+        feedData.setOwner(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:owner/itunes:name")).orElse(null));
+        feedData.setLanguageCode(XmlHelper.getFirstMatchingValue(document, List.of("//channel/language")).orElse(null));
+        feedData.setImageUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/image/url", "//channel/itunes:image/@href")).orElse(null));
+        feedData.setCategory(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:category")).orElse(null));
+        return feedData;
+    }
+
+    private List<EpisodeData> parseEpisodeDataListFromDocument(Document document, String sourceUrl) {
         List<Node> itemNodes = Optional.ofNullable(document.selectNodes("//channel/item")).orElseGet(Collections::emptyList);
         log.debug("Parsing {} episodes retrieved for feed: {}", itemNodes.size(), sourceUrl);
-        List<EpisodeInput> episodes = new ArrayList<>();
+        List<EpisodeData> episodes = new ArrayList<>();
         for (Node itemNode : itemNodes) {
             episodes.add(this.parseEpisodeInputFromItemNode(itemNode));
         }
         return episodes;
     }
 
-    private EpisodeInput parseEpisodeInputFromItemNode(Node itemNode) {
-        EpisodeInput episodeInput = new EpisodeInput();
-        return episodeInput;
+    private EpisodeData parseEpisodeInputFromItemNode(Node itemNode) {
+        EpisodeData episodeData = new EpisodeData();
+        episodeData.setContentType(XmlHelper.getFirstMatchingValue(itemNode, List.of("//enclosure/@type", "//media:content/@type")).orElse(null));
+        episodeData.setContentUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("//enclosure/@url", "//media:content/@url")).orElse(null));
+        episodeData.setDescription(XmlHelper.getFirstMatchingValue(itemNode, List.of("//description", "/itunes:summary")).orElse(null));
+        episodeData.setDuration(XmlHelper.getFirstMatchingValue(itemNode, List.of("//itunes:duration")).map(stringValue -> Duration.ofSeconds(Integer.parseInt(stringValue))).orElse(null));
+        episodeData.setPublicationDate(XmlHelper.getFirstMatchingValue(itemNode, List.of("//pubDate")).map(DateHelper::parseInstant).orElse(null));
+        episodeData.setSize(XmlHelper.getFirstMatchingValue(itemNode, List.of("//enclosure/@length", "//media:content/@fileSize")).map(Long::valueOf).orElse(null));
+        episodeData.setSubtitle(XmlHelper.getFirstMatchingValue(itemNode, List.of("//itunes:subtitle")).orElse(null));
+        episodeData.setTitle(XmlHelper.getFirstMatchingValue(itemNode, List.of("//title")).orElse(null));
+        return episodeData;
     }
 
     public List<String> getValidContentTypes() {
