@@ -1,7 +1,6 @@
 package de.perdian.apps.podcentral.ui.components.feeds.add;
 
 import de.perdian.apps.podcentral.ui.Central;
-import de.perdian.apps.podcentral.ui.CentralFactory;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -13,13 +12,12 @@ public class AddFeedActionExample {
 
         @Override
         public void start(Stage primaryStage) throws Exception {
-            Central central = CentralFactory.createCentral(new Localization() {});
-            AddFeedAction addFeedAction = new AddFeedAction(central, new Localization() {});
+            Central central = new Central(new Localization() {});
+            AddFeedAction addFeedAction = new AddFeedAction(central.getLibrary(), new Localization() {});
             addFeedAction.handle(new ActionEvent(primaryStage, null));
         }
 
     }
-
 
     public static void main(String[] args) throws Exception {
         Application.launch(AddFeedActionExampleApplication.class);

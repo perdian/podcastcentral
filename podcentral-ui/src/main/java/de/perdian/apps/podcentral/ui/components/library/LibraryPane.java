@@ -21,6 +21,7 @@ import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.ui.components.treetable.TreeTableHelper;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
@@ -29,6 +30,10 @@ import javafx.scene.layout.BorderPane;
 public class LibraryPane extends BorderPane {
 
     public LibraryPane(Library library, Localization localization) {
+
+        LibraryToolbarPane toolbarPane = new LibraryToolbarPane(library, localization);
+        toolbarPane.setPadding(new Insets(4, 4, 4, 4));
+        this.setTop(toolbarPane);
 
         TreeItem<LibraryTreeValue> rootItem = new TreeItem<>(null);
         for (Feed feed : library.getFeeds()) {

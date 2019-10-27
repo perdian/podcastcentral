@@ -18,7 +18,7 @@ package de.perdian.apps.podcentral.ui.components.feeds.add;
 import java.util.function.Consumer;
 
 import de.perdian.apps.podcentral.core.model.FeedInput;
-import de.perdian.apps.podcentral.ui.Central;
+import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,11 +30,11 @@ import javafx.stage.StageStyle;
 
 public class AddFeedAction implements EventHandler<ActionEvent> {
 
-    private Central central = null;
+    private Library library = null;
     private Localization localization = null;
 
-    public AddFeedAction(Central central, Localization localization) {
-        this.setCentral(central);
+    public AddFeedAction(Library library, Localization localization) {
+        this.setLibrary(library);
         this.setLocalization(localization);
     }
 
@@ -48,7 +48,7 @@ public class AddFeedAction implements EventHandler<ActionEvent> {
 
         Consumer<FeedInput> feedInputConsumer = feedInput -> {
             dialogStage.close();
-            new Thread(() -> this.getCentral().getLibrary().addFeedForInput(feedInput)).start();
+            new Thread(() -> this.getLibrary().addFeedForInput(feedInput)).start();
         };
 
         DialogPane dialogPane = new DialogPane();
@@ -60,11 +60,11 @@ public class AddFeedAction implements EventHandler<ActionEvent> {
 
     }
 
-    private Central getCentral() {
-        return this.central;
+    private Library getLibrary() {
+        return this.library;
     }
-    private void setCentral(Central central) {
-        this.central = central;
+    private void setLibrary(Library library) {
+        this.library = library;
     }
 
     private Localization getLocalization() {

@@ -1,6 +1,6 @@
-package de.perdian.apps.podcentral.ui.components.toolbar;
+package de.perdian.apps.podcentral.ui.components.library;
 
-import de.perdian.apps.podcentral.ui.Central;
+import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.ui.components.feeds.add.AddFeedAction;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.support.icons.IconFactory;
@@ -10,12 +10,12 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 
-public class ToolbarPane extends BorderPane {
+public class LibraryToolbarPane extends BorderPane {
 
-    public ToolbarPane(Central central, Localization localization) {
+    public LibraryToolbarPane(Library library, Localization localization) {
 
         Button addFeedButton = new Button(localization.addFeed());
-        addFeedButton.setOnAction(new AddFeedAction(central, localization));
+        addFeedButton.setOnAction(new AddFeedAction(library, localization));
         ButtonBar.setButtonData(addFeedButton, ButtonData.LEFT);
 
         ButtonBar buttonBar = new ButtonBar();
@@ -23,7 +23,7 @@ public class ToolbarPane extends BorderPane {
         buttonBar.getButtons().add(IconFactory.createButton("\uf044"));
 
         buttonBar.getButtons().add(addFeedButton);
-        this.setPadding(new Insets(4, 8, 4, 8));
+        this.setPadding(new Insets(2, 2, 2, 2));
         this.setLeft(buttonBar);
 
     }
