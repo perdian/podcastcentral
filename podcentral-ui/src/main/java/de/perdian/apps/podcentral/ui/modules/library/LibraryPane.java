@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
+import java.io.File;
 import java.util.List;
 
 import de.perdian.apps.podcentral.core.model.Episode;
@@ -26,7 +27,11 @@ import javafx.geometry.Insets;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
@@ -60,6 +65,19 @@ public class LibraryPane extends GridPane {
         treeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         treeTableView.getColumns().addAll(List.of(titleColumn, durationColumn));
         treeTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        treeTableView.setRowFactory(tv -> {
+            TreeTableRow<LibraryTreeValue> tableRow = new TreeTableRow<>();
+            tableRow.setOnDragDetected(event -> {
+                System.err.println("DRAG!!!");
+                Dragboard db = tableRow.startDragAndDrop(TransferMode.COPY);
+
+                ClipboardContent content = new ClipboardContent();
+                content.putFiles(List.of(new File("/Users/perdian/Downloads/w13xttx2.rss")));
+                db.setContent(content);
+                event.consume();
+            });
+            return tableRow;
+        });
         GridPane.setHgrow(treeTableView, Priority.ALWAYS);
         GridPane.setVgrow(treeTableView, Priority.ALWAYS);
 
