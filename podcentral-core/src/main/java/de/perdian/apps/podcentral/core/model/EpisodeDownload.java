@@ -15,25 +15,18 @@
  */
 package de.perdian.apps.podcentral.core.model;
 
-import java.time.Duration;
+import java.nio.file.Path;
 import java.time.Instant;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
 
-public interface Episode {
+public interface EpisodeDownload {
 
-    StringProperty getTitle();
-    StringProperty getSubtitle();
-    StringProperty getDescription();
-    ObjectProperty<Duration> getDuration();
-    ObjectProperty<Long> getSize();
-    ObjectProperty<Instant> getCreationDate();
-    ObjectProperty<Instant> getPublicationDate();
-    StringProperty getContentUrl();
-    StringProperty getContentType();
-    StringProperty getWebsiteUrl();
-    StringProperty getImageUrl();
-    EpisodeDownload getDownload();
+    ObjectProperty<EpisodeDownloadState> getState();
+    ObjectProperty<Instant> getDate();
+    ObjectProperty<Long> getTotalBytes();
+    ObjectProperty<Path> getLocalPath();
+    ObjectProperty<Long> getLocalBytes();
+    ObjectProperty<Double> getProgress();
 
 }

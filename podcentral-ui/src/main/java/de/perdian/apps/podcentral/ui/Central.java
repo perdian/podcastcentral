@@ -20,8 +20,8 @@ import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.podcentral.core.LibraryBuilderFactory;
 import de.perdian.apps.podcentral.core.model.Library;
-import de.perdian.apps.podcentral.core.model.LibraryFactory;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.scheduler.Scheduler;
@@ -43,8 +43,8 @@ public class Central {
         this.setPreferences(preferences);
 
         log.info("Loading library");
-        LibraryFactory libraryFactory = ServiceLoader.load(LibraryFactory.class).findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryFactory.class.getName()));
-        this.setLibrary(libraryFactory.createLibrary(preferences.toProperties()));
+        LibraryBuilderFactory libraryBuilderFactory = ServiceLoader.load(LibraryBuilderFactory.class).findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryBuilderFactory.class.getName()));
+        this.setLibrary(libraryBuilderFactory.createLibraryBuilder().buildLibrary(preferences.toProperties()));
 
         log.info("Creating scheduler");
         this.setScheduler(SchedulerFactory.createScheduler());

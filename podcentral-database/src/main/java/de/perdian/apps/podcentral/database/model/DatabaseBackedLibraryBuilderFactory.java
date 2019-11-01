@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.model;
+package de.perdian.apps.podcentral.database.model;
 
-public enum EpisodeRemoteState {
+import de.perdian.apps.podcentral.core.LibraryBuilder;
+import de.perdian.apps.podcentral.core.LibraryBuilderFactory;
 
-    AVAIALBLE,
-    NOT_AVAILABLE;
+public class DatabaseBackedLibraryBuilderFactory implements LibraryBuilderFactory {
+
+    @Override
+    public LibraryBuilder createLibraryBuilder() {
+        return new DatabaseBackedLibraryBuilder();
+    }
 
 }

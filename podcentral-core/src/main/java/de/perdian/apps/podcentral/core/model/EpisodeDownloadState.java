@@ -15,25 +15,12 @@
  */
 package de.perdian.apps.podcentral.core.model;
 
-import java.time.Duration;
-import java.time.Instant;
+public enum EpisodeDownloadState {
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
-
-public interface Episode {
-
-    StringProperty getTitle();
-    StringProperty getSubtitle();
-    StringProperty getDescription();
-    ObjectProperty<Duration> getDuration();
-    ObjectProperty<Long> getSize();
-    ObjectProperty<Instant> getCreationDate();
-    ObjectProperty<Instant> getPublicationDate();
-    StringProperty getContentUrl();
-    StringProperty getContentType();
-    StringProperty getWebsiteUrl();
-    StringProperty getImageUrl();
-    EpisodeDownload getDownload();
+    NEW,
+    DOWNLOAD_COMPLETED,
+    DOWNLOAD_CANCELLED,
+    DOWNLOAD_ERRORED,
+    DELETED;
 
 }

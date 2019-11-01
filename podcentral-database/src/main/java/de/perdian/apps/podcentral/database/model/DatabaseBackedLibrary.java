@@ -15,8 +15,13 @@
  */
 package de.perdian.apps.podcentral.database.model;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.persistence.criteria.CriteriaQuery;
@@ -25,24 +30,28 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import de.perdian.apps.podcentral.core.impl.AbstractLibrary;
 import de.perdian.apps.podcentral.core.model.EpisodeData;
-import de.perdian.apps.podcentral.core.model.EpisodeLocalState;
+import de.perdian.apps.podcentral.core.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.core.model.Feed;
 import de.perdian.apps.podcentral.core.model.FeedInput;
-import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-class DatabaseBackedLibrary implements Library, AutoCloseable {
+class DatabaseBackedLibrary extends AbstractLibrary implements AutoCloseable {
 
     private SessionFactory sessionFactory = null;
     private ObservableList<Feed> feeds = null;
+    private ObjectProperty<Path> storageDirectory = null;
 
-    public DatabaseBackedLibrary(SessionFactory sessionFactory) {
+    public DatabaseBackedLibrary(SessionFactory sessionFactory, Path storageDirectory) {
         this.setSessionFactory(sessionFactory);
         this.setFeeds(FXCollections.observableArrayList());
+        this.setStorageDirectory(new SimpleObjectProperty<>(storageDirectory));
     }
 
     @Override
@@ -53,6 +62,29 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
             } finally {
                 this.setSessionFactory(null);
             }
+        }
+    }
+
+    void loadInitialFeeds() {
+        try (Session session = this.getSessionFactory().openSession()) {
+
+            List<FeedEntity> feedEntities = session.createQuery("from FeedEntity").list();
+            feedEntities.sort(Comparator.comparing(feedEntity -> feedEntity.getData().getTitle()));
+
+            List<EpisodeEntity> episodeEntities = session.createQuery("from EpisodeEntity").list();
+            Map<FeedEntity, List<EpisodeEntity>> episodeEntitiesByFeed = new HashMap<>();
+            for (EpisodeEntity episodeEntity : episodeEntities) {
+                episodeEntitiesByFeed.compute(episodeEntity.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episodeEntity);
+            }
+
+            List<DatabaseBackedFeed> feeds = new ArrayList<>();
+            for (FeedEntity feedEntity : feedEntities) {
+                List<EpisodeEntity> episodeEntitiesForFeed = Optional.ofNullable(episodeEntitiesByFeed.get(feedEntity)).orElseGet(ArrayList::new);
+                episodeEntitiesForFeed.sort(new EpisodeEntity.PublicationDateComparator().reversed());
+                feeds.add(new DatabaseBackedFeed(feedEntity, episodeEntitiesForFeed, this.getSessionFactory()));
+            }
+            this.getFeeds().setAll(feeds);
+
         }
     }
 
@@ -71,7 +103,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
                     EpisodeEntity episodeEntity = new EpisodeEntity();
                     episodeEntity.setFeed(feedEntity);
                     episodeEntity.setData(episodeData);
-                    episodeEntity.setLocalState(EpisodeLocalState.NEW);
+                    episodeEntity.setDownloadState(EpisodeDownloadState.NEW);
                     session.save(episodeEntity);
                     episodeEntities.add(episodeEntity);
                 }
@@ -101,6 +133,13 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     }
     private void setFeeds(ObservableList<Feed> feeds) {
         this.feeds = feeds;
+    }
+
+    public ObjectProperty<Path> getStorageDirectory() {
+        return this.storageDirectory;
+    }
+    private void setStorageDirectory(ObjectProperty<Path> storageDirectory) {
+        this.storageDirectory = storageDirectory;
     }
 
 }

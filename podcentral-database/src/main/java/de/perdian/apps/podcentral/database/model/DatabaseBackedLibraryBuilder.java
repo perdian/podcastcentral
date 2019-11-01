@@ -18,15 +18,8 @@ package de.perdian.apps.podcentral.database.model;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -35,53 +28,28 @@ import org.hibernate.service.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.model.LibraryFactory;
+import de.perdian.apps.podcentral.core.impl.AbstractLibraryBuilder;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
 
-public class DatabaseBackedLibraryFactory implements LibraryFactory {
+public class DatabaseBackedLibraryBuilder extends AbstractLibraryBuilder {
 
-    private static final Logger log = LoggerFactory.getLogger(DatabaseBackedLibraryFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseBackedLibraryBuilder.class);
 
     @Override
-    public DatabaseBackedLibrary createLibrary(Properties properties) {
-
-        SessionFactory sessionFactory = this.createHibernateSessionFactory(properties);
-        DatabaseBackedLibrary library = new DatabaseBackedLibrary(sessionFactory);
-        library.getFeeds().setAll(this.loadFeeds(sessionFactory));
+    public DatabaseBackedLibrary buildLibrary(Properties properties) {
+        Path storageDirectory = this.resolveStorageDirectory(properties);
+        SessionFactory sessionFactory = this.resolveHibernateSessionFactory(properties);
+        DatabaseBackedLibrary library = new DatabaseBackedLibrary(sessionFactory, storageDirectory);
+        library.loadInitialFeeds();
         return library;
-
     }
 
-    private List<DatabaseBackedFeed> loadFeeds(SessionFactory sessionFactory) {
-        try (Session session = sessionFactory.openSession()) {
-
-            List<FeedEntity> feedEntities = session.createQuery("from FeedEntity").list();
-            feedEntities.sort(Comparator.comparing(feedEntity -> feedEntity.getData().getTitle()));
-
-            List<EpisodeEntity> episodeEntities = session.createQuery("from EpisodeEntity").list();
-            Map<FeedEntity, List<EpisodeEntity>> episodeEntitiesByFeed = new HashMap<>();
-            for (EpisodeEntity episodeEntity : episodeEntities) {
-                episodeEntitiesByFeed.compute(episodeEntity.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episodeEntity);
-            }
-
-            List<DatabaseBackedFeed> feeds = new ArrayList<>();
-            for (FeedEntity feedEntity : feedEntities) {
-                List<EpisodeEntity> episodeEntitiesForFeed = Optional.ofNullable(episodeEntitiesByFeed.get(feedEntity)).orElseGet(ArrayList::new);
-                episodeEntitiesForFeed.sort(new EpisodeEntity.PublicationDateComparator().reversed());
-                feeds.add(new DatabaseBackedFeed(feedEntity, episodeEntitiesForFeed, sessionFactory));
-            }
-            return feeds;
-
-        }
-
-    }
-
-    private SessionFactory createHibernateSessionFactory(Properties properties) {
+    private SessionFactory resolveHibernateSessionFactory(Properties properties) {
 
         Configuration hibernateConfiguration = new Configuration();
         hibernateConfiguration.setProperty(Environment.DRIVER, "org.h2.Driver");
-        hibernateConfiguration.setProperty(Environment.URL, this.createHibernateDatabaseUrl(properties));
+        hibernateConfiguration.setProperty(Environment.URL, this.resolveHibernateDatabaseUrl(properties));
         hibernateConfiguration.setProperty(Environment.USER, "sa");
         hibernateConfiguration.setProperty(Environment.PASS, "");
         hibernateConfiguration.setProperty(Environment.DIALECT, "org.hibernate.dialect.H2Dialect");
@@ -97,9 +65,8 @@ public class DatabaseBackedLibraryFactory implements LibraryFactory {
 
     }
 
-    private String createHibernateDatabaseUrl(Properties properties) {
-        Path userHomePath = Paths.get(System.getProperty("user.home"), ".podcastcentral");
-        Path databaseDirectory = userHomePath.resolve(properties.getProperty("database.directory", "database/"));
+    private String resolveHibernateDatabaseUrl(Properties properties) {
+        Path databaseDirectory = this.resolveApplicationDirectory(properties).resolve(properties.getProperty("database.directory", "database/"));
         if (!Files.exists(databaseDirectory)) {
             try {
                 log.info("Creating database directory at: {}", databaseDirectory);
@@ -111,6 +78,14 @@ public class DatabaseBackedLibraryFactory implements LibraryFactory {
         StringBuilder databaseUrl = new StringBuilder();
         databaseUrl.append("jdbc:h2:file:").append(databaseDirectory.resolve("feeds"));
         return databaseUrl.toString();
+    }
+
+    private Path resolveStorageDirectory(Properties properties) {
+        return this.resolveApplicationDirectory(properties).resolve(properties.getProperty("downloads.directory", "downloads/"));
+    }
+
+    private Path resolveApplicationDirectory(Properties properties) {
+        return Paths.get(System.getProperty("user.home"), ".podcastcentral");
     }
 
 }

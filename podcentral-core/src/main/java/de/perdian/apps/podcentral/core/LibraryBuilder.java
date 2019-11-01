@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.model;
+package de.perdian.apps.podcentral.core;
 
-public enum EpisodeLocalState {
+import java.util.Properties;
 
-    NEW,
-    DOWNLOAD_COMPLETED,
-    DOWNLOAD_CANCELLED,
-    DOWNLOAD_ERRORED,
-    DELETED;
+import de.perdian.apps.podcentral.core.model.Library;
+
+public interface LibraryBuilder {
+
+    Library buildLibrary(Properties properties);
 
 }

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Comparator;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,7 +28,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import de.perdian.apps.podcentral.core.model.EpisodeData;
-import de.perdian.apps.podcentral.core.model.EpisodeLocalState;
+import de.perdian.apps.podcentral.core.model.EpisodeDownloadState;
 
 @Entity
 @Table(name = "episode")
@@ -39,7 +40,8 @@ public class EpisodeEntity implements Serializable {
     private FeedEntity feed = null;
     private EpisodeData data = null;
     private Instant downloadDate = null;
-    private EpisodeLocalState localState = null;
+    private EpisodeDownloadState downloadState = null;
+    private String localPath = null;
 
     @Override
     public int hashCode() {
@@ -107,12 +109,19 @@ public class EpisodeEntity implements Serializable {
         this.downloadDate = downloadDate;
     }
 
-    public EpisodeLocalState getLocalState() {
-        return this.localState;
+    public EpisodeDownloadState getDownloadState() {
+        return this.downloadState;
     }
-    public void setLocalState(EpisodeLocalState localState) {
-        this.localState = localState;
+    public void setDownloadState(EpisodeDownloadState downloadState) {
+        this.downloadState = downloadState;
     }
 
+    @Column(length = 500)
+    public String getLocalPath() {
+        return this.localPath;
+    }
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
 
 }
