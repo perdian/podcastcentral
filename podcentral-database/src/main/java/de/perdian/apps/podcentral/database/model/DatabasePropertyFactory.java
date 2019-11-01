@@ -28,32 +28,41 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class DatabasePropertyFactory {
+public class DatabasePropertyFactory<T> {
 
+    private T bean = null;
     private SessionFactory sessionFactory = null;
 
-    DatabasePropertyFactory(SessionFactory sessionFactory) {
+    DatabasePropertyFactory(T bean, SessionFactory sessionFactory) {
+        this.setBean(bean);
         this.setSessionFactory(sessionFactory);
     }
 
-    <T> StringProperty createProperty(T entity, Function<T, String> entityGetterFunction, BiConsumer<T, String> entitySetterFunction) {
-        return this.createProperty(entity, entityGetterFunction, entitySetterFunction, SimpleStringProperty::new);
+    StringProperty createProperty(Function<T, String> entityGetterFunction, BiConsumer<T, String> entitySetterFunction) {
+        return this.createProperty(entityGetterFunction, entitySetterFunction, SimpleStringProperty::new);
     }
 
-    <T, U, P extends Property<U>> P createProperty(T entity, Function<T, U> entityGetterFunction, BiConsumer<T, U> entitySetterFunction, Supplier<P> propertySupplier) {
+    <U, P extends Property<U>> P createProperty(Function<T, U> entityGetterFunction, BiConsumer<T, U> entitySetterFunction, Supplier<P> propertySupplier) {
         P property = propertySupplier.get();
-        property.setValue(entityGetterFunction.apply(entity));
+        property.setValue(entityGetterFunction.apply(this.getBean()));
         property.addListener((o, oldValue, newValue) -> {
             if (!Objects.equals(oldValue, newValue)) {
                 try (Session session = this.getSessionFactory().openSession()) {
                     Transaction transaction = session.beginTransaction();
-                    entitySetterFunction.accept(entity, newValue);
-                    session.update(entity);
+                    entitySetterFunction.accept(this.getBean(), newValue);
+                    session.update(this.getBean());
                     transaction.commit();
                 }
             }
         });
         return property;
+    }
+
+    private T getBean() {
+        return this.bean;
+    }
+    private void setBean(T bean) {
+        this.bean = bean;
     }
 
     private SessionFactory getSessionFactory() {

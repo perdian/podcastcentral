@@ -25,8 +25,16 @@ public interface Localization {
         return "Cannot load feed from URL: " + feedUrl;
     }
 
+    default String date() {
+        return "Date";
+    }
+
     default String description() {
         return "Description";
+    }
+
+    default String duration() {
+        return "Duration";
     }
 
     default String feedUrl() {

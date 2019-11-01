@@ -16,6 +16,7 @@
 package de.perdian.apps.podcentral.database.model;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -47,19 +48,18 @@ public class DatabaseBackedFeed implements Feed {
     DatabaseBackedFeed(FeedEntity feedEntity, List<EpisodeEntity> episodeEntities, SessionFactory sessionFactory) {
         this.setEntity(feedEntity);
 
-        DatabasePropertyFactory propertyFactory = new DatabasePropertyFactory(sessionFactory);
-//        this.setCategory(propertyFactory.createProperty(feedEntity, feedEntity -> feedEntity.getData()::getCategory, FeedEntity::setCategory));
-//        this.setDescription(propertyFactory.createProperty(feedEntity, FeedEntity::getDescription, FeedEntity::setDescription));
-//        this.setImageUrl(propertyFactory.createProperty(feedEntity, FeedEntity::getImageUrl, FeedEntity::setImageUrl));
-//        this.setLanguageCode(propertyFactory.createProperty(feedEntity, FeedEntity::getLanguageCode, FeedEntity::setLanguageCode));
-//        this.setOwner(propertyFactory.createProperty(feedEntity, FeedEntity::getOwner, FeedEntity::setOwner));
-//        this.setOwnerUrl(propertyFactory.createProperty(feedEntity, FeedEntity::getOwnerUrl, FeedEntity::setOwnerUrl));
-//        this.setSubtitle(propertyFactory.createProperty(feedEntity, FeedEntity::getSubtitle, FeedEntity::setSubtitle));
-//        this.setTitle(propertyFactory.createProperty(feedEntity, FeedEntity::getTitle, FeedEntity::setTitle));
-//        this.setUrl(propertyFactory.createProperty(feedEntity, FeedEntity::getUrl, FeedEntity::setUrl));
-//        this.setWebsiteUrl(propertyFactory.createProperty(feedEntity, FeedEntity::getWebsiteUrl, FeedEntity::setWebsiteUrl));
-//        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(episodeEntity, sessionFactory)).collect(Collectors.toList())));
-this.setEpisodes(FXCollections.observableArrayList());
+        DatabasePropertyFactory<FeedEntity> propertyFactory = new DatabasePropertyFactory<>(feedEntity, sessionFactory);
+        this.setCategory(propertyFactory.createProperty(e -> e.getData().getCategory(), (e, v) -> e.getData().setCategory(v)));
+        this.setDescription(propertyFactory.createProperty(e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v)));
+        this.setImageUrl(propertyFactory.createProperty(e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v)));
+        this.setLanguageCode(propertyFactory.createProperty(e -> e.getData().getLanguageCode(), (e, v) -> e.getData().setLanguageCode(v)));
+        this.setOwner(propertyFactory.createProperty(e -> e.getData().getOwner(), (e, v) -> e.getData().setOwner(v)));
+        this.setOwnerUrl(propertyFactory.createProperty(e -> e.getData().getOwnerUrl(), (e, v) -> e.getData().setOwnerUrl(v)));
+        this.setSubtitle(propertyFactory.createProperty(e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v)));
+        this.setTitle(propertyFactory.createProperty(e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v)));
+        this.setUrl(propertyFactory.createProperty(e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v)));
+        this.setWebsiteUrl(propertyFactory.createProperty(e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v)));
+        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(episodeEntity, sessionFactory)).collect(Collectors.toList())));
 
     }
 

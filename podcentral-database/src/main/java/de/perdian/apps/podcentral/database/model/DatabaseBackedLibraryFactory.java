@@ -68,7 +68,7 @@ public class DatabaseBackedLibraryFactory implements LibraryFactory {
             List<DatabaseBackedFeed> feeds = new ArrayList<>();
             for (FeedEntity feedEntity : feedEntities) {
                 List<EpisodeEntity> episodeEntitiesForFeed = Optional.ofNullable(episodeEntitiesByFeed.get(feedEntity)).orElseGet(ArrayList::new);
-                episodeEntitiesForFeed.sort(Comparator.comparing(episodeEntity -> episodeEntity.getData().getPublicationDate()));
+                episodeEntitiesForFeed.sort(new EpisodeEntity.PublicationDateComparator().reversed());
                 feeds.add(new DatabaseBackedFeed(feedEntity, episodeEntitiesForFeed, sessionFactory));
             }
             return feeds;

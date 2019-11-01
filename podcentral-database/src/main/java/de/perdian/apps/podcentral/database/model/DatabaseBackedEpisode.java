@@ -25,8 +25,8 @@ import org.hibernate.SessionFactory;
 import de.perdian.apps.podcentral.core.model.Episode;
 import de.perdian.apps.podcentral.core.model.EpisodeLocalState;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
-import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 
 public class DatabaseBackedEpisode implements Episode {
@@ -36,7 +36,7 @@ public class DatabaseBackedEpisode implements Episode {
     private StringProperty subtitle = null;
     private StringProperty description = null;
     private ObjectProperty<Duration> duration = null;
-    private LongProperty size = null;
+    private ObjectProperty<Long> size = null;
     private ObjectProperty<Instant> creationDate = null;
     private ObjectProperty<Instant> publicationDate = null;
     private ObjectProperty<Instant> downloadDate = null;
@@ -44,11 +44,25 @@ public class DatabaseBackedEpisode implements Episode {
     private StringProperty contentUrl = null;
     private StringProperty contentType = null;
     private StringProperty websiteUrl = null;
+    private StringProperty imageUrl = null;
 
     public DatabaseBackedEpisode(EpisodeEntity episodeEntity, SessionFactory sessionFactory) {
         this.setEntity(episodeEntity);
 
-        DatabasePropertyFactory propertyFactory = new DatabasePropertyFactory(sessionFactory);
+        DatabasePropertyFactory<EpisodeEntity> propertyFactory = new DatabasePropertyFactory<>(episodeEntity, sessionFactory);
+        this.setContentType(propertyFactory.createProperty(e -> e.getData().getContentType(), (e, v) -> e.getData().setContentType(v)));
+        this.setContentUrl(propertyFactory.createProperty(e -> e.getData().getContentUrl(), (e, v) -> e.getData().setContentUrl(v)));
+        this.setCreationDate(propertyFactory.createProperty(e -> e.getData().getCreationDate(), (e, v) -> e.getData().setCreationDate(v), SimpleObjectProperty::new));
+        this.setDescription(propertyFactory.createProperty(e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v)));
+        this.setDownloadDate(propertyFactory.createProperty(e -> e.getDownloadDate(), (e, v) -> e.setDownloadDate(v), SimpleObjectProperty::new));
+        this.setDuration(propertyFactory.createProperty(e -> e.getData().getDuration(), (e, v) -> e.getData().setDuration(v), SimpleObjectProperty::new));
+        this.setImageUrl(propertyFactory.createProperty(e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v)));
+        this.setLocalState(propertyFactory.createProperty(e -> e.getLocalState(), (e, v) -> e.setLocalState(v), SimpleObjectProperty::new));
+        this.setPublicationDate(propertyFactory.createProperty(e -> e.getData().getPublicationDate(), (e, v) -> e.getData().setPublicationDate(v), SimpleObjectProperty::new));
+        this.setSize(propertyFactory.createProperty(e -> e.getData().getSize(), (e, v) -> e.getData().setSize(v), SimpleObjectProperty::new));
+        this.setSubtitle(propertyFactory.createProperty(e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v)));
+        this.setTitle(propertyFactory.createProperty(e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v)));
+        this.setWebsiteUrl(propertyFactory.createProperty(e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v)));
 
     }
 
@@ -97,10 +111,10 @@ public class DatabaseBackedEpisode implements Episode {
     }
 
     @Override
-    public LongProperty getSize() {
+    public ObjectProperty<Long> getSize() {
         return this.size;
     }
-    private void setSize(LongProperty size) {
+    private void setSize(ObjectProperty<Long> size) {
         this.size = size;
     }
 
@@ -158,6 +172,14 @@ public class DatabaseBackedEpisode implements Episode {
     }
     private void setWebsiteUrl(StringProperty websiteUrl) {
         this.websiteUrl = websiteUrl;
+    }
+
+    @Override
+    public StringProperty getImageUrl() {
+        return this.imageUrl;
+    }
+    public void setImageUrl(StringProperty imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
 }

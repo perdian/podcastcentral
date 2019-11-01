@@ -108,14 +108,15 @@ public class RssFeedInputLoader implements FeedInputLoader {
 
     private EpisodeData parseEpisodeInputFromItemNode(Node itemNode) {
         EpisodeData episodeData = new EpisodeData();
-        episodeData.setContentType(XmlHelper.getFirstMatchingValue(itemNode, List.of("//enclosure/@type", "//media:content/@type")).orElse(null));
-        episodeData.setContentUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("//enclosure/@url", "//media:content/@url")).orElse(null));
-        episodeData.setDescription(XmlHelper.getFirstMatchingValue(itemNode, List.of("//description", "/itunes:summary")).orElse(null));
-        episodeData.setDuration(XmlHelper.getFirstMatchingValue(itemNode, List.of("//itunes:duration")).map(stringValue -> Duration.ofSeconds(Integer.parseInt(stringValue))).orElse(null));
-        episodeData.setPublicationDate(XmlHelper.getFirstMatchingValue(itemNode, List.of("//pubDate")).map(DateHelper::parseInstant).orElse(null));
-        episodeData.setSize(XmlHelper.getFirstMatchingValue(itemNode, List.of("//enclosure/@length", "//media:content/@fileSize")).map(Long::valueOf).orElse(null));
-        episodeData.setSubtitle(XmlHelper.getFirstMatchingValue(itemNode, List.of("//itunes:subtitle")).orElse(null));
-        episodeData.setTitle(XmlHelper.getFirstMatchingValue(itemNode, List.of("//title")).orElse(null));
+        episodeData.setContentType(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@type", "media:content/@type")).orElse(null));
+        episodeData.setContentUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@url", "media:content/@url")).orElse(null));
+        episodeData.setDescription(XmlHelper.getFirstMatchingValue(itemNode, List.of("description", "itunes:summary")).orElse(null));
+        episodeData.setDuration(XmlHelper.getFirstMatchingValue(itemNode, List.of("itunes:duration")).map(stringValue -> Duration.ofSeconds(Integer.parseInt(stringValue))).orElse(null));
+        episodeData.setImageUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("image/url")).orElse(null));
+        episodeData.setPublicationDate(XmlHelper.getFirstMatchingValue(itemNode, List.of("pubDate")).map(DateHelper::parseInstant).orElse(null));
+        episodeData.setSize(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@length", "media:content/@fileSize")).map(Long::valueOf).orElse(null));
+        episodeData.setSubtitle(XmlHelper.getFirstMatchingValue(itemNode, List.of("itunes:subtitle")).orElse(null));
+        episodeData.setTitle(XmlHelper.getFirstMatchingValue(itemNode, List.of("title")).orElse(null));
         return episodeData;
     }
 

@@ -38,6 +38,7 @@ public class EpisodeData implements Serializable {
     private Instant creationDate = null;
     private Instant publicationDate = null;
     private String contentUrl = null;
+    private String imageUrl = null;
     private String contentType = null;
     private String websiteUrl = null;
 
@@ -104,6 +105,14 @@ public class EpisodeData implements Serializable {
     }
     public void setContentUrl(String contentUrl) {
         this.contentUrl = contentUrl;
+    }
+
+    @Column(length = 500)
+    public String getImageUrl() {
+        return this.imageUrl;
+    }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getContentType() {

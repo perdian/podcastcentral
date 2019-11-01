@@ -15,13 +15,15 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
+import java.util.List;
+
 import de.perdian.apps.podcentral.core.model.Episode;
 import de.perdian.apps.podcentral.core.model.Feed;
 import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.support.treetable.TreeTableHelper;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
@@ -46,15 +48,18 @@ public class LibraryPane extends GridPane {
             rootItem.getChildren().add(feedTreeItem);
         }
 
-        TreeTableColumn<LibraryTreeValue, String> titleColumn = new TreeTableColumn<>();
+        TreeTableColumn<LibraryTreeValue, String> titleColumn = TreeTableHelper.createColumn(LibraryTreeValue::getTitle, localization.title());
         titleColumn.setMaxWidth(Double.MAX_VALUE);
-        titleColumn.setText(localization.title());
-        titleColumn.setCellValueFactory(p -> p.getValue() == null || p.getValue().getValue() == null ? new SimpleStringProperty("") : p.getValue().getValue().getTitle());
+
+        TreeTableColumn<LibraryTreeValue, String> durationColumn = TreeTableHelper.createColumn(LibraryTreeValue::getDuration, localization.duration());
+        durationColumn.setPrefWidth(100);
+        durationColumn.setMinWidth(100);
 
         TreeTableView<LibraryTreeValue> treeTableView = new TreeTableView<>(rootItem);
         treeTableView.setShowRoot(false);
         treeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
-        treeTableView.getColumns().add(TreeTableHelper.createColumn(LibraryTreeValue::getTitle, localization.title()));
+        treeTableView.getColumns().addAll(List.of(titleColumn, durationColumn));
+        treeTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         GridPane.setHgrow(treeTableView, Priority.ALWAYS);
         GridPane.setVgrow(treeTableView, Priority.ALWAYS);
 

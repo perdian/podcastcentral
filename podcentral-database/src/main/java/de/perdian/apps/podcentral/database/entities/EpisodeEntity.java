@@ -17,6 +17,7 @@ package de.perdian.apps.podcentral.database.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Comparator;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -54,6 +55,25 @@ public class EpisodeEntity implements Serializable {
         } else {
             return false;
         }
+    }
+
+    public static class PublicationDateComparator implements Comparator<EpisodeEntity> {
+
+        @Override
+        public int compare(EpisodeEntity o1, EpisodeEntity o2) {
+            Instant i1 = o1.getData().getPublicationDate();
+            Instant i2 = o2.getData().getPublicationDate();
+            if (i1 == null && i2 == null) {
+                return 0;
+            } else if (i1 == null) {
+                return -1;
+            } else if (i2 == null) {
+                return 1;
+            } else {
+                return i1.compareTo(i2);
+            }
+        }
+
     }
 
     @Id @GeneratedValue

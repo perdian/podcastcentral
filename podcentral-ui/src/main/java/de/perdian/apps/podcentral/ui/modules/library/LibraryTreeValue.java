@@ -15,8 +15,12 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
+import java.time.format.DateTimeFormatter;
+
 import de.perdian.apps.podcentral.core.model.Episode;
 import de.perdian.apps.podcentral.core.model.Feed;
+import de.perdian.apps.podcentral.ui.support.properties.PropertiesHelper;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -53,8 +57,19 @@ interface LibraryTreeValue {
         }
 
         @Override
-        public StringProperty getTitle() {
-            return new SimpleStringProperty("X");
+        public Property<String> getTitle() {
+            return this.getEpisode().getTitle();
+        }
+
+        @Override
+        public Property<String> getDuration() {
+            return PropertiesHelper.map(this.getEpisode().getDuration(), duration -> duration.toString(), null);
+        }
+
+        @Override
+        public Property<String> getPublicationDate() {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+            return PropertiesHelper.map(this.getEpisode().getPublicationDate(), date -> dateTimeFormatter.format(date), null);
         }
 
         private Episode getEpisode() {
@@ -66,6 +81,14 @@ interface LibraryTreeValue {
 
     }
 
-    StringProperty getTitle();
+    Property<String> getTitle();
+
+    default Property<String> getPublicationDate() {
+        return new SimpleStringProperty();
+    }
+
+    default Property<String> getDuration() {
+        return new SimpleStringProperty();
+    }
 
 }
