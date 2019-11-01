@@ -13,14 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.modules.library;
+package de.perdian.apps.podcentral.core.model;
 
-import javafx.scene.control.TreeItem;
+public class FeedInputOptions {
 
-class LibraryTreeItem extends TreeItem<LibraryTreeValue> {
+    private boolean resetDeletedEpisodes = false;
+    private boolean resetLocalValues = false;
 
-    LibraryTreeItem(LibraryTreeValue value) {
-        this.setValue(value);
+    public boolean isResetDeletedEpisodes() {
+        return this.resetDeletedEpisodes;
+    }
+    public void setResetDeletedEpisodes(boolean resetDeletedEpisodes) {
+        this.resetDeletedEpisodes = resetDeletedEpisodes;
+    }
+
+    public boolean isResetLocalValues() {
+        return this.resetLocalValues;
+    }
+    public void setResetLocalValues(boolean resetLocalValues) {
+        this.resetLocalValues = resetLocalValues;
     }
 
 }

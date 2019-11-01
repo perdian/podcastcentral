@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.impl;
+package de.perdian.apps.podcentral.storage;
 
-import de.perdian.apps.podcentral.core.model.Library;
+public class StorageFactory {
 
-public abstract class AbstractLibrary implements Library {
+    public static Storage createStorage() {
+        return null;
+    }
 
 }

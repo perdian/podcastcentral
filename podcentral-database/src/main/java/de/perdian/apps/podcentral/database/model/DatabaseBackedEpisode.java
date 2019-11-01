@@ -23,16 +23,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.SessionFactory;
 
 import de.perdian.apps.podcentral.core.model.Episode;
-import de.perdian.apps.podcentral.core.model.EpisodeDownload;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 class DatabaseBackedEpisode implements Episode {
 
     private EpisodeEntity entity = null;
-    private EpisodeDownload download = null;
+    private DatabaseBackedEpisodeDownload download = null;
     private StringProperty title = null;
     private StringProperty subtitle = null;
     private StringProperty description = null;
@@ -47,23 +47,33 @@ class DatabaseBackedEpisode implements Episode {
 
     public DatabaseBackedEpisode(EpisodeEntity episodeEntity, SessionFactory sessionFactory) {
         this.setEntity(episodeEntity);
+        this.setContentType(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getContentType(), (e, v) -> e.getData().setContentType(v), SimpleStringProperty::new, sessionFactory));
+        this.setContentUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getContentUrl(), (e, v) -> e.getData().setContentUrl(v), SimpleStringProperty::new, sessionFactory));
+        this.setCreationDate(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getCreationDate(), (e, v) -> e.getData().setCreationDate(v), SimpleObjectProperty::new, sessionFactory));
+        this.setDescription(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v), SimpleStringProperty::new, sessionFactory));
+        this.setDuration(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getDuration(), (e, v) -> e.getData().setDuration(v), SimpleObjectProperty::new, sessionFactory));
+        this.setImageUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v), SimpleStringProperty::new, sessionFactory));
+        this.setPublicationDate(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getPublicationDate(), (e, v) -> e.getData().setPublicationDate(v), SimpleObjectProperty::new, sessionFactory));
+        this.setSize(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getSize(), (e, v) -> e.getData().setSize(v), SimpleObjectProperty::new, sessionFactory));
+        this.setSubtitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v), SimpleStringProperty::new, sessionFactory));
+        this.setTitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
+        this.setWebsiteUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
+        this.setDownload(new DatabaseBackedEpisodeDownload(episodeEntity, sessionFactory));
+    }
 
-        DatabasePropertyFactory<EpisodeEntity> propertyFactory = new DatabasePropertyFactory<>(episodeEntity, sessionFactory);
-        this.setContentType(propertyFactory.createProperty(e -> e.getData().getContentType(), (e, v) -> e.getData().setContentType(v)));
-        this.setContentUrl(propertyFactory.createProperty(e -> e.getData().getContentUrl(), (e, v) -> e.getData().setContentUrl(v)));
-        this.setCreationDate(propertyFactory.createProperty(e -> e.getData().getCreationDate(), (e, v) -> e.getData().setCreationDate(v), SimpleObjectProperty::new));
-        this.setDescription(propertyFactory.createProperty(e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v)));
-        this.setDuration(propertyFactory.createProperty(e -> e.getData().getDuration(), (e, v) -> e.getData().setDuration(v), SimpleObjectProperty::new));
-        this.setImageUrl(propertyFactory.createProperty(e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v)));
-        this.setPublicationDate(propertyFactory.createProperty(e -> e.getData().getPublicationDate(), (e, v) -> e.getData().setPublicationDate(v), SimpleObjectProperty::new));
-        this.setSize(propertyFactory.createProperty(e -> e.getData().getSize(), (e, v) -> e.getData().setSize(v), SimpleObjectProperty::new));
-        this.setSubtitle(propertyFactory.createProperty(e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v)));
-        this.setTitle(propertyFactory.createProperty(e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v)));
-        this.setWebsiteUrl(propertyFactory.createProperty(e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v)));
-
-        DatabaseBackedEpisodeDownload episodeDownload = new DatabaseBackedEpisodeDownload(episodeEntity, sessionFactory);
-        this.setDownload(episodeDownload);
-
+    void updateEpisode(EpisodeEntity episodeEntity) {
+        this.getContentType().setValue(episodeEntity.getData().getContentType());
+        this.getContentUrl().setValue(episodeEntity.getData().getContentUrl());
+        this.getCreationDate().setValue(episodeEntity.getData().getCreationDate());
+        this.getDescription().setValue(episodeEntity.getData().getDescription());
+        this.getDuration().setValue(episodeEntity.getData().getDuration());
+        this.getImageUrl().setValue(episodeEntity.getData().getImageUrl());
+        this.getPublicationDate().setValue(episodeEntity.getData().getPublicationDate());
+        this.getSize().setValue(episodeEntity.getData().getSize());
+        this.getSubtitle().setValue(episodeEntity.getData().getSubtitle());
+        this.getTitle().setValue(episodeEntity.getData().getTitle());
+        this.getWebsiteUrl().setValue(episodeEntity.getData().getWebsiteUrl());
+        this.getDownload().updateEpisode(episodeEntity);
     }
 
     @Override
@@ -79,10 +89,10 @@ class DatabaseBackedEpisode implements Episode {
     }
 
     @Override
-    public EpisodeDownload getDownload() {
+    public DatabaseBackedEpisodeDownload getDownload() {
         return this.download;
     }
-    private void setDownload(EpisodeDownload download) {
+    private void setDownload(DatabaseBackedEpisodeDownload download) {
         this.download = download;
     }
 

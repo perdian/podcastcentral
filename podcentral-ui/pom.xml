@@ -35,6 +35,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>podcentral-storage</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
@@ -44,11 +49,6 @@
             <artifactId>fontawesomefx-fontawesome</artifactId>
             <version>${fontawesomefx.version}</version>
         </dependency>
-<dependency>
-  <groupId>org.controlsfx</groupId>
-  <artifactId>controlsfx</artifactId>
-  <version>11.0.0</version>
-</dependency>
 
     </dependencies>
 

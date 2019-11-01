@@ -15,11 +15,8 @@
  */
 package de.perdian.apps.podcentral.database.model;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 
 import de.perdian.apps.podcentral.core.model.EpisodeDownload;
@@ -33,20 +30,23 @@ class DatabaseBackedEpisodeDownload implements EpisodeDownload {
     private ObjectProperty<EpisodeDownloadState> state = null;
     private ObjectProperty<Instant> date = null;
     private ObjectProperty<Long> totalBytes = null;
-    private ObjectProperty<Path> localPath = null;
+    private ObjectProperty<String> localPath = null;
     private ObjectProperty<Long> localBytes = null;
     private ObjectProperty<Double> progress = null;
 
     DatabaseBackedEpisodeDownload(EpisodeEntity episodeEntity, SessionFactory sessionFactory) {
-
-        DatabasePropertyFactory<EpisodeEntity> propertyFactory = new DatabasePropertyFactory<>(episodeEntity, sessionFactory);
-        this.setDate(propertyFactory.createProperty(e -> e.getDownloadDate(), (e, v) -> e.setDownloadDate(v), SimpleObjectProperty::new));
+        this.setDate(DatabaseHelper.createProperty(episodeEntity, e -> e.getDownloadDate(), (e, v) -> e.setDownloadDate(v), SimpleObjectProperty::new, sessionFactory));
         this.setLocalBytes(new SimpleObjectProperty<>());
-        this.setLocalPath(propertyFactory.createProperty(e -> StringUtils.isEmpty(e.getLocalPath()) ? null : Paths.get(e.getLocalPath()), (e, v) -> e.setLocalPath(v == null ? null : v.toString()), SimpleObjectProperty::new));
+        this.setLocalPath(DatabaseHelper.createProperty(episodeEntity, e -> e.getLocalPath(), (e, v) -> e.setLocalPath(v), SimpleObjectProperty::new, sessionFactory));
         this.setProgress(new SimpleObjectProperty<>());
         this.setState(new SimpleObjectProperty<>());
-        this.setTotalBytes(propertyFactory.createProperty(e -> e.getData().getSize(), (e, v) -> e.getData().setSize(v), SimpleObjectProperty::new));
+        this.setTotalBytes(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getSize(), (e, v) -> e.getData().setSize(v), SimpleObjectProperty::new, sessionFactory));
+    }
 
+    void updateEpisode(EpisodeEntity episodeEntity) {
+        this.getDate().setValue(episodeEntity.getDownloadDate());
+        this.getLocalPath().setValue(episodeEntity.getLocalPath());
+        this.getTotalBytes().setValue(episodeEntity.getData().getSize());
     }
 
     @Override
@@ -74,10 +74,10 @@ class DatabaseBackedEpisodeDownload implements EpisodeDownload {
     }
 
     @Override
-    public ObjectProperty<Path> getLocalPath() {
+    public ObjectProperty<String> getLocalPath() {
         return this.localPath;
     }
-    private void setLocalPath(ObjectProperty<Path> localPath) {
+    private void setLocalPath(ObjectProperty<String> localPath) {
         this.localPath = localPath;
     }
 

@@ -30,6 +30,7 @@ public class EpisodeData implements Serializable {
 
     static final long serialVersionUID = 1L;
 
+    private String guid = null;
     private String title = null;
     private String subtitle = null;
     private String description = null;
@@ -45,6 +46,14 @@ public class EpisodeData implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    @Column(length = 500)
+    public String getGuid() {
+        return this.guid;
+    }
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     @Column(length = 16000)

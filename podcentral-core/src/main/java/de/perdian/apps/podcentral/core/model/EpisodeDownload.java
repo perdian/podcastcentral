@@ -15,7 +15,6 @@
  */
 package de.perdian.apps.podcentral.core.model;
 
-import java.nio.file.Path;
 import java.time.Instant;
 
 import javafx.beans.property.ObjectProperty;
@@ -25,7 +24,7 @@ public interface EpisodeDownload {
     ObjectProperty<EpisodeDownloadState> getState();
     ObjectProperty<Instant> getDate();
     ObjectProperty<Long> getTotalBytes();
-    ObjectProperty<Path> getLocalPath();
+    ObjectProperty<String> getLocalPath();
     ObjectProperty<Long> getLocalBytes();
     ObjectProperty<Double> getProgress();
 

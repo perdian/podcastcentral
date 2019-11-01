@@ -29,6 +29,10 @@ public interface Localization {
         return "Date";
     }
 
+    default String delete() {
+        return "Delete";
+    }
+
     default String description() {
         return "Description";
     }

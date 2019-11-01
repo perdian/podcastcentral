@@ -13,16 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.database.model;
+package de.perdian.apps.podcentral.storage;
 
-import de.perdian.apps.podcentral.core.LibraryBuilder;
-import de.perdian.apps.podcentral.core.LibraryBuilderFactory;
+import java.io.File;
 
-public class DatabaseBackedLibraryBuilderFactory implements LibraryBuilderFactory {
+class StorageImpl implements Storage {
+
+    private File storageDirectory = null;
+
+    StorageImpl(File storageDirectory) {
+        this.setStorageDirectory(storageDirectory);
+    }
 
     @Override
-    public LibraryBuilder createLibraryBuilder() {
-        return new DatabaseBackedLibraryBuilder();
+    public File resolveStorageFile(String feedName, String episodeName, String type) {
+        throw new UnsupportedOperationException();
+    }
+
+    private File getStorageDirectory() {
+        return this.storageDirectory;
+    }
+    private void setStorageDirectory(File storageDirectory) {
+        this.storageDirectory = storageDirectory;
     }
 
 }

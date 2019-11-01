@@ -20,7 +20,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -38,59 +37,66 @@ public class PreferencesFactory {
 
     private static final Logger log = LoggerFactory.getLogger(PreferencesFactory.class);
 
-    public static Preferences loadPreferences() {
-        ObservableMap<String, String> values = FXCollections.observableHashMap();
-        values.putAll(PreferencesFactory.loadValues());
-        values.addListener((MapChangeListener.Change<?, ?> change) -> PreferencesFactory.writeValues(values));
-        return new Preferences(values);
+    public static Preferences createPreferences() {
+        File applicationDirectory = PreferencesFactory.resolveApplicationDirectory();
+        PreferencesImpl preferences = new PreferencesImpl();
+        preferences.setApplicationDirectory(applicationDirectory);
+        preferences.setValues(PreferencesFactory.resolveValues(applicationDirectory));
+        return preferences;
     }
 
-    private static Map<String, String> loadValues() {
+    private static File resolveApplicationDirectory() {
+        File userDirectory = new File(System.getProperty("user.home"));
+        File applicationDirectory = new File(userDirectory, ".podcastcentral");
+        if (!applicationDirectory.exists()) {
+            log.info("Creating application directory at: {}", applicationDirectory.getAbsolutePath());
+            applicationDirectory.mkdirs();
+        }
+        return applicationDirectory;
+    }
+
+    private static ObservableMap<String, String> resolveValues(File applicationDirectory) {
+        File valuesFile = new File(applicationDirectory, "preferences/values");
+        ObservableMap<String, String> values = FXCollections.observableHashMap();
+        values.putAll(PreferencesFactory.loadValues(valuesFile));
+        values.addListener((MapChangeListener.Change<?, ?> change) -> PreferencesFactory.storeValues(values, valuesFile));
+        return values;
+    }
+
+    private static Map<String, String> loadValues(File valuesFile) {
         Map<String, String> values = new HashMap<>();
         try {
-            File preferencesFile = PreferencesFactory.resolvePreferencesFile(false);
-            if (preferencesFile.exists()) {
-                log.debug("Loading preferences from file: {}", preferencesFile.getAbsolutePath());
-                try (InputStream preferencesStream = new BufferedInputStream(new FileInputStream(preferencesFile))) {
+            if (valuesFile.exists()) {
+                log.debug("Loading preferences from file: {}", valuesFile.getAbsolutePath());
+                try (InputStream preferencesStream = new BufferedInputStream(new FileInputStream(valuesFile))) {
                     Properties properties = new Properties();
                     properties.load(preferencesStream);
                     properties.entrySet().stream().filter(entry -> entry.getKey() != null && entry.getValue() != null).forEach(entry -> values.put(entry.getKey().toString(), entry.getValue().toString()));
                 }
             } else {
-                log.trace("No preferences file found at: {}", preferencesFile.getAbsolutePath());
+                log.trace("No preferences file found at: {}", valuesFile.getAbsolutePath());
             }
         } catch (Exception e) {
-            log.warn("Cannot load preferences", e);
+            log.warn("Cannot load preferences from: {}", valuesFile.getAbsolutePath(), e);
         }
         return values;
     }
 
-    private static void writeValues(Map<String, String> values) {
+    private static void storeValues(Map<String, String> values, File valuesFile) {
         try {
             Properties properties = new Properties();
             values.entrySet().stream().filter(entry -> entry.getKey() != null && entry.getValue() != null).forEach(entry -> properties.setProperty(entry.getKey(), entry.getValue()));
-            File preferencesFile = PreferencesFactory.resolvePreferencesFile(true);
-            log.trace("Writing preferences into file: {}", preferencesFile.getAbsolutePath());
-            try (OutputStream preferencesStream = new BufferedOutputStream(new FileOutputStream(preferencesFile))) {
+            if (!valuesFile.exists()) {
+                log.debug("Creating preferences value file at: {}", valuesFile);
+            }
+            log.trace("Storing preferences into file: {}", valuesFile.getAbsolutePath());
+            try (OutputStream preferencesStream = new BufferedOutputStream(new FileOutputStream(valuesFile))) {
                 properties.store(preferencesStream, null);
                 preferencesStream.flush();
             }
         } catch (Exception e) {
             log.warn("Cannot write preferences", e);
         }
-    }
-
-    private static File resolvePreferencesFile(boolean createIfNotExisting) throws IOException {
-        File userDirectory = new File(System.getProperty("user.home"));
-        File podcentralDirectory = new File(userDirectory, ".podcentral");
-        File preferencesFile = new File(podcentralDirectory, "preferences").getCanonicalFile();
-        if (!preferencesFile.exists() && createIfNotExisting) {
-            if (!preferencesFile.getParentFile().exists()) {
-                preferencesFile.getParentFile().mkdirs();
-            }
-            preferencesFile.createNewFile();
-        }
-        return preferencesFile;
     }
 
 }

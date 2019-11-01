@@ -17,6 +17,7 @@ package de.perdian.apps.podcentral.core.model;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
@@ -35,5 +36,24 @@ public interface Episode {
     StringProperty getWebsiteUrl();
     StringProperty getImageUrl();
     EpisodeDownload getDownload();
+
+    public static class PublishedDateComparator implements Comparator<Episode> {
+
+        @Override
+        public int compare(Episode e1, Episode e2) {
+            Instant i1 = e1.getPublicationDate().getValue();
+            Instant i2 = e2.getPublicationDate().getValue();
+            if (i1 == null && i2 == null) {
+                return 0;
+            } else if (i1 == null) {
+                return -1;
+            } else if (i2 == null) {
+                return 1;
+            } else {
+                return i1.compareTo(i2);
+            }
+        }
+
+    }
 
 }

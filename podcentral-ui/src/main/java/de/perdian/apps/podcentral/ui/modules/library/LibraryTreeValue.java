@@ -23,6 +23,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import de.perdian.apps.podcentral.core.model.Episode;
 import de.perdian.apps.podcentral.core.model.Feed;
+import de.perdian.apps.podcentral.core.model.Library;
 import de.perdian.apps.podcentral.ui.support.properties.PropertiesHelper;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,10 +32,17 @@ interface LibraryTreeValue {
 
     static class FeedTreeValue implements LibraryTreeValue {
 
+        private Library library = null;
         private Feed feed = null;
 
-        FeedTreeValue(Feed feed) {
+        FeedTreeValue(Library library, Feed feed) {
+            this.setLibrary(library);
             this.setFeed(feed);
+        }
+
+        @Override
+        public void delete() {
+            this.getLibrary().getFeeds().remove(this.getFeed());
         }
 
         @Override
@@ -47,7 +55,14 @@ interface LibraryTreeValue {
             return PropertiesHelper.map(this.getFeed().getDescription(), StringUtils::normalizeSpace, null);
         }
 
-        private Feed getFeed() {
+        Library getLibrary() {
+            return this.library;
+        }
+        private void setLibrary(Library library) {
+            this.library = library;
+        }
+
+        Feed getFeed() {
             return this.feed;
         }
         private void setFeed(Feed feed) {
@@ -58,10 +73,17 @@ interface LibraryTreeValue {
 
     static class EpisodeTreeValue implements LibraryTreeValue {
 
+        private Feed feed = null;
         private Episode episode = null;
 
-        EpisodeTreeValue(Episode episode) {
+        EpisodeTreeValue(Feed feed, Episode episode) {
+            this.setFeed(feed);
             this.setEpisode(episode);
+        }
+
+        @Override
+        public void delete() {
+            this.getFeed().getEpisodes().remove(this.getEpisode());
         }
 
         @Override
@@ -85,7 +107,14 @@ interface LibraryTreeValue {
             return PropertiesHelper.map(this.getEpisode().getPublicationDate(), date -> dateTimeFormatter.format(date.atZone(ZoneId.systemDefault())), null);
         }
 
-        private Episode getEpisode() {
+        Feed getFeed() {
+            return this.feed;
+        }
+        private void setFeed(Feed feed) {
+            this.feed = feed;
+        }
+
+        Episode getEpisode() {
             return this.episode;
         }
         private void setEpisode(Episode episode) {
@@ -96,6 +125,7 @@ interface LibraryTreeValue {
 
     Property<String> getTitle();
     Property<String> getDescription();
+    void delete();
 
     default Property<String> getPublicationDate() {
         return new SimpleStringProperty();

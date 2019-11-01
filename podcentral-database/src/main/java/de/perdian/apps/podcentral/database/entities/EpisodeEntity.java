@@ -17,7 +17,6 @@ package de.perdian.apps.podcentral.database.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Comparator;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -26,6 +25,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import de.perdian.apps.podcentral.core.model.EpisodeData;
 import de.perdian.apps.podcentral.core.model.EpisodeDownloadState;
@@ -40,7 +41,7 @@ public class EpisodeEntity implements Serializable {
     private FeedEntity feed = null;
     private EpisodeData data = null;
     private Instant downloadDate = null;
-    private EpisodeDownloadState downloadState = null;
+    private EpisodeDownloadState downloadState = EpisodeDownloadState.NEW;
     private String localPath = null;
 
     @Override
@@ -59,23 +60,12 @@ public class EpisodeEntity implements Serializable {
         }
     }
 
-    public static class PublicationDateComparator implements Comparator<EpisodeEntity> {
-
-        @Override
-        public int compare(EpisodeEntity o1, EpisodeEntity o2) {
-            Instant i1 = o1.getData().getPublicationDate();
-            Instant i2 = o2.getData().getPublicationDate();
-            if (i1 == null && i2 == null) {
-                return 0;
-            } else if (i1 == null) {
-                return -1;
-            } else if (i2 == null) {
-                return 1;
-            } else {
-                return i1.compareTo(i2);
-            }
-        }
-
+    @Override
+    public String toString() {
+        ToStringBuilder toStringBuilder = new ToStringBuilder(this);
+        toStringBuilder.append("id", this.getId());
+        toStringBuilder.append("title", this.getData().getTitle());
+        return toStringBuilder.toString();
     }
 
     @Id @GeneratedValue

@@ -20,12 +20,14 @@ import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.LibraryBuilderFactory;
 import de.perdian.apps.podcentral.core.model.Library;
+import de.perdian.apps.podcentral.core.model.LibraryBuilder;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.scheduler.Scheduler;
 import de.perdian.apps.podcentral.scheduler.SchedulerFactory;
+import de.perdian.apps.podcentral.storage.Storage;
+import de.perdian.apps.podcentral.storage.StorageFactory;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 
 public class Central {
@@ -35,19 +37,24 @@ public class Central {
     private Preferences preferences = null;
     private Library library = null;
     private Scheduler scheduler = null;
+    private Storage storage = null;
 
     public Central(Localization localization) {
 
         log.info("Loading preferences");
-        Preferences preferences = PreferencesFactory.loadPreferences();
+        Preferences preferences = PreferencesFactory.createPreferences();
         this.setPreferences(preferences);
-
-        log.info("Loading library");
-        LibraryBuilderFactory libraryBuilderFactory = ServiceLoader.load(LibraryBuilderFactory.class).findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryBuilderFactory.class.getName()));
-        this.setLibrary(libraryBuilderFactory.createLibraryBuilder().buildLibrary(preferences.toProperties()));
 
         log.info("Creating scheduler");
         this.setScheduler(SchedulerFactory.createScheduler());
+
+        log.info("Creating storage");
+        Storage storage = StorageFactory.createStorage();
+        this.setStorage(storage);
+
+        log.info("Loading library");
+        LibraryBuilder libraryBuilder = ServiceLoader.load(LibraryBuilder.class).findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryBuilder.class.getName()));
+        this.setLibrary(libraryBuilder.buildLibrary(storage, preferences));
 
     }
 
@@ -70,6 +77,13 @@ public class Central {
     }
     private void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
+    }
+
+    public Storage getStorage() {
+        return this.storage;
+    }
+    private void setStorage(Storage storage) {
+        this.storage = storage;
     }
 
 }

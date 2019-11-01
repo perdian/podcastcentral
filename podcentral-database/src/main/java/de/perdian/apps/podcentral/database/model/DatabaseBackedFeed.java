@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.podcentral.database.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,14 +24,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.SessionFactory;
 
 import de.perdian.apps.podcentral.core.model.Episode;
+import de.perdian.apps.podcentral.core.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.core.model.Feed;
-import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class DatabaseBackedFeed implements Feed {
+class DatabaseBackedFeed implements Feed {
 
     private FeedEntity entity = null;
     private StringProperty url = null;
@@ -45,21 +47,50 @@ public class DatabaseBackedFeed implements Feed {
     private StringProperty category = null;
     private ObservableList<Episode> episodes = null;
 
-    DatabaseBackedFeed(FeedEntity feedEntity, List<EpisodeEntity> episodeEntities, SessionFactory sessionFactory) {
+    DatabaseBackedFeed(FeedEntity feedEntity, SessionFactory sessionFactory) {
         this.setEntity(feedEntity);
+        this.setCategory(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getCategory(), (e, v) -> e.getData().setCategory(v), SimpleStringProperty::new, sessionFactory));
+        this.setDescription(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v), SimpleStringProperty::new, sessionFactory));
+        this.setImageUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v), SimpleStringProperty::new, sessionFactory));
+        this.setLanguageCode(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getLanguageCode(), (e, v) -> e.getData().setLanguageCode(v), SimpleStringProperty::new, sessionFactory));
+        this.setOwner(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getOwner(), (e, v) -> e.getData().setOwner(v), SimpleStringProperty::new, sessionFactory));
+        this.setOwnerUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getOwnerUrl(), (e, v) -> e.getData().setOwnerUrl(v), SimpleStringProperty::new, sessionFactory));
+        this.setSubtitle(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v), SimpleStringProperty::new, sessionFactory));
+        this.setTitle(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
+        this.setUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v), SimpleStringProperty::new, sessionFactory));
+        this.setWebsiteUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
+        this.setEpisodes(FXCollections.observableArrayList());
+    }
 
-        DatabasePropertyFactory<FeedEntity> propertyFactory = new DatabasePropertyFactory<>(feedEntity, sessionFactory);
-        this.setCategory(propertyFactory.createProperty(e -> e.getData().getCategory(), (e, v) -> e.getData().setCategory(v)));
-        this.setDescription(propertyFactory.createProperty(e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v)));
-        this.setImageUrl(propertyFactory.createProperty(e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v)));
-        this.setLanguageCode(propertyFactory.createProperty(e -> e.getData().getLanguageCode(), (e, v) -> e.getData().setLanguageCode(v)));
-        this.setOwner(propertyFactory.createProperty(e -> e.getData().getOwner(), (e, v) -> e.getData().setOwner(v)));
-        this.setOwnerUrl(propertyFactory.createProperty(e -> e.getData().getOwnerUrl(), (e, v) -> e.getData().setOwnerUrl(v)));
-        this.setSubtitle(propertyFactory.createProperty(e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v)));
-        this.setTitle(propertyFactory.createProperty(e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v)));
-        this.setUrl(propertyFactory.createProperty(e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v)));
-        this.setWebsiteUrl(propertyFactory.createProperty(e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v)));
-        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(episodeEntity, sessionFactory)).collect(Collectors.toList())));
+    void updateFeed(FeedEntity feedEntity) {
+        this.getCategory().setValue(feedEntity.getData().getCategory());
+        this.getDescription().setValue(feedEntity.getData().getDescription());
+        this.getImageUrl().setValue(feedEntity.getData().getImageUrl());
+        this.getLanguageCode().setValue(feedEntity.getData().getLanguageCode());
+        this.getOwner().setValue(feedEntity.getData().getOwner());
+        this.getOwnerUrl().setValue(feedEntity.getData().getOwnerUrl());
+        this.getSubtitle().setValue(feedEntity.getData().getSubtitle());
+        this.getTitle().setValue(feedEntity.getData().getTitle());
+        this.getUrl().setValue(feedEntity.getData().getUrl());
+        this.getWebsiteUrl().setValue(feedEntity.getData().getWebsiteUrl());
+    }
+
+    public void updateEpisodes(List<DatabaseBackedEpisode> newEpisodes) {
+
+        List<Episode> consolidatedEpisodes = new ArrayList<>();
+        for (DatabaseBackedEpisode newEpisode : newEpisodes) {
+            if (!EpisodeDownloadState.DELETED.equals(newEpisode.getDownload().getState().getValue()) && !consolidatedEpisodes.contains(newEpisode)) {
+                consolidatedEpisodes.add(newEpisode);
+            }
+        }
+
+        List<Episode> consolidatedEpisodesToAdd = consolidatedEpisodes.stream().filter(episode -> !this.getEpisodes().contains(episode)).collect(Collectors.toList());
+        List<Episode> consolidatedEpisodesToRemove = this.getEpisodes().stream().filter(episode -> !consolidatedEpisodes.contains(episode)).collect(Collectors.toList());
+        this.getEpisodes().removeAll(consolidatedEpisodesToRemove);
+        this.getEpisodes().addAll(consolidatedEpisodesToAdd);
+        if (!consolidatedEpisodesToAdd.isEmpty() || !consolidatedEpisodesToRemove.isEmpty()) {
+            this.getEpisodes().sort(new Episode.PublishedDateComparator().reversed());
+        }
 
     }
 

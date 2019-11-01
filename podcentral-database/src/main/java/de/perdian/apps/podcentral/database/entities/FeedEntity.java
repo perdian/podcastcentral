@@ -23,6 +23,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import de.perdian.apps.podcentral.core.model.FeedData;
 
 @Entity
@@ -48,6 +50,14 @@ public class FeedEntity implements Serializable {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        ToStringBuilder toStringBuilder = new ToStringBuilder(this);
+        toStringBuilder.append("id", this.getId());
+        toStringBuilder.append("title", this.getData().getTitle());
+        return toStringBuilder.toString();
     }
 
     @Id @GeneratedValue

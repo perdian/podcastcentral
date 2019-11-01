@@ -113,6 +113,7 @@ public class RssFeedInputLoader implements FeedInputLoader {
 
     private EpisodeData parseEpisodeInputFromItemNode(Node itemNode) {
         EpisodeData episodeData = new EpisodeData();
+        episodeData.setGuid(XmlHelper.getFirstMatchingValue(itemNode, List.of("guid", "enclosure/@url", "media:content/@url")).orElse(null));
         episodeData.setContentType(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@type", "media:content/@type")).orElse(null));
         episodeData.setContentUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@url", "media:content/@url")).orElse(null));
         episodeData.setDescription(XmlHelper.getFirstMatchingValue(itemNode, List.of("description", "itunes:summary")).orElse(null));

@@ -15,11 +15,16 @@
  */
 package de.perdian.apps.podcentral.database.model;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -28,28 +33,29 @@ import org.hibernate.service.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.impl.AbstractLibraryBuilder;
+import de.perdian.apps.podcentral.core.model.LibraryBuilder;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
+import de.perdian.apps.podcentral.preferences.Preferences;
+import de.perdian.apps.podcentral.storage.Storage;
 
-public class DatabaseBackedLibraryBuilder extends AbstractLibraryBuilder {
+public class DatabaseBackedLibraryBuilder implements LibraryBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseBackedLibraryBuilder.class);
 
     @Override
-    public DatabaseBackedLibrary buildLibrary(Properties properties) {
-        Path storageDirectory = this.resolveStorageDirectory(properties);
-        SessionFactory sessionFactory = this.resolveHibernateSessionFactory(properties);
-        DatabaseBackedLibrary library = new DatabaseBackedLibrary(sessionFactory, storageDirectory);
-        library.loadInitialFeeds();
+    public DatabaseBackedLibrary buildLibrary(Storage storage, Preferences preferences) {
+        SessionFactory sessionFactory = this.buildHibernateSessionFactory(preferences);
+        DatabaseBackedLibrary library = new DatabaseBackedLibrary(sessionFactory, storage);
+        this.loadInitialFeeds(sessionFactory, library);
         return library;
     }
 
-    private SessionFactory resolveHibernateSessionFactory(Properties properties) {
+    private SessionFactory buildHibernateSessionFactory(Preferences preferences) {
 
         Configuration hibernateConfiguration = new Configuration();
         hibernateConfiguration.setProperty(Environment.DRIVER, "org.h2.Driver");
-        hibernateConfiguration.setProperty(Environment.URL, this.resolveHibernateDatabaseUrl(properties));
+        hibernateConfiguration.setProperty(Environment.URL, this.buildHibernateDatabaseUrl(preferences));
         hibernateConfiguration.setProperty(Environment.USER, "sa");
         hibernateConfiguration.setProperty(Environment.PASS, "");
         hibernateConfiguration.setProperty(Environment.DIALECT, "org.hibernate.dialect.H2Dialect");
@@ -65,27 +71,39 @@ public class DatabaseBackedLibraryBuilder extends AbstractLibraryBuilder {
 
     }
 
-    private String resolveHibernateDatabaseUrl(Properties properties) {
-        Path databaseDirectory = this.resolveApplicationDirectory(properties).resolve(properties.getProperty("database.directory", "database/"));
-        if (!Files.exists(databaseDirectory)) {
+    private String buildHibernateDatabaseUrl(Preferences preferences) {
+        File databaseDirectory = new File(preferences.getApplicationDirectory(), "database/");
+        if (!databaseDirectory.exists()) {
             try {
-                log.info("Creating database directory at: {}", databaseDirectory);
-                Files.createDirectories(databaseDirectory);
+                log.info("Creating database directory at: {}", databaseDirectory.getAbsolutePath());
+                databaseDirectory.mkdirs();
             } catch (Exception e) {
                 throw new RuntimeException("Cannot create database directory at: " + databaseDirectory, e);
             }
         }
+        File databaseFile = new File(databaseDirectory, "library");
+        log.debug("Using H2 database at: {}", databaseFile.getAbsolutePath());
         StringBuilder databaseUrl = new StringBuilder();
-        databaseUrl.append("jdbc:h2:file:").append(databaseDirectory.resolve("feeds"));
+        databaseUrl.append("jdbc:h2:file:").append(databaseFile.getAbsolutePath());
         return databaseUrl.toString();
     }
 
-    private Path resolveStorageDirectory(Properties properties) {
-        return this.resolveApplicationDirectory(properties).resolve(properties.getProperty("downloads.directory", "downloads/"));
-    }
-
-    private Path resolveApplicationDirectory(Properties properties) {
-        return Paths.get(System.getProperty("user.home"), ".podcastcentral");
+    private void loadInitialFeeds(SessionFactory sessionFactory, DatabaseBackedLibrary targetLibrary) {
+        try (Session session = sessionFactory.openSession()) {
+            log.info("Loading initial feeds from database");
+            List<EpisodeEntity> episodeEntities = session.createQuery("from EpisodeEntity").list();
+            Map<FeedEntity, List<EpisodeEntity>> episodeEntitiesByFeed = new HashMap<>();
+            for (EpisodeEntity episodeEntity : episodeEntities) {
+                episodeEntitiesByFeed.compute(episodeEntity.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episodeEntity);
+            }
+            List<FeedEntity> feedEntities = session.createQuery("from FeedEntity").list();
+            feedEntities.sort(Comparator.comparing(feedEntity -> feedEntity.getData().getTitle()));
+            for (FeedEntity feedEntity : feedEntities) {
+                log.debug("Loading initial feed from database: {}", ToStringBuilder.reflectionToString(feedEntity, ToStringStyle.NO_CLASS_NAME_STYLE));
+                targetLibrary.updateFeedFromDatabase(feedEntity, episodeEntitiesByFeed.get(feedEntity), session);
+            }
+            log.info("Loaded {} initial feeds from database", feedEntities.size());
+        }
     }
 
 }

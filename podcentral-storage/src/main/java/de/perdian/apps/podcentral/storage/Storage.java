@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core;
+package de.perdian.apps.podcentral.storage;
 
-import java.util.Properties;
+import java.io.File;
 
-import de.perdian.apps.podcentral.core.model.Library;
+public interface Storage {
 
-public interface LibraryBuilder {
-
-    Library buildLibrary(Properties properties);
+    File resolveStorageFile(String feedName, String episodeName, String type);
 
 }

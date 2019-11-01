@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.impl;
+package de.perdian.apps.podcentral.core.model;
 
-import de.perdian.apps.podcentral.core.LibraryBuilder;
+import de.perdian.apps.podcentral.preferences.Preferences;
+import de.perdian.apps.podcentral.storage.Storage;
 
-public abstract class AbstractLibraryBuilder implements LibraryBuilder {
+public interface LibraryBuilder {
+
+    Library buildLibrary(Storage storage, Preferences preferences);
 
 }
