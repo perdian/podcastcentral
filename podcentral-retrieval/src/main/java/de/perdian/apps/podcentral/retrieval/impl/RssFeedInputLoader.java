@@ -36,6 +36,7 @@ import de.perdian.apps.podcentral.core.model.FeedData;
 import de.perdian.apps.podcentral.core.model.FeedInput;
 import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
 import de.perdian.apps.podcentral.retrieval.support.DateHelper;
+import de.perdian.apps.podcentral.retrieval.support.RegexParsingHelper;
 import de.perdian.apps.podcentral.retrieval.support.XmlHelper;
 import okhttp3.Response;
 
@@ -49,6 +50,10 @@ import okhttp3.Response;
 public class RssFeedInputLoader implements FeedInputLoader {
 
     private static final Logger log = LoggerFactory.getLogger(RssFeedInputLoader.class);
+    private static final RegexParsingHelper<Duration> DURATION_PARSING_HELPER = new RegexParsingHelper<Duration>()
+        .add("([0-9]+)", matcher -> Duration.ofSeconds(Integer.parseInt(matcher.group(1))))
+        .add("(\\d+)\\:(\\d+)", matcher -> Duration.ofSeconds(Long.parseLong(matcher.group(1), 10) * 60 + Long.parseLong(matcher.group(2), 10)))
+        .add("(\\d+)\\:(\\d+)\\:(\\d+)", matcher -> Duration.ofSeconds(Long.parseLong(matcher.group(1), 10) * (60 * 60) + Long.parseLong(matcher.group(2), 10) * 60 + Long.parseLong(matcher.group(3), 10)));
 
     private List<String> validContentTypes = List.of("application/rss+xml", "application/xml");
 
@@ -111,7 +116,7 @@ public class RssFeedInputLoader implements FeedInputLoader {
         episodeData.setContentType(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@type", "media:content/@type")).orElse(null));
         episodeData.setContentUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@url", "media:content/@url")).orElse(null));
         episodeData.setDescription(XmlHelper.getFirstMatchingValue(itemNode, List.of("description", "itunes:summary")).orElse(null));
-        episodeData.setDuration(XmlHelper.getFirstMatchingValue(itemNode, List.of("itunes:duration")).map(stringValue -> Duration.ofSeconds(Integer.parseInt(stringValue))).orElse(null));
+        episodeData.setDuration(XmlHelper.getFirstMatchingValue(itemNode, List.of("itunes:duration")).map(stringValue -> DURATION_PARSING_HELPER.parse(stringValue).orElse(null)).orElse(null));
         episodeData.setImageUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("image/url")).orElse(null));
         episodeData.setPublicationDate(XmlHelper.getFirstMatchingValue(itemNode, List.of("pubDate")).map(DateHelper::parseInstant).orElse(null));
         episodeData.setSize(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@length", "media:content/@fileSize")).map(Long::valueOf).orElse(null));

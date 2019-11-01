@@ -20,7 +20,6 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.modules.library.LibraryPane;
 import de.perdian.apps.podcentral.ui.modules.scheduler.SchedulerPane;
-import de.perdian.apps.podcentral.ui.modules.scheduler.SchedulerToolbarPane;
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -42,12 +41,8 @@ class CentralMainPane extends BorderPane {
         schedulerTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
         schedulerTab.setClosable(false);
 
-        SchedulerToolbarPane schedulerToolbarPane = new SchedulerToolbarPane(central.getScheduler(), localization);
-        schedulerToolbarPane.setPadding(new Insets(0, 8, 8, 8));
-
         TabPane tabPane = new TabPane(libraryTab, schedulerTab);
         this.setCenter(tabPane);
-        this.setBottom(schedulerToolbarPane);
 
     }
 

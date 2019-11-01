@@ -15,14 +15,17 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import de.perdian.apps.podcentral.core.model.Episode;
 import de.perdian.apps.podcentral.core.model.Feed;
 import de.perdian.apps.podcentral.ui.support.properties.PropertiesHelper;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 interface LibraryTreeValue {
 
@@ -35,8 +38,13 @@ interface LibraryTreeValue {
         }
 
         @Override
-        public StringProperty getTitle() {
+        public Property<String> getTitle() {
             return this.getFeed().getTitle();
+        }
+
+        @Override
+        public Property<String> getDescription() {
+            return PropertiesHelper.map(this.getFeed().getDescription(), StringUtils::normalizeSpace, null);
         }
 
         private Feed getFeed() {
@@ -62,14 +70,19 @@ interface LibraryTreeValue {
         }
 
         @Override
+        public Property<String> getDescription() {
+            return PropertiesHelper.map(this.getEpisode().getDescription(), StringUtils::normalizeSpace, null);
+        }
+
+        @Override
         public Property<String> getDuration() {
-            return PropertiesHelper.map(this.getEpisode().getDuration(), duration -> duration.toString(), null);
+            return PropertiesHelper.map(this.getEpisode().getDuration(), duration -> duration == null ? "" : DurationFormatUtils.formatDuration(duration.toMillis(), "HH:mm:ss"), null);
         }
 
         @Override
         public Property<String> getPublicationDate() {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-            return PropertiesHelper.map(this.getEpisode().getPublicationDate(), date -> dateTimeFormatter.format(date), null);
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            return PropertiesHelper.map(this.getEpisode().getPublicationDate(), date -> dateTimeFormatter.format(date.atZone(ZoneId.systemDefault())), null);
         }
 
         private Episode getEpisode() {
@@ -82,6 +95,7 @@ interface LibraryTreeValue {
     }
 
     Property<String> getTitle();
+    Property<String> getDescription();
 
     default Property<String> getPublicationDate() {
         return new SimpleStringProperty();

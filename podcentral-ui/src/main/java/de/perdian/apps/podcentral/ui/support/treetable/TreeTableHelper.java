@@ -29,6 +29,7 @@ public class TreeTableHelper {
         column.setCellValueFactory(cell -> {
             return cell.getValue() == null || cell.getValue().getValue() == null ? new SimpleObjectProperty<>() : sourcePropertyFunction.apply(cell.getValue().getValue());
         });
+        column.setReorderable(false);
         return column;
     }
 
