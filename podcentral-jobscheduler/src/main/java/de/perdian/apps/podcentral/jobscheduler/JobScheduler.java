@@ -50,6 +50,10 @@ public class JobScheduler {
         this.setProcessorCount(1);
     }
 
+    public synchronized boolean isBusy() {
+        return !this.getScheduledJobs().isEmpty() || !this.getActiveJobs().isEmpty();
+    }
+
     public AcceptedJob submitJob(Job job) {
         if (job == null) {
             throw new NullPointerException("Parameter 'job' must not be null!");
