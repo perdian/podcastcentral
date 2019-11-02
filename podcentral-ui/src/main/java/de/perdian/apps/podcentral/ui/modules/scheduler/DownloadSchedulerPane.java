@@ -15,15 +15,15 @@
  */
 package de.perdian.apps.podcentral.ui.modules.scheduler;
 
-import de.perdian.apps.podcentral.scheduler.Scheduler;
+import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
-public class SchedulerPane extends BorderPane {
+public class DownloadSchedulerPane extends BorderPane {
 
-    public SchedulerPane(Scheduler scheduler, Localization localization) {
+    public DownloadSchedulerPane(JobScheduler jobScheduler, Localization localization) {
         this.setCenter(new Label("DUMMY"));
         this.setPadding(new Insets(8, 8, 8, 8));
     }

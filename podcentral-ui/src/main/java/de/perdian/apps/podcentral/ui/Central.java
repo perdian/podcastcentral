@@ -20,14 +20,13 @@ import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.model.LibraryBuilder;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
 import de.perdian.apps.podcentral.retrieval.FeedInputLoaderFactory;
-import de.perdian.apps.podcentral.scheduler.Scheduler;
-import de.perdian.apps.podcentral.scheduler.SchedulerFactory;
 import de.perdian.apps.podcentral.storage.Storage;
 import de.perdian.apps.podcentral.storage.StorageFactory;
 import de.perdian.apps.podcentral.ui.localization.Localization;
@@ -39,7 +38,8 @@ public class Central {
     private Preferences preferences = null;
     private Library library = null;
     private FeedInputLoader feedInputLoader = null;
-    private Scheduler scheduler = null;
+    private JobScheduler uiJobScheduler = null;
+    private JobScheduler downloadJobScheduler = null;
     private Storage storage = null;
 
     public Central(Localization localization) {
@@ -48,8 +48,13 @@ public class Central {
         Preferences preferences = PreferencesFactory.createPreferences();
         this.setPreferences(preferences);
 
-        log.info("Creating scheduler");
-        this.setScheduler(SchedulerFactory.createScheduler());
+        log.info("Creating UI job scheduler");
+        JobScheduler uiJobScheduler = new JobScheduler(1);
+        this.setUiJobScheduler(uiJobScheduler);
+
+        log.info("Creating download job scheduler");
+        JobScheduler downloadJobScheduler = new JobScheduler(5);
+        this.setDownloadJobScheduler(downloadJobScheduler);
 
         log.info("Creating storage");
         Storage storage = StorageFactory.createStorage();
@@ -86,11 +91,18 @@ public class Central {
         this.feedInputLoader = feedInputLoader;
     }
 
-    public Scheduler getScheduler() {
-        return this.scheduler;
+    public JobScheduler getUiJobScheduler() {
+        return this.uiJobScheduler;
     }
-    private void setScheduler(Scheduler scheduler) {
-        this.scheduler = scheduler;
+    private void setUiJobScheduler(JobScheduler uiJobScheduler) {
+        this.uiJobScheduler = uiJobScheduler;
+    }
+
+    public JobScheduler getDownloadJobScheduler() {
+        return this.downloadJobScheduler;
+    }
+    private void setDownloadJobScheduler(JobScheduler downloadJobScheduler) {
+        this.downloadJobScheduler = downloadJobScheduler;
     }
 
     public Storage getStorage() {

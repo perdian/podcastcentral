@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.modules.feeds.inputloader;
+package de.perdian.apps.podcentral.ui.modules.scheduler;
 
-import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
+import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.BorderPane;
 
-public class FeedInputLoaderPane extends GridPane {
+public class UiSchedulerPane extends BorderPane {
 
-    public FeedInputLoaderPane(FeedInputLoader feedInputLoader, Localization localization) {
+    public UiSchedulerPane(JobScheduler jobScheduler, Localization localization) {
 
-        ProgressBar progressBar = new ProgressBar(feedInputLoader.getOverallProgress().getValue().doubleValue());
-        feedInputLoader.getOverallProgress().addListener((o, oldValue, newValue) -> Platform.runLater(() -> progressBar.setProgress(newValue.doubleValue())));
-
-        this.add(progressBar, 0, 0, 1, 1);
+        ProgressBar jobProgressBar = new ProgressBar(0);
+        this.setLeft(jobProgressBar);
 
     }
 

@@ -18,7 +18,6 @@ package de.perdian.apps.podcentral.ui.modules.library;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.modules.feeds.inputloader.FeedInputLoaderPane;
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -35,13 +34,8 @@ public class LibraryPane extends GridPane {
         GridPane.setHgrow(treeTableView, Priority.ALWAYS);
         GridPane.setVgrow(treeTableView, Priority.ALWAYS);
 
-        FeedInputLoaderPane feedInputLoaderPane = new FeedInputLoaderPane(feedInputLoader, localization);
-        GridPane.setMargin(feedInputLoaderPane, new Insets(4, 0, 0, 0));
-        GridPane.setHgrow(feedInputLoaderPane, Priority.ALWAYS);
-
         this.add(toolbarPane, 0, 0, 1, 1);
         this.add(treeTableView, 0, 1, 1, 1);
-        this.add(feedInputLoaderPane, 0, 2, 1, 1);
 
     }
 

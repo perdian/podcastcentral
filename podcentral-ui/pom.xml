@@ -16,6 +16,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>podcentral-jobscheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>podcentral-model</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -27,11 +32,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>podcentral-retrieval</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>podcentral-scheduler</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

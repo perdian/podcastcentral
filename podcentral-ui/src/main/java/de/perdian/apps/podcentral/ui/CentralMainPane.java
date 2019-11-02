@@ -19,13 +19,15 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.modules.library.LibraryPane;
-import de.perdian.apps.podcentral.ui.modules.scheduler.SchedulerPane;
+import de.perdian.apps.podcentral.ui.modules.scheduler.DownloadSchedulerPane;
+import de.perdian.apps.podcentral.ui.modules.scheduler.UiSchedulerPane;
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 
-class CentralMainPane extends BorderPane {
+class CentralMainPane extends GridPane {
 
     public CentralMainPane(Central central, Localization localization) {
 
@@ -35,14 +37,21 @@ class CentralMainPane extends BorderPane {
         libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
         libraryTab.setClosable(false);
 
-        SchedulerPane schedulerPane = new SchedulerPane(central.getScheduler(), localization);
-        schedulerPane.setPadding(new Insets(8, 8, 8, 8));
-        Tab schedulerTab = new Tab(localization.scheduler(), schedulerPane);
+        DownloadSchedulerPane downloadSchedulerPane = new DownloadSchedulerPane(central.getDownloadJobScheduler(), localization);
+        downloadSchedulerPane.setPadding(new Insets(8, 8, 8, 8));
+        Tab schedulerTab = new Tab(localization.scheduler(), downloadSchedulerPane);
         schedulerTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
         schedulerTab.setClosable(false);
 
         TabPane tabPane = new TabPane(libraryTab, schedulerTab);
-        this.setCenter(tabPane);
+        GridPane.setHgrow(tabPane, Priority.ALWAYS);
+        GridPane.setVgrow(tabPane, Priority.ALWAYS);
+
+        UiSchedulerPane uiSchedulerPane = new UiSchedulerPane(central.getUiJobScheduler(), localization);
+        uiSchedulerPane.setPadding(new Insets(4, 8, 8, 8));
+
+        this.add(tabPane, 0, 0, 1, 1);
+        this.add(uiSchedulerPane, 0, 1, 1, 1);
 
     }
 

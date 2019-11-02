@@ -10,9 +10,9 @@
         <module>podcentral-database</module>
         <module>podcentral-development</module>
         <module>podcentral-model</module>
+        <module>podcentral-jobscheduler</module>
         <module>podcentral-preferences</module>
         <module>podcentral-retrieval</module>
-        <module>podcentral-scheduler</module>
         <module>podcentral-storage</module>
         <module>podcentral-ui</module>
     </modules>

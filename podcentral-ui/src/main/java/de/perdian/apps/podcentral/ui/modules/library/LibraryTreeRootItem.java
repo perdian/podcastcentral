@@ -27,25 +27,25 @@ import de.perdian.apps.podcentral.model.Library;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeItem;
 
-class LibraryTreeRootItem extends TreeItem<LibraryTreeValue> {
+class LibraryTreeRootItem extends TreeItem<LibraryTreeTableValue> {
 
     LibraryTreeRootItem(Library library) {
-        Map<Feed, TreeItem<LibraryTreeValue>> feedTreeItemsByFeed = new HashMap<>();
+        Map<Feed, TreeItem<LibraryTreeTableValue>> feedTreeItemsByFeed = new HashMap<>();
         for (Feed feed : library.getFeeds()) {
-            TreeItem<LibraryTreeValue> feedTreeItem = LibraryTreeRootItem.createTreeItemForFeed(library, feed);
+            TreeItem<LibraryTreeTableValue> feedTreeItem = LibraryTreeRootItem.createTreeItemForFeed(library, feed);
             this.getChildren().add(feedTreeItem);
             feedTreeItemsByFeed.put(feed, feedTreeItem);
         }
         library.getFeeds().addListener((ListChangeListener.Change<? extends Feed> change) -> {
             while (change.next()) {
                 for (Feed removedFeed : change.getRemoved()) {
-                    TreeItem<LibraryTreeValue> feedTreeItem = feedTreeItemsByFeed.get(removedFeed);
+                    TreeItem<LibraryTreeTableValue> feedTreeItem = feedTreeItemsByFeed.get(removedFeed);
                     if (feedTreeItem != null) {
                         this.getChildren().remove(feedTreeItem);
                     }
                 }
                 for (Feed addedFeed : change.getAddedSubList()) {
-                    TreeItem<LibraryTreeValue> feedTreeItem = LibraryTreeRootItem.createTreeItemForFeed(library, addedFeed);
+                    TreeItem<LibraryTreeTableValue> feedTreeItem = LibraryTreeRootItem.createTreeItemForFeed(library, addedFeed);
                     int feedTargetIndex = change.getList().indexOf(addedFeed);
                     this.getChildren().add(feedTargetIndex, feedTreeItem);
                     feedTreeItemsByFeed.put(addedFeed, feedTreeItem);
@@ -54,11 +54,11 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeValue> {
         });
     }
 
-    private static TreeItem<LibraryTreeValue> createTreeItemForFeed(Library library, Feed feed) {
-        TreeItem<LibraryTreeValue> feedTreeItem = new TreeItem<>(new LibraryTreeValue.FeedTreeValue(library, feed));
-        Map<Episode, TreeItem<LibraryTreeValue>> episodeTreeItemsByEpisode = new HashMap<>();
+    private static TreeItem<LibraryTreeTableValue> createTreeItemForFeed(Library library, Feed feed) {
+        TreeItem<LibraryTreeTableValue> feedTreeItem = new TreeItem<>(new LibraryTreeTableValue.FeedTreeValue(library, feed));
+        Map<Episode, TreeItem<LibraryTreeTableValue>> episodeTreeItemsByEpisode = new HashMap<>();
         for (Episode episode : feed.getEpisodes()) {
-            TreeItem<LibraryTreeValue> episodeTreeItem = LibraryTreeRootItem.createTreeItemForEpisode(feed, episode);
+            TreeItem<LibraryTreeTableValue> episodeTreeItem = LibraryTreeRootItem.createTreeItemForEpisode(feed, episode);
             feedTreeItem.setExpanded(true);
             feedTreeItem.getChildren().add(episodeTreeItem);
             episodeTreeItemsByEpisode.put(episode, episodeTreeItem);
@@ -66,7 +66,7 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeValue> {
         feed.getEpisodes().addListener((ListChangeListener.Change<? extends Episode> change) -> {
             while (change.next()) {
                 for (Episode removedEpisode : change.getRemoved()) {
-                    TreeItem<LibraryTreeValue> removedValue = episodeTreeItemsByEpisode.remove(removedEpisode);
+                    TreeItem<LibraryTreeTableValue> removedValue = episodeTreeItemsByEpisode.remove(removedEpisode);
                     if (removedValue != null) {
                         feedTreeItem.getChildren().remove(removedValue);
                     }
@@ -75,7 +75,7 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeValue> {
                     episodeTreeItemsByEpisode.put(addedEpisode, LibraryTreeRootItem.createTreeItemForEpisode(feed, addedEpisode));
                 }
                 if (change.wasPermutated()) {
-                    List<TreeItem<LibraryTreeValue>> episodeTreeItems = change.getList().stream().map(episode -> episodeTreeItemsByEpisode.get(episode)).filter(Objects::nonNull).collect(Collectors.toList());
+                    List<TreeItem<LibraryTreeTableValue>> episodeTreeItems = change.getList().stream().map(episode -> episodeTreeItemsByEpisode.get(episode)).filter(Objects::nonNull).collect(Collectors.toList());
                     feedTreeItem.getChildren().setAll(episodeTreeItems);
                 }
             }
@@ -83,8 +83,8 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeValue> {
         return feedTreeItem;
     }
 
-    private static TreeItem<LibraryTreeValue> createTreeItemForEpisode(Feed feed, Episode episode) {
-        return new TreeItem<>(new LibraryTreeValue.EpisodeTreeValue(feed, episode));
+    private static TreeItem<LibraryTreeTableValue> createTreeItemForEpisode(Feed feed, Episode episode) {
+        return new TreeItem<>(new LibraryTreeTableValue.EpisodeTreeValue(feed, episode));
     }
 
 }

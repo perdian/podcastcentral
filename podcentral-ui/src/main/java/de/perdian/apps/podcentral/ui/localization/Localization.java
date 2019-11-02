@@ -82,7 +82,7 @@ public interface Localization {
     }
 
     default String scheduler() {
-        return "Scheduler";
+        return "JobScheduler";
     }
 
     default String title() {

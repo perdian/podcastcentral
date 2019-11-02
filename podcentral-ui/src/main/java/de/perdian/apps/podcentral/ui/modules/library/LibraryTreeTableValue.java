@@ -28,9 +28,9 @@ import de.perdian.apps.podcentral.ui.support.properties.PropertiesHelper;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 
-interface LibraryTreeValue {
+interface LibraryTreeTableValue {
 
-    static class FeedTreeValue implements LibraryTreeValue {
+    static class FeedTreeValue implements LibraryTreeTableValue {
 
         private Library library = null;
         private Feed feed = null;
@@ -71,7 +71,7 @@ interface LibraryTreeValue {
 
     }
 
-    static class EpisodeTreeValue implements LibraryTreeValue {
+    static class EpisodeTreeValue implements LibraryTreeTableValue {
 
         private Feed feed = null;
         private Episode episode = null;
