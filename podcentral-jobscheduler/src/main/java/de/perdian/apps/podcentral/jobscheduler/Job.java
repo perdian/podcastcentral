@@ -15,10 +15,14 @@
  */
 package de.perdian.apps.podcentral.jobscheduler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Job {
 
     private String title = null;
-    private Runnable runnable = null;
+    private JobRunnable runnable = null;
+    private List<JobProgressListener> progressListeners = new ArrayList<>();
 
     public String getTitle() {
         return this.title;
@@ -27,11 +31,24 @@ public class Job {
         this.title = title;
     }
 
-    public Runnable getRunnable() {
+    public JobRunnable getRunnable() {
         return this.runnable;
     }
-    public void setRunnable(Runnable runnable) {
+    public void setRunnable(JobRunnable runnable) {
         this.runnable = runnable;
+    }
+
+    public boolean addProgressListener(JobProgressListener jobProgressListener) {
+        return this.getProgressListeners().add(jobProgressListener);
+    }
+    public boolean removeProgressListener(JobProgressListener jobProgressListener) {
+        return this.getProgressListeners().remove(jobProgressListener);
+    }
+    public List<JobProgressListener> getProgressListeners() {
+        return this.progressListeners;
+    }
+    public void setProgressListeners(List<JobProgressListener> progressListeners) {
+        this.progressListeners = progressListeners;
     }
 
 }

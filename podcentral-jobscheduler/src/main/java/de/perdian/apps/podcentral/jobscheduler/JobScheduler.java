@@ -148,7 +148,7 @@ public class JobScheduler {
     }
 
     private void startJobCallable(ActiveJob activeJob) throws Exception {
-        activeJob.getAcceptedJob().getJob().getRunnable().run();
+        activeJob.getAcceptedJob().getJob().getRunnable().run(new JobProgress(activeJob.getAcceptedJob().getJob().getProgressListeners()));
     }
 
     private synchronized void checkWaitingRequests() {
