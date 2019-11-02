@@ -27,8 +27,10 @@ import de.perdian.apps.podcentral.database.entities.FeedEntity;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.model.Feed;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -46,6 +48,8 @@ class DatabaseBackedFeed implements Feed {
     private StringProperty imageUrl = null;
     private StringProperty category = null;
     private ObservableList<Episode> episodes = null;
+    private ObservableList<Object> processors = null;
+    private ObservableBooleanValue busy = null;
 
     DatabaseBackedFeed(FeedEntity feedEntity, SessionFactory sessionFactory) {
         this.setEntity(feedEntity);
@@ -60,6 +64,10 @@ class DatabaseBackedFeed implements Feed {
         this.setUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setEpisodes(FXCollections.observableArrayList());
+
+        ObservableList<Object> processorsList = FXCollections.observableArrayList();
+        this.setProcessors(processorsList);
+        this.setBusy(Bindings.isNotEmpty(processorsList));
     }
 
     void updateFeed(FeedEntity feedEntity) {
@@ -192,6 +200,22 @@ class DatabaseBackedFeed implements Feed {
     }
     private void setEpisodes(ObservableList<Episode> episodes) {
         this.episodes = episodes;
+    }
+
+    @Override
+    public ObservableList<Object> getProcessors() {
+        return this.processors;
+    }
+    public void setProcessors(ObservableList<Object> processors) {
+        this.processors = processors;
+    }
+
+    @Override
+    public ObservableBooleanValue getBusy() {
+        return this.busy;
+    }
+    private void setBusy(ObservableBooleanValue busy) {
+        this.busy = busy;
     }
 
 }

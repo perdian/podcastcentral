@@ -16,8 +16,11 @@
 package de.perdian.apps.podcentral.ui.modules.feeds;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.perdian.apps.podcentral.jobscheduler.Job;
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
@@ -50,21 +53,36 @@ public class FeedDeleteEventHandler implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
         if (!this.getFeeds().isEmpty() || !this.getEpisodes().isEmpty()) {
             this.getJobScheduler().submitJob(new Job(this.getLocalization().deletingEntries(), progress -> {
-                List<Runnable> deleteRunnables = this.createDeleteRunnables();
-                for (int i=0; i < deleteRunnables.size(); i++) {
-                    progress.updateProgress((double)(i+1) / (double)deleteRunnables.size(), null);
-                    deleteRunnables.get(i).run();
-                }
+
+                List<Feed> feeds = new ArrayList<>(this.getFeeds());
+                Map<Feed, List<Episode>> episodes = this.getEpisodes().entrySet().stream().filter(entry -> feeds.contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                Set<Feed> allFeeds = new HashSet<>();
+                allFeeds.addAll(feeds);
+                allFeeds.addAll(episodes.keySet());
+                allFeeds.forEach(feed -> feed.getProcessors().add(this));
+
+                feeds.forEach(feed -> {
+                    try {
+                        this.getLibrary().getFeeds().remove(feed);
+                    } finally {
+                        feed.getProcessors().remove(this);
+                    }
+                });
+                feeds.forEach(feed -> feed.getProcessors().remove(this));
+
+                episodes.entrySet().forEach(entry -> {
+                    try {
+                        entry.getKey().getEpisodes().removeAll(entry.getValue());
+                    } finally {
+                        entry.getKey().getProcessors().remove(this);
+                    }
+                });
+                episodes.keySet().forEach(feed -> feed.getProcessors().remove(this));
+
                 this.getClearSelectionCallback().run();
+
             }));
         }
-    }
-
-    private List<Runnable> createDeleteRunnables() {
-        List<Runnable> runnables = new ArrayList<>();
-        this.getFeeds().stream().forEach(feed -> runnables.add(() -> this.getLibrary().getFeeds().remove(feed)));
-        this.getEpisodes().entrySet().stream().filter(entry -> !this.getFeeds().contains(entry.getKey())).forEach(entry -> entry.getKey().getEpisodes().removeAll(entry.getValue()));
-        return runnables;
     }
 
     private List<Feed> getFeeds() {

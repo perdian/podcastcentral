@@ -17,7 +17,6 @@ package de.perdian.apps.podcentral.ui.modules.library;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -37,21 +36,20 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
     LibraryTreeTableContextMenu(List<Feed> selectedFeeds, Map<Feed, List<Episode>> selectedEpisodes, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
 
-        List<String> feedUrls = selectedFeeds.stream().map(feed -> feed.getUrl().getValue()).collect(Collectors.toList());
         MenuItem refreshMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        if (feedUrls.isEmpty()) {
+        if (selectedFeeds.isEmpty()) {
             refreshMenuItem.setDisable(true);
         } else {
-            refreshMenuItem.setOnAction(new FeedRefreshEventHandler(() -> feedUrls, clearSelectionCallback, jobScheduler, library, localization));
+            refreshMenuItem.setOnAction(new FeedRefreshEventHandler(() -> selectedFeeds, clearSelectionCallback, jobScheduler, library, localization));
         }
         this.getItems().add(refreshMenuItem);
         MenuItem refreshRestoreEpisodesMenuItem = new MenuItem(localization.refreshRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        if (feedUrls.isEmpty()) {
+        if (selectedFeeds.isEmpty()) {
             refreshRestoreEpisodesMenuItem.setDisable(true);
         } else {
             FeedInputOptions feedInputOptions = new FeedInputOptions();
             feedInputOptions.setResetDeletedEpisodes(true);
-            FeedRefreshEventHandler eventHandler = new FeedRefreshEventHandler(() -> feedUrls, clearSelectionCallback, jobScheduler, library, localization);
+            FeedRefreshEventHandler eventHandler = new FeedRefreshEventHandler(() -> selectedFeeds, clearSelectionCallback, jobScheduler, library, localization);
             eventHandler.setFeedInputOptions(feedInputOptions);
             refreshRestoreEpisodesMenuItem.setOnAction(eventHandler);
         }

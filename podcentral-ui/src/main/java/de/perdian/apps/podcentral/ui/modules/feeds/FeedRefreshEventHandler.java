@@ -16,12 +16,12 @@
 package de.perdian.apps.podcentral.ui.modules.feeds;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
 import de.perdian.apps.podcentral.jobscheduler.Job;
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
+import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.FeedInputOptions;
 import de.perdian.apps.podcentral.model.Library;
@@ -32,15 +32,15 @@ import javafx.event.EventHandler;
 
 public class FeedRefreshEventHandler implements EventHandler<ActionEvent> {
 
-    private Supplier<Collection<String>> feedUrlListSupplier = null;
+    private Supplier<List<Feed>> feedListSupplier = null;
     private Runnable clearSelectionCallback = null;
     private JobScheduler jobScheduler = null;
     private Library library = null;
     private Localization localization = null;
     private FeedInputOptions feedInputOptions = new FeedInputOptions();
 
-    public FeedRefreshEventHandler(Supplier<Collection<String>> feedUrlListSupplier, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
-        this.setFeedUrlListSupplier(feedUrlListSupplier);
+    public FeedRefreshEventHandler(Supplier<List<Feed>> feedListSupplier, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
+        this.setFeedListSupplier(feedListSupplier);
         this.setClearSelectionCallback(clearSelectionCallback);
         this.setJobScheduler(jobScheduler);
         this.setLibrary(library);
@@ -49,30 +49,36 @@ public class FeedRefreshEventHandler implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent event) {
-        List<String> feedUrlList = new ArrayList<>(this.getFeedUrlListSupplier().get());
-        if (!feedUrlList.isEmpty()) {
+        List<Feed> feedList = new ArrayList<>(this.getFeedListSupplier().get());
+        if (!feedList.isEmpty()) {
             this.getJobScheduler().submitJob(new Job(this.getLocalization().refreshingFeeds(), progress -> {
-                progress.updateProgress(0d, null);
-                for (int i=0; i < feedUrlList.size(); i++) {
-                    progress.updateProgress((double)(i+1) / (double)feedUrlList.size(), null);
-                    this.handleRefreshFeed(feedUrlList.get(i));
+                feedList.forEach(feed -> feed.getProcessors().add(this));
+                try {
+                    progress.updateProgress(0d, null);
+                    for (int i=0; i < feedList.size(); i++) {
+                        progress.updateProgress((double)(i+1) / (double)feedList.size(), null);
+                        this.handleRefreshFeed(feedList.get(i));
+                        feedList.get(i).getProcessors().remove(this);
+                    }
+                    this.getClearSelectionCallback().run();
+                } finally {
+                    feedList.forEach(feed -> feed.getProcessors().remove(this));
                 }
-                this.getClearSelectionCallback().run();
             }));
         }
     }
 
-    private void handleRefreshFeed(String feedUrl) throws Exception {
+    private void handleRefreshFeed(Feed feed) throws Exception {
         FeedInputLoader feedInputLoader = new FeedInputLoader();
-        FeedInput feedInput = feedInputLoader.loadFeedInputFromUrl(feedUrl);
+        FeedInput feedInput = feedInputLoader.loadFeedInputFromUrl(feed.getUrl().getValue());
         this.getLibrary().updateFeedFromInput(feedInput, this.getFeedInputOptions());
     }
 
-    private Supplier<Collection<String>> getFeedUrlListSupplier() {
-        return this.feedUrlListSupplier;
+    private Supplier<List<Feed>> getFeedListSupplier() {
+        return this.feedListSupplier;
     }
-    private void setFeedUrlListSupplier(Supplier<Collection<String>> feedUrlListSupplier) {
-        this.feedUrlListSupplier = feedUrlListSupplier;
+    private void setFeedListSupplier(Supplier<List<Feed>> feedListSupplier) {
+        this.feedListSupplier = feedListSupplier;
     }
 
     private Runnable getClearSelectionCallback() {
