@@ -31,7 +31,7 @@ class CentralMainPane extends GridPane {
 
     public CentralMainPane(Central central, Localization localization) {
 
-        LibraryPane libraryPane = new LibraryPane(central.getLibrary(), central.getFeedInputLoader(), localization);
+        LibraryPane libraryPane = new LibraryPane(central.getUiJobScheduler(), central.getLibrary(), localization);
         libraryPane.setPadding(new Insets(8, 8, 8, 8));
         Tab libraryTab = new Tab(localization.library(), libraryPane);
         libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
@@ -39,7 +39,7 @@ class CentralMainPane extends GridPane {
 
         DownloadSchedulerPane downloadSchedulerPane = new DownloadSchedulerPane(central.getDownloadJobScheduler(), localization);
         downloadSchedulerPane.setPadding(new Insets(8, 8, 8, 8));
-        Tab schedulerTab = new Tab(localization.scheduler(), downloadSchedulerPane);
+        Tab schedulerTab = new Tab(localization.downloads(), downloadSchedulerPane);
         schedulerTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
         schedulerTab.setClosable(false);
 

@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.model.FeedInput;
-import de.perdian.apps.podcentral.retrieval.FeedInputLoaderFactory;
+import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
 
 public class FeedInputFactoryExample {
 
@@ -27,7 +27,8 @@ public class FeedInputFactoryExample {
 
     public static void main(String[] args) throws Exception {
 
-        FeedInput feedInput = FeedInputLoaderFactory.createFeedInputLoader().submitFeedUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss").get();
+        FeedInputLoader feedInputLoader = new FeedInputLoader();
+        FeedInput feedInput = feedInputLoader.loadFeedInputFromUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss");
         log.info("Loaded feed: {}", feedInput);
 
     }

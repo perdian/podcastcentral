@@ -33,8 +33,16 @@ public interface Localization {
         return "Delete";
     }
 
+    default String deletingEntries() {
+        return "Deleting entries";
+    }
+
     default String description() {
         return "Description";
+    }
+
+    default String downloads() {
+        return "Downloads";
     }
 
     default String duration() {
@@ -69,6 +77,10 @@ public interface Localization {
         return "Loading library...";
     }
 
+    default String noActivity() {
+        return "No activity";
+    }
+
     default String noFeedLoadedYet() {
         return "No feed loaded yet";
     }
@@ -81,8 +93,20 @@ public interface Localization {
         return "PodCentral";
     }
 
-    default String scheduler() {
-        return "JobScheduler";
+    default String refresh() {
+        return "Refresh";
+    }
+
+    default String refreshRestoreDeletedEpisodes() {
+        return "Refresh (restore deleted episodes)";
+    }
+
+    default String refreshFeeds() {
+        return "Refresh feeds";
+    }
+
+    default String refreshingFeeds() {
+        return "Refreshing feeds";
     }
 
     default String title() {

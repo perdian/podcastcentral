@@ -16,6 +16,7 @@
 package de.perdian.apps.podcentral.jobscheduler;
 
 import java.time.Instant;
+import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -34,6 +35,15 @@ public class AcceptedJob {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.NO_CLASS_NAME_STYLE);
+    }
+
+    static class PriorityComparator implements Comparator<AcceptedJob> {
+
+        @Override
+        public int compare(AcceptedJob o1, AcceptedJob o2) {
+            return Integer.compare(o1.getJob().getPriority(), o2.getJob().getPriority());
+        }
+
     }
 
     public void forceStart() {

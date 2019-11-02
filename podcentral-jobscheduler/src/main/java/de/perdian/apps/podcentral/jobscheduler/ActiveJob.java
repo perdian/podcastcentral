@@ -16,6 +16,8 @@
 package de.perdian.apps.podcentral.jobscheduler;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -30,9 +32,12 @@ public class ActiveJob {
     private String cancelReason = null;
     private JobStatus status = null;
     private Exception exception = null;
+    private List<JobProgressListener> progressListeners = null;
 
-    ActiveJob(JobScheduler owner) {
+    ActiveJob(JobScheduler owner, AcceptedJob acceptedJob) {
         this.setOwner(owner);
+        this.setAcceptedJob(acceptedJob);
+        this.setProgressListeners(new ArrayList<>(acceptedJob.getJob().getProgressListeners()));
     }
 
     @Override
@@ -44,7 +49,7 @@ public class ActiveJob {
         this.getOwner().cancelJob(this, reason);
     }
 
-    JobScheduler getOwner() {
+    public JobScheduler getOwner() {
         return this.owner;
     }
     private void setOwner(JobScheduler owner) {
@@ -54,7 +59,7 @@ public class ActiveJob {
     public AcceptedJob getAcceptedJob() {
         return this.acceptedJob;
     }
-    void setAcceptedJob(AcceptedJob acceptedJob) {
+    private void setAcceptedJob(AcceptedJob acceptedJob) {
         this.acceptedJob = acceptedJob;
     }
 
@@ -98,6 +103,19 @@ public class ActiveJob {
     }
     void setException(Exception exception) {
         this.exception = exception;
+    }
+
+    public boolean addProgressListeners(JobProgressListener progressListener) {
+        return this.getProgressListeners().add(progressListener);
+    }
+    public boolean removeProgressListeners(JobProgressListener progressListener) {
+        return this.getProgressListeners().remove(progressListener);
+    }
+    public List<JobProgressListener> getProgressListeners() {
+        return this.progressListeners;
+    }
+    private void setProgressListeners(List<JobProgressListener> progressListeners) {
+        this.progressListeners = progressListeners;
     }
 
 }

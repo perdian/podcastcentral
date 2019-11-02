@@ -15,8 +15,8 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
+import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Library;
-import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
@@ -24,13 +24,13 @@ import javafx.scene.layout.Priority;
 
 public class LibraryPane extends GridPane {
 
-    public LibraryPane(Library library, FeedInputLoader feedInputLoader, Localization localization) {
+    public LibraryPane(JobScheduler jobScheduler, Library library, Localization localization) {
 
-        LibraryToolbarPane toolbarPane = new LibraryToolbarPane(library, localization);
+        LibraryToolbarPane toolbarPane = new LibraryToolbarPane(jobScheduler, library, localization);
         GridPane.setMargin(toolbarPane, new Insets(0, 0, 4, 0));
         GridPane.setHgrow(toolbarPane, Priority.ALWAYS);
 
-        LibraryTreeTableView treeTableView = new LibraryTreeTableView(library, feedInputLoader, localization);
+        LibraryTreeTableView treeTableView = new LibraryTreeTableView(jobScheduler, library, localization);
         GridPane.setHgrow(treeTableView, Priority.ALWAYS);
         GridPane.setVgrow(treeTableView, Priority.ALWAYS);
 

@@ -25,8 +25,6 @@ import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.model.LibraryBuilder;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
-import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
-import de.perdian.apps.podcentral.retrieval.FeedInputLoaderFactory;
 import de.perdian.apps.podcentral.storage.Storage;
 import de.perdian.apps.podcentral.storage.StorageFactory;
 import de.perdian.apps.podcentral.ui.localization.Localization;
@@ -37,7 +35,6 @@ public class Central {
 
     private Preferences preferences = null;
     private Library library = null;
-    private FeedInputLoader feedInputLoader = null;
     private JobScheduler uiJobScheduler = null;
     private JobScheduler downloadJobScheduler = null;
     private Storage storage = null;
@@ -60,10 +57,6 @@ public class Central {
         Storage storage = StorageFactory.createStorage();
         this.setStorage(storage);
 
-        log.info("Creating feed input loader");
-        FeedInputLoader feedInputLoader = FeedInputLoaderFactory.createFeedInputLoader();
-        this.setFeedInputLoader(feedInputLoader);
-
         log.info("Loading library");
         LibraryBuilder libraryBuilder = ServiceLoader.load(LibraryBuilder.class).findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryBuilder.class.getName()));
         this.setLibrary(libraryBuilder.buildLibrary(storage, preferences));
@@ -82,13 +75,6 @@ public class Central {
     }
     private void setLibrary(Library library) {
         this.library = library;
-    }
-
-    public FeedInputLoader getFeedInputLoader() {
-        return this.feedInputLoader;
-    }
-    private void setFeedInputLoader(FeedInputLoader feedInputLoader) {
-        this.feedInputLoader = feedInputLoader;
     }
 
     public JobScheduler getUiJobScheduler() {

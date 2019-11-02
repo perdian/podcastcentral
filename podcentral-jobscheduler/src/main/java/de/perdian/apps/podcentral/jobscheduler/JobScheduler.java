@@ -45,7 +45,7 @@ public class JobScheduler {
         this.setExecutorService(Executors.newCachedThreadPool());
         this.setJobListeners(new CopyOnWriteArrayList<>());
         this.setJobSchedulerListeners(new CopyOnWriteArrayList<>());
-        this.setScheduledJobs(new PriorityQueue<>(10));
+        this.setScheduledJobs(new PriorityQueue<>(10, new AcceptedJob.PriorityComparator()));
         this.setActiveJobs(new ArrayList<>());
         this.setProcessorCount(1);
     }
@@ -93,10 +93,9 @@ public class JobScheduler {
 
             if (!jobAlreadyActive) {
 
-                ActiveJob activeJob = new ActiveJob(this);
+                ActiveJob activeJob = new ActiveJob(this, job);
                 activeJob.setStartTime(this.getClock().instant());
                 activeJob.setStatus(JobStatus.ACTIVE);
-                activeJob.setAcceptedJob(job);
                 job.setActiveJob(activeJob);
 
                 this.getActiveJobs().add(activeJob);
@@ -148,7 +147,7 @@ public class JobScheduler {
     }
 
     private void startJobCallable(ActiveJob activeJob) throws Exception {
-        activeJob.getAcceptedJob().getJob().getRunnable().run(new JobProgress(activeJob.getAcceptedJob().getJob().getProgressListeners()));
+        activeJob.getAcceptedJob().getJob().getRunnable().run(new JobProgress(activeJob.getProgressListeners()));
     }
 
     private synchronized void checkWaitingRequests() {

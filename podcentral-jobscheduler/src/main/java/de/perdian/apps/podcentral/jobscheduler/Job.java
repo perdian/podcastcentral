@@ -22,7 +22,16 @@ public class Job {
 
     private String title = null;
     private JobRunnable runnable = null;
+    private int priority = 0;
     private List<JobProgressListener> progressListeners = new ArrayList<>();
+
+    public Job() {
+    }
+
+    public Job(String title, JobRunnable runnable) {
+        this.setTitle(title);
+        this.setRunnable(runnable);
+    }
 
     public String getTitle() {
         return this.title;
@@ -36,6 +45,13 @@ public class Job {
     }
     public void setRunnable(JobRunnable runnable) {
         this.runnable = runnable;
+    }
+
+    public int getPriority() {
+        return this.priority;
+    }
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public boolean addProgressListener(JobProgressListener jobProgressListener) {
