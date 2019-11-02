@@ -22,10 +22,11 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.model.FeedInput;
-import de.perdian.apps.podcentral.retrieval.FeedInputFactory;
+import de.perdian.apps.podcentral.model.FeedInput;
+import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
+import de.perdian.apps.podcentral.retrieval.FeedInputLoaderFactory;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.modules.feeds.input.FeedDataPane;
+import de.perdian.apps.podcentral.ui.modules.feeds.data.FeedDataPane;
 import de.perdian.apps.podcentral.ui.support.errors.ExceptionDialogBuilder;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -112,7 +113,8 @@ public class AddFeedPane extends GridPane {
             try {
 
                 Platform.runLater(() -> AddFeedPane.this.getDetailsWrapperPane().setCenter(AddFeedPane.this.createLoadFeedBusyPane(feedUrl)));
-                FeedInput feedInput = FeedInputFactory.getFeedInput(feedUrl);
+                FeedInputLoader feedInputLoader = FeedInputLoaderFactory.createFeedInputLoader();
+                FeedInput feedInput = feedInputLoader.submitFeedUrl(feedUrl).get();
                 FeedDataPane feedDataPane = new FeedDataPane(feedInput.getData(), AddFeedPane.this.getLocalization());
                 GridPane.setHgrow(feedDataPane, Priority.ALWAYS);
                 GridPane.setVgrow(feedDataPane, Priority.ALWAYS);

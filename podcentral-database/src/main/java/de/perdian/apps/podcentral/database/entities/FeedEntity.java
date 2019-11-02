@@ -25,7 +25,7 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import de.perdian.apps.podcentral.core.model.FeedData;
+import de.perdian.apps.podcentral.model.FeedData;
 
 @Entity
 @Table(name = "feed")

@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.retrieval;
+package de.perdian.apps.podcentral.model;
 
-import java.util.concurrent.Future;
+import javafx.collections.ObservableList;
 
-import de.perdian.apps.podcentral.model.FeedInput;
-import javafx.beans.value.ObservableBooleanValue;
-import javafx.beans.value.ObservableDoubleValue;
+public interface Library {
 
-public interface FeedInputLoader {
+    ObservableList<Feed> getFeeds();
 
-    Future<FeedInput> submitFeedUrl(String feedUrl);
-    ObservableBooleanValue getBusy();
-    ObservableDoubleValue getOverallProgress();
-    boolean addListener(FeedInputLoaderListener listener);
-    boolean removeListener(FeedInputLoaderListener listener);
+    Feed updateFeedFromInput(FeedInput feedInput, FeedInputOptions feedInputOptions);
 
 }

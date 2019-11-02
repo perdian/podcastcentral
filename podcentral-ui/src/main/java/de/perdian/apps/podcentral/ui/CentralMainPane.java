@@ -29,7 +29,7 @@ class CentralMainPane extends BorderPane {
 
     public CentralMainPane(Central central, Localization localization) {
 
-        LibraryPane libraryPane = new LibraryPane(central.getLibrary(), localization);
+        LibraryPane libraryPane = new LibraryPane(central.getLibrary(), central.getFeedInputLoader(), localization);
         libraryPane.setPadding(new Insets(8, 8, 8, 8));
         Tab libraryTab = new Tab(localization.library(), libraryPane);
         libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));

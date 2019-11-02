@@ -11,12 +11,12 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>podcentral-core</artifactId>
+            <artifactId>podcentral-database</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>podcentral-database</artifactId>
+            <artifactId>podcentral-model</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import de.perdian.apps.podcentral.core.model.Episode;
-import de.perdian.apps.podcentral.core.model.Feed;
-import de.perdian.apps.podcentral.core.model.Library;
+import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.model.Feed;
+import de.perdian.apps.podcentral.model.Library;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeItem;
 

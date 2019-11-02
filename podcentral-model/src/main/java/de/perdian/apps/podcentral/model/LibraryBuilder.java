@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.model;
+package de.perdian.apps.podcentral.model;
 
-import java.time.Instant;
+import de.perdian.apps.podcentral.preferences.Preferences;
+import de.perdian.apps.podcentral.storage.Storage;
 
-import javafx.beans.property.ObjectProperty;
+public interface LibraryBuilder {
 
-public interface EpisodeDownload {
-
-    ObjectProperty<EpisodeDownloadState> getState();
-    ObjectProperty<Instant> getDate();
-    ObjectProperty<Long> getTotalBytes();
-    ObjectProperty<String> getLocalPath();
-    ObjectProperty<Long> getLocalBytes();
-    ObjectProperty<Double> getProgress();
+    Library buildLibrary(Storage storage, Preferences preferences);
 
 }

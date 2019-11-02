@@ -20,10 +20,12 @@ import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.model.Library;
-import de.perdian.apps.podcentral.core.model.LibraryBuilder;
+import de.perdian.apps.podcentral.model.Library;
+import de.perdian.apps.podcentral.model.LibraryBuilder;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
+import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
+import de.perdian.apps.podcentral.retrieval.FeedInputLoaderFactory;
 import de.perdian.apps.podcentral.scheduler.Scheduler;
 import de.perdian.apps.podcentral.scheduler.SchedulerFactory;
 import de.perdian.apps.podcentral.storage.Storage;
@@ -36,6 +38,7 @@ public class Central {
 
     private Preferences preferences = null;
     private Library library = null;
+    private FeedInputLoader feedInputLoader = null;
     private Scheduler scheduler = null;
     private Storage storage = null;
 
@@ -51,6 +54,10 @@ public class Central {
         log.info("Creating storage");
         Storage storage = StorageFactory.createStorage();
         this.setStorage(storage);
+
+        log.info("Creating feed input loader");
+        FeedInputLoader feedInputLoader = FeedInputLoaderFactory.createFeedInputLoader();
+        this.setFeedInputLoader(feedInputLoader);
 
         log.info("Loading library");
         LibraryBuilder libraryBuilder = ServiceLoader.load(LibraryBuilder.class).findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryBuilder.class.getName()));
@@ -70,6 +77,13 @@ public class Central {
     }
     private void setLibrary(Library library) {
         this.library = library;
+    }
+
+    public FeedInputLoader getFeedInputLoader() {
+        return this.feedInputLoader;
+    }
+    private void setFeedInputLoader(FeedInputLoader feedInputLoader) {
+        this.feedInputLoader = feedInputLoader;
     }
 
     public Scheduler getScheduler() {

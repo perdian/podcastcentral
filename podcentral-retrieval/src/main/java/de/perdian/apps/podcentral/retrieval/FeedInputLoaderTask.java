@@ -13,23 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.web;
+package de.perdian.apps.podcentral.retrieval;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.concurrent.CompletableFuture;
 
 import de.perdian.apps.podcentral.model.FeedInput;
-import de.perdian.apps.podcentral.retrieval.FeedInputLoaderFactory;
 
-public class FeedInputFactoryExample {
+class FeedInputLoaderTask {
 
-    private static final Logger log = LoggerFactory.getLogger(FeedInputFactoryExample.class);
+    private String url = null;
+    private CompletableFuture<FeedInput> future = null;
 
-    public static void main(String[] args) throws Exception {
+    FeedInputLoaderTask(String url) {
+        this.setUrl(url);
+        this.setFuture(new CompletableFuture<>());
+    }
 
-        FeedInput feedInput = FeedInputLoaderFactory.createFeedInputLoader().submitFeedUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss").get();
-        log.info("Loaded feed: {}", feedInput);
+    String getUrl() {
+        return this.url;
+    }
+    private void setUrl(String url) {
+        this.url = url;
+    }
 
+    CompletableFuture<FeedInput> getFuture() {
+        return this.future;
+    }
+    private void setFuture(CompletableFuture<FeedInput> future) {
+        this.future = future;
     }
 
 }

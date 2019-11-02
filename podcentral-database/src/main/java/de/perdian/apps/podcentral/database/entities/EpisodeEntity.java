@@ -28,8 +28,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import de.perdian.apps.podcentral.core.model.EpisodeData;
-import de.perdian.apps.podcentral.core.model.EpisodeDownloadState;
+import de.perdian.apps.podcentral.model.EpisodeData;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 
 @Entity
 @Table(name = "episode")

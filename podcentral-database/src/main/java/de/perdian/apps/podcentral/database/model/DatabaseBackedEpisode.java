@@ -22,8 +22,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.SessionFactory;
 
-import de.perdian.apps.podcentral.core.model.Episode;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
+import de.perdian.apps.podcentral.model.Episode;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

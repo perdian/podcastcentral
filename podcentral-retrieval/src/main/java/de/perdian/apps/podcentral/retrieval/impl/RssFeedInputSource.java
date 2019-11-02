@@ -31,10 +31,10 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.model.EpisodeData;
-import de.perdian.apps.podcentral.core.model.FeedData;
-import de.perdian.apps.podcentral.core.model.FeedInput;
-import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
+import de.perdian.apps.podcentral.model.EpisodeData;
+import de.perdian.apps.podcentral.model.FeedData;
+import de.perdian.apps.podcentral.model.FeedInput;
+import de.perdian.apps.podcentral.retrieval.FeedInputSource;
 import de.perdian.apps.podcentral.retrieval.support.DateHelper;
 import de.perdian.apps.podcentral.retrieval.support.RegexParsingHelper;
 import de.perdian.apps.podcentral.retrieval.support.XmlHelper;
@@ -47,9 +47,9 @@ import okhttp3.Response;
  * @author Christian Seifert
  */
 
-public class RssFeedInputLoader implements FeedInputLoader {
+public class RssFeedInputSource implements FeedInputSource {
 
-    private static final Logger log = LoggerFactory.getLogger(RssFeedInputLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(RssFeedInputSource.class);
     private static final RegexParsingHelper<Duration> DURATION_PARSING_HELPER = new RegexParsingHelper<Duration>()
         .add("([0-9]+)", matcher -> Duration.ofSeconds(Integer.parseInt(matcher.group(1))))
         .add("(\\d+)\\:(\\d+)", matcher -> Duration.ofSeconds(Long.parseLong(matcher.group(1), 10) * 60 + Long.parseLong(matcher.group(2), 10)))

@@ -17,9 +17,9 @@ package de.perdian.apps.podcentral.ui.modules.feeds.add;
 
 import java.util.function.Consumer;
 
-import de.perdian.apps.podcentral.core.model.FeedInput;
-import de.perdian.apps.podcentral.core.model.FeedInputOptions;
-import de.perdian.apps.podcentral.core.model.Library;
+import de.perdian.apps.podcentral.model.FeedInput;
+import de.perdian.apps.podcentral.model.FeedInputOptions;
+import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

@@ -23,10 +23,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.SessionFactory;
 
-import de.perdian.apps.podcentral.core.model.Episode;
-import de.perdian.apps.podcentral.core.model.EpisodeDownloadState;
-import de.perdian.apps.podcentral.core.model.Feed;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
+import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
+import de.perdian.apps.podcentral.model.Feed;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;

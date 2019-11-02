@@ -13,14 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.model;
+package de.perdian.apps.podcentral.model;
 
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 
-public interface Library {
+public interface Feed {
 
-    ObservableList<Feed> getFeeds();
-
-    Feed updateFeedFromInput(FeedInput feedInput, FeedInputOptions feedInputOptions);
+    StringProperty getUrl();
+    StringProperty getWebsiteUrl();
+    StringProperty getTitle();
+    StringProperty getSubtitle();
+    StringProperty getDescription();
+    StringProperty getOwner();
+    StringProperty getOwnerUrl();
+    StringProperty getLanguageCode();
+    StringProperty getImageUrl();
+    StringProperty getCategory();
+    ObservableList<Episode> getEpisodes();
 
 }

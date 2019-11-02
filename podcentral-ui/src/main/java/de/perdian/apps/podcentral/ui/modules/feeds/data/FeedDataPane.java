@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.modules.feeds.input;
+package de.perdian.apps.podcentral.ui.modules.feeds.data;
 
-import de.perdian.apps.podcentral.core.model.FeedData;
+import de.perdian.apps.podcentral.model.FeedData;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;

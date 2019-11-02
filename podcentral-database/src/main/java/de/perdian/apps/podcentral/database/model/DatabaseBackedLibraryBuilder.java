@@ -33,9 +33,9 @@ import org.hibernate.service.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.core.model.LibraryBuilder;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
+import de.perdian.apps.podcentral.model.LibraryBuilder;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.storage.Storage;
 

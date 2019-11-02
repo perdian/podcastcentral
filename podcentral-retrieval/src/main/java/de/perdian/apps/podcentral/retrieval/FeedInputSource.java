@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.model;
+package de.perdian.apps.podcentral.retrieval;
 
-public enum EpisodeDownloadState {
+import de.perdian.apps.podcentral.model.FeedInput;
+import okhttp3.Response;
 
-    NEW,
-    DOWNLOAD_COMPLETED,
-    DOWNLOAD_CANCELLED,
-    DOWNLOAD_ERRORED,
-    DELETED;
+public interface FeedInputSource {
+
+    FeedInput loadFeedInput(Response feedResponse) throws Exception;
 
 }

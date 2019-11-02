@@ -19,9 +19,9 @@ import java.time.Instant;
 
 import org.hibernate.SessionFactory;
 
-import de.perdian.apps.podcentral.core.model.EpisodeDownload;
-import de.perdian.apps.podcentral.core.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
+import de.perdian.apps.podcentral.model.EpisodeDownload;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 

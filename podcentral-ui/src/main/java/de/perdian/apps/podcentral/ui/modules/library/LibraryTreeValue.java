@@ -21,9 +21,9 @@ import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
-import de.perdian.apps.podcentral.core.model.Episode;
-import de.perdian.apps.podcentral.core.model.Feed;
-import de.perdian.apps.podcentral.core.model.Library;
+import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.model.Feed;
+import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.support.properties.PropertiesHelper;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;

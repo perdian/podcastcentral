@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.web;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package de.perdian.apps.podcentral.retrieval;
 
 import de.perdian.apps.podcentral.model.FeedInput;
-import de.perdian.apps.podcentral.retrieval.FeedInputLoaderFactory;
 
-public class FeedInputFactoryExample {
+public interface FeedInputLoaderListener {
 
-    private static final Logger log = LoggerFactory.getLogger(FeedInputFactoryExample.class);
-
-    public static void main(String[] args) throws Exception {
-
-        FeedInput feedInput = FeedInputLoaderFactory.createFeedInputLoader().submitFeedUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss").get();
-        log.info("Loaded feed: {}", feedInput);
-
-    }
+    void onFeedInputLoaded(String feedUrl, FeedInput feedInput);
+    void onFeedInputFailure(String feedUrl, Exception exception);
 
 }

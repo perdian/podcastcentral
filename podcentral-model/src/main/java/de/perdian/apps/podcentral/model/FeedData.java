@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.core.model;
+package de.perdian.apps.podcentral.model;
 
 import java.io.Serializable;
-import java.time.Duration;
-import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -26,22 +24,20 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Embeddable
-public class EpisodeData implements Serializable {
+public class FeedData implements Serializable {
 
     static final long serialVersionUID = 1L;
 
-    private String guid = null;
+    private String url = null;
+    private String websiteUrl = null;
     private String title = null;
     private String subtitle = null;
     private String description = null;
-    private Duration duration = null;
-    private Long size = null;
-    private Instant creationDate = null;
-    private Instant publicationDate = null;
-    private String contentUrl = null;
+    private String owner = null;
+    private String ownerUrl = null;
+    private String languageCode = null;
     private String imageUrl = null;
-    private String contentType = null;
-    private String websiteUrl = null;
+    private String category = null;
 
     @Override
     public String toString() {
@@ -49,11 +45,19 @@ public class EpisodeData implements Serializable {
     }
 
     @Column(length = 500)
-    public String getGuid() {
-        return this.guid;
+    public String getUrl() {
+        return this.url;
     }
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @Column(length = 500)
+    public String getWebsiteUrl() {
+        return this.websiteUrl;
+    }
+    public void setWebsiteUrl(String websiteUrl) {
+        this.websiteUrl = websiteUrl;
     }
 
     @Column(length = 16000)
@@ -80,40 +84,28 @@ public class EpisodeData implements Serializable {
         this.description = description;
     }
 
-    public Duration getDuration() {
-        return this.duration;
+    @Column(length = 500)
+    public String getOwner() {
+        return this.owner;
     }
-    public void setDuration(Duration duration) {
-        this.duration = duration;
-    }
-
-    public Long getSize() {
-        return this.size;
-    }
-    public void setSize(Long size) {
-        this.size = size;
-    }
-
-    public Instant getCreationDate() {
-        return this.creationDate;
-    }
-    public void setCreationDate(Instant creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Instant getPublicationDate() {
-        return this.publicationDate;
-    }
-    public void setPublicationDate(Instant publicationDate) {
-        this.publicationDate = publicationDate;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     @Column(length = 500)
-    public String getContentUrl() {
-        return this.contentUrl;
+    public String getOwnerUrl() {
+        return this.ownerUrl;
     }
-    public void setContentUrl(String contentUrl) {
-        this.contentUrl = contentUrl;
+    public void setOwnerUrl(String ownerUrl) {
+        this.ownerUrl = ownerUrl;
+    }
+
+    @Column(length = 10)
+    public String getLanguageCode() {
+        return this.languageCode;
+    }
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
     }
 
     @Column(length = 500)
@@ -124,18 +116,12 @@ public class EpisodeData implements Serializable {
         this.imageUrl = imageUrl;
     }
 
-    public String getContentType() {
-        return this.contentType;
+    @Column(length = 500)
+    public String getCategory() {
+        return this.category;
     }
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public String getWebsiteUrl() {
-        return this.websiteUrl;
-    }
-    public void setWebsiteUrl(String websiteUrl) {
-        this.websiteUrl = websiteUrl;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 }
