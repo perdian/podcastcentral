@@ -1,6 +1,5 @@
 package de.perdian.apps.podcentral.database.model;
 
-import de.perdian.apps.podcentral.model.FeedInputOptions;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
@@ -12,11 +11,10 @@ public class ResetDatabaseExample {
 
         FeedInputLoader feedInputLoader = new FeedInputLoader();
 
-        FeedInputOptions feedInputOptions = new FeedInputOptions();
         Preferences preferences = PreferencesFactory.createPreferences();
         try (DatabaseBackedLibrary library = new DatabaseBackedLibraryBuilder().buildLibrary(StorageFactory.createStorage(), preferences)) {
-            library.updateFeedFromInput(feedInputLoader.loadFeedInputFromUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss"), feedInputOptions);
-            library.updateFeedFromInput(feedInputLoader.loadFeedInputFromUrl("http://omegataupodcast.net/category/podcast/feed"), feedInputOptions);
+            library.addFeed(feedInputLoader.loadFeedInputFromUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss"));
+            library.addFeed(feedInputLoader.loadFeedInputFromUrl("http://omegataupodcast.net/category/podcast/feed"));
         } catch (Exception e) {
             e.printStackTrace();
         }

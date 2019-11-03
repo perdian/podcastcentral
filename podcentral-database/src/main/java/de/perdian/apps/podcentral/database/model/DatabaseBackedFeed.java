@@ -16,17 +16,28 @@
 package de.perdian.apps.podcentral.database.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.persistence.criteria.CriteriaQuery;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
 import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.model.EpisodeData;
 import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.model.Feed;
+import de.perdian.apps.podcentral.model.FeedData;
+import de.perdian.apps.podcentral.model.FeedInput;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -37,6 +48,7 @@ import javafx.collections.ObservableList;
 class DatabaseBackedFeed implements Feed {
 
     private FeedEntity entity = null;
+    private SessionFactory sessionFactory = null;
     private StringProperty url = null;
     private StringProperty websiteUrl = null;
     private StringProperty title = null;
@@ -51,8 +63,9 @@ class DatabaseBackedFeed implements Feed {
     private ObservableList<Object> processors = null;
     private ObservableBooleanValue busy = null;
 
-    DatabaseBackedFeed(FeedEntity feedEntity, SessionFactory sessionFactory) {
+    DatabaseBackedFeed(FeedEntity feedEntity, List<EpisodeEntity> episodeEntities, SessionFactory sessionFactory) {
         this.setEntity(feedEntity);
+        this.setSessionFactory(sessionFactory);
         this.setCategory(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getCategory(), (e, v) -> e.getData().setCategory(v), SimpleStringProperty::new, sessionFactory));
         this.setDescription(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v), SimpleStringProperty::new, sessionFactory));
         this.setImageUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v), SimpleStringProperty::new, sessionFactory));
@@ -63,43 +76,72 @@ class DatabaseBackedFeed implements Feed {
         this.setTitle(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
-        this.setEpisodes(FXCollections.observableArrayList());
+        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(episodeEntity, sessionFactory)).collect(Collectors.toList())));
 
         ObservableList<Object> processorsList = FXCollections.observableArrayList();
         this.setProcessors(processorsList);
         this.setBusy(Bindings.isNotEmpty(processorsList));
     }
 
-    void updateFeed(FeedEntity feedEntity) {
-        this.getCategory().setValue(feedEntity.getData().getCategory());
-        this.getDescription().setValue(feedEntity.getData().getDescription());
-        this.getImageUrl().setValue(feedEntity.getData().getImageUrl());
-        this.getLanguageCode().setValue(feedEntity.getData().getLanguageCode());
-        this.getOwner().setValue(feedEntity.getData().getOwner());
-        this.getOwnerUrl().setValue(feedEntity.getData().getOwnerUrl());
-        this.getSubtitle().setValue(feedEntity.getData().getSubtitle());
-        this.getTitle().setValue(feedEntity.getData().getTitle());
-        this.getUrl().setValue(feedEntity.getData().getUrl());
-        this.getWebsiteUrl().setValue(feedEntity.getData().getWebsiteUrl());
+    void updateData(FeedData feedData) {
+        this.getCategory().setValue(feedData.getCategory());
+        this.getDescription().setValue(feedData.getDescription());
+        this.getImageUrl().setValue(feedData.getImageUrl());
+        this.getLanguageCode().setValue(feedData.getLanguageCode());
+        this.getOwner().setValue(feedData.getOwner());
+        this.getOwnerUrl().setValue(feedData.getOwnerUrl());
+        this.getSubtitle().setValue(feedData.getSubtitle());
+        this.getTitle().setValue(feedData.getTitle());
+        this.getUrl().setValue(feedData.getUrl());
+        this.getWebsiteUrl().setValue(feedData.getWebsiteUrl());
     }
 
-    public void updateEpisodes(List<DatabaseBackedEpisode> newEpisodes) {
+    @Override
+    public synchronized void refresh(FeedInput feedInput, RefreshOption... refreshOptions) {
+        Set<RefreshOption> refreshOptionsSet = Set.of(refreshOptions);
+        if (refreshOptionsSet.contains(RefreshOption.OVERWRITE_CHANGED_VALUES)) {
+            this.updateData(feedInput.getData());
+        }
+        try (Session session = this.getSessionFactory().openSession()) {
 
-        List<Episode> consolidatedEpisodes = new ArrayList<>();
-        for (DatabaseBackedEpisode newEpisode : newEpisodes) {
-            if (!EpisodeDownloadState.DELETED.equals(newEpisode.getDownload().getState().getValue()) && !consolidatedEpisodes.contains(newEpisode)) {
-                consolidatedEpisodes.add(newEpisode);
+            CriteriaQuery<EpisodeEntity> episodeEntityQuery = session.getCriteriaBuilder().createQuery(EpisodeEntity.class);
+            episodeEntityQuery.where(session.getCriteriaBuilder().equal(episodeEntityQuery.from(EpisodeEntity.class).get("feed"), this.getEntity()));
+            List<EpisodeEntity> episodeEntities = session.createQuery(episodeEntityQuery).list();
+            Map<String, EpisodeEntity> episodeEntitiesByGuid = new HashMap<>(episodeEntities.stream().collect(Collectors.toMap(episodeEntity -> episodeEntity.getData().getGuid(), Function.identity())));
+            Map<String, DatabaseBackedEpisode> episodesByGuid = this.getEpisodes().stream().map(episode -> (DatabaseBackedEpisode)episode).collect(Collectors.toMap(episode -> episode.getGuid().getValue(), Function.identity()));
+
+            List<DatabaseBackedEpisode> newEpisodes = new ArrayList<>();
+            for (EpisodeData episodeData : feedInput.getEpisodes()) {
+                DatabaseBackedEpisode episode = episodesByGuid.get(episodeData.getGuid());
+                EpisodeEntity episodeEntityFromDatabase = episodeEntitiesByGuid.remove(episodeData.getGuid());
+                if (episode != null && refreshOptionsSet.contains(RefreshOption.OVERWRITE_CHANGED_VALUES)) {
+                    episode.updateData(episodeData);
+                } else if (episode == null) {
+                    if (episodeEntityFromDatabase != null && refreshOptionsSet.contains(RefreshOption.RESTORE_DELETED_EPISODES)) {
+                        episodeEntityFromDatabase.setDownloadState(EpisodeDownloadState.NEW);
+                        session.update(episodeEntityFromDatabase);
+                        newEpisodes.add(new DatabaseBackedEpisode(episodeEntityFromDatabase, this.getSessionFactory()));
+                    } else if (episodeEntityFromDatabase == null) {
+                        episodeEntityFromDatabase = new EpisodeEntity();
+                        episodeEntityFromDatabase.setFeed(this.getEntity());
+                        episodeEntityFromDatabase.setData(episodeData);
+                        session.update(episodeEntityFromDatabase);
+                        newEpisodes.add(new DatabaseBackedEpisode(episodeEntityFromDatabase, this.getSessionFactory()));
+                    }
+                }
             }
-        }
+            if (!newEpisodes.isEmpty()) {
+                this.getEpisodes().addAll(newEpisodes);
+                FXCollections.sort(this.getEpisodes(), new Episode.PublishedDateComparator().reversed());
+            }
 
-        List<Episode> consolidatedEpisodesToAdd = consolidatedEpisodes.stream().filter(episode -> !this.getEpisodes().contains(episode)).collect(Collectors.toList());
-        List<Episode> consolidatedEpisodesToRemove = this.getEpisodes().stream().filter(episode -> !consolidatedEpisodes.contains(episode)).collect(Collectors.toList());
-        this.getEpisodes().removeAll(consolidatedEpisodesToRemove);
-        this.getEpisodes().addAll(consolidatedEpisodesToAdd);
-        if (!consolidatedEpisodesToAdd.isEmpty() || !consolidatedEpisodesToRemove.isEmpty()) {
-            this.getEpisodes().sort(new Episode.PublishedDateComparator().reversed());
-        }
+            // If we have episodes that are marked as deleted and are no longer contained in the feed the we delete
+            // them to save memory
+            episodeEntitiesByGuid.values().stream()
+                .filter(episodeEntity -> EpisodeDownloadState.DELETED.equals(episodeEntity.getDownloadState()))
+                .forEach(episodeEntity -> session.delete(episodeEntity));
 
+        }
     }
 
     @Override
@@ -107,11 +149,18 @@ class DatabaseBackedFeed implements Feed {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    FeedEntity getEntity() {
+    private FeedEntity getEntity() {
         return this.entity;
     }
     private void setEntity(FeedEntity entity) {
         this.entity = entity;
+    }
+
+    private SessionFactory getSessionFactory() {
+        return this.sessionFactory;
+    }
+    private void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     @Override

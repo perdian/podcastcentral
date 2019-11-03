@@ -15,57 +15,99 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Feed;
-import de.perdian.apps.podcentral.model.FeedInputOptions;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.modules.feeds.FeedDeleteEventHandler;
 import de.perdian.apps.podcentral.ui.modules.feeds.FeedRefreshEventHandler;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
 class LibraryTreeTableContextMenu extends ContextMenu {
 
-    LibraryTreeTableContextMenu(List<Feed> selectedFeeds, Map<Feed, List<Episode>> selectedEpisodes, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
+    private LibraryTreeTableView libraryTreeTableView = null;
+    private ObservableList<Feed> selectedFeeds = FXCollections.observableArrayList();
+    private ObservableMap<Feed, List<Episode>> selectedEpisodes = FXCollections.observableHashMap();
+
+    public LibraryTreeTableContextMenu(LibraryTreeTableView libraryTreeTableView, JobScheduler jobScheduler, Library library, Localization localization) {
 
         MenuItem refreshMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        if (selectedFeeds.isEmpty()) {
-            refreshMenuItem.setDisable(true);
-        } else {
-            refreshMenuItem.setOnAction(new FeedRefreshEventHandler(() -> selectedFeeds, clearSelectionCallback, jobScheduler, library, localization));
-        }
+        refreshMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
+        refreshMenuItem.setOnAction(new FeedRefreshEventHandler(this::getSelectedFeeds, Set.of(), () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, localization));
         this.getItems().add(refreshMenuItem);
+
         MenuItem refreshRestoreEpisodesMenuItem = new MenuItem(localization.refreshRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        if (selectedFeeds.isEmpty()) {
-            refreshRestoreEpisodesMenuItem.setDisable(true);
-        } else {
-            FeedInputOptions feedInputOptions = new FeedInputOptions();
-            feedInputOptions.setResetDeletedEpisodes(true);
-            FeedRefreshEventHandler eventHandler = new FeedRefreshEventHandler(() -> selectedFeeds, clearSelectionCallback, jobScheduler, library, localization);
-            eventHandler.setFeedInputOptions(feedInputOptions);
-            refreshRestoreEpisodesMenuItem.setOnAction(eventHandler);
-        }
+        refreshRestoreEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
+        refreshRestoreEpisodesMenuItem.setOnAction(new FeedRefreshEventHandler(this::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, localization));
         this.getItems().add(refreshRestoreEpisodesMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());
 
         MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.REMOVE));
-        if (selectedFeeds.isEmpty() && selectedEpisodes.isEmpty()) {
-            deleteMenuItem.setDisable(true);
-        } else {
-            deleteMenuItem.setOnAction(new FeedDeleteEventHandler(selectedFeeds, selectedEpisodes, clearSelectionCallback, jobScheduler, library, localization));
-        }
+        deleteMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()).and(Bindings.isEmpty(this.getSelectedEpisodes())));
+        deleteMenuItem.setOnAction(new FeedDeleteEventHandler(this::getSelectedFeeds, this::getSelectedEpisodes, () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, library, localization));
         this.getItems().add(deleteMenuItem);
 
+        this.setLibraryTreeTableView(libraryTreeTableView);
 
+    }
+
+    @Override
+    public void show(Node anchor, double screenX, double screenY) {
+        this.collectSelectedFeeds();
+        this.collectSelectedEpisodes();
+        super.show(anchor, screenX, screenY);
+    }
+
+    private void collectSelectedFeeds() {
+        this.getSelectedFeeds().setAll(this.getLibraryTreeTableView().getSelectionModel().getSelectedItems().stream().filter(item -> item.getValue() instanceof LibraryTreeTableValue.FeedTreeValue).map(item -> ((LibraryTreeTableValue.FeedTreeValue)item.getValue()).getFeed()).collect(Collectors.toList()));
+    }
+
+    private void collectSelectedEpisodes() {
+        Map<Feed, List<Episode>> episodes = new HashMap<>();
+        this.getLibraryTreeTableView().getSelectionModel().getSelectedItems().stream()
+            .filter(item -> item.getValue() instanceof LibraryTreeTableValue.EpisodeTreeValue)
+            .map(item -> (LibraryTreeTableValue.EpisodeTreeValue)item.getValue())
+            .forEach(item -> episodes.compute(item.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(item.getEpisode()));
+        this.getSelectedEpisodes().putAll(episodes);
+    }
+
+    private LibraryTreeTableView getLibraryTreeTableView() {
+        return this.libraryTreeTableView;
+    }
+    private void setLibraryTreeTableView(LibraryTreeTableView libraryTreeTableView) {
+        this.libraryTreeTableView = libraryTreeTableView;
+    }
+
+    ObservableList<Feed> getSelectedFeeds() {
+        return this.selectedFeeds;
+    }
+    void setSelectedFeeds(ObservableList<Feed> selectedFeeds) {
+        this.selectedFeeds = selectedFeeds;
+    }
+
+    ObservableMap<Feed, List<Episode>> getSelectedEpisodes() {
+        return this.selectedEpisodes;
+    }
+    void setSelectedEpisodes(ObservableMap<Feed, List<Episode>> selectedEpisodes) {
+        this.selectedEpisodes = selectedEpisodes;
     }
 
 }

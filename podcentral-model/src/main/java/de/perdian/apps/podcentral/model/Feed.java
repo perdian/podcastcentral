@@ -35,4 +35,11 @@ public interface Feed {
     ObservableList<Object> getProcessors();
     ObservableBooleanValue getBusy();
 
+    void refresh(FeedInput feedInput, RefreshOption... refreshOptions);
+
+    public enum RefreshOption {
+        RESTORE_DELETED_EPISODES,
+        OVERWRITE_CHANGED_VALUES;
+    }
+
 }

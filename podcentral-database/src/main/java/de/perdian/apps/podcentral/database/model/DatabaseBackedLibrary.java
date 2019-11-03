@@ -16,18 +16,16 @@
 package de.perdian.apps.podcentral.database.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import javax.persistence.criteria.CriteriaQuery;
-
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +33,8 @@ import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeData;
-import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedInput;
-import de.perdian.apps.podcentral.model.FeedInputOptions;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.storage.Storage;
 import javafx.collections.FXCollections;
@@ -50,16 +46,15 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(DatabaseBackedLibrary.class);
 
     private SessionFactory sessionFactory = null;
+    private Map<String, DatabaseBackedFeed> feedsByFeedUrl = null;
     private ObservableList<Feed> feeds = null;
-    private Map<FeedEntity, DatabaseBackedFeed> feedsByEntity = null;
-    private Map<EpisodeEntity, DatabaseBackedEpisode> episodesByEntity = null;
 
     DatabaseBackedLibrary(SessionFactory sessionFactory, Storage storage) {
         this.setSessionFactory(sessionFactory);
+        this.setFeedsByFeedUrl(new HashMap<>());
         this.setFeeds(FXCollections.observableArrayList());
-        this.setFeedsByEntity(new HashMap<>());
-        this.setEpisodesByEntity(new HashMap<>());
         this.getFeeds().addListener(this::onFeedListChange);
+        this.loadInitialFeeds();
     }
 
     @Override
@@ -73,149 +68,88 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
         }
     }
 
-    @Override
-    public Feed updateFeedFromInput(FeedInput feedInput, FeedInputOptions feedInputOptions) {
+    private void loadInitialFeeds() {
+        log.info("Loading initial feeds from database");
         try (Session session = this.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
 
-            CriteriaQuery<FeedEntity> feedQuery = session.getCriteriaBuilder().createQuery(FeedEntity.class);
-            feedQuery.where(session.getCriteriaBuilder().equal(feedQuery.from(FeedEntity.class).get("data").get("url"), feedInput.getData().getUrl()));
-            FeedEntity feedEntity = session.createQuery(feedQuery).uniqueResultOptional().orElse(null);
-            if (feedEntity == null) {
-                feedEntity = new FeedEntity();
+            List<EpisodeEntity> episodeEntities = session.createQuery("from EpisodeEntity order by publicationDate desc").list();
+            Map<FeedEntity, List<EpisodeEntity>> episodeEntitiesByFeed = new LinkedHashMap<>();
+            for (EpisodeEntity episodeEntity : episodeEntities) {
+                episodeEntitiesByFeed.compute(episodeEntity.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episodeEntity);
+            }
+
+            List<FeedEntity> feedEntities = session.createQuery("from FeedEntity order by data.title asc").list();
+            for (FeedEntity feedEntity : feedEntities) {
+                log.debug("Loading initial feed from database: {}", ToStringBuilder.reflectionToString(feedEntity, ToStringStyle.NO_CLASS_NAME_STYLE));
+                DatabaseBackedFeed feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntitiesByFeed.get(feedEntity), this.getSessionFactory());
+                this.getFeeds().add(feedImpl);
+                this.getFeedsByFeedUrl().put(feedImpl.getUrl().getValue(), feedImpl);
+            }
+            log.info("Loaded {} initial feeds from database", feedEntities.size());
+
+        }
+    }
+
+    @Override
+    public Feed addFeed(FeedInput feedInput) {
+        DatabaseBackedFeed feedImpl = this.getFeedsByFeedUrl().get(feedInput.getData().getUrl());
+        if (feedImpl != null) {
+            feedImpl.refresh(feedInput);
+        } else {
+            try (Session session = this.getSessionFactory().openSession()) {
+                FeedEntity feedEntity = new FeedEntity();
                 feedEntity.setData(feedInput.getData());
                 session.save(feedEntity);
-            }
-
-            CriteriaQuery<EpisodeEntity> episodeQuery = session.getCriteriaBuilder().createQuery(EpisodeEntity.class);
-            episodeQuery.where(session.getCriteriaBuilder().equal(episodeQuery.from(EpisodeEntity.class).get("feed"), feedEntity));
-            List<EpisodeEntity> episodes = session.createQuery(episodeQuery).list();
-            Map<String, EpisodeEntity> episodesByGuid = episodes.stream().collect(Collectors.toMap(e -> e.getData().getGuid(), Function.identity()));
-            List<EpisodeEntity> remainingEpisodes = new ArrayList<>(episodes);
-            List<EpisodeEntity> consolidatedEpisodes = new ArrayList<>(episodes);
-            for (EpisodeData episodeData : feedInput.getEpisodes()) {
-                EpisodeEntity episodeEntity = episodesByGuid.get(episodeData.getGuid());
-                if (episodeEntity == null) {
-                    episodeEntity = new EpisodeEntity();
+                List<EpisodeEntity> episodeEntities = new ArrayList<>();
+                for (EpisodeData episodeData : feedInput.getEpisodes()) {
+                    EpisodeEntity episodeEntity = new EpisodeEntity();
                     episodeEntity.setFeed(feedEntity);
                     episodeEntity.setData(episodeData);
-                    consolidatedEpisodes.add(episodeEntity);
                     session.save(episodeEntity);
+                    episodeEntities.add(episodeEntity);
                 }
-                if (feedInputOptions.isResetDeletedEpisodes() && EpisodeDownloadState.DELETED.equals(episodeEntity.getDownloadState())) {
-                    episodeEntity.setDownloadState(EpisodeDownloadState.NEW);
-                    session.update(episodeEntity);
-                }
-                if (feedInputOptions.isResetLocalValues()) {
-                    episodeEntity.setData(episodeData);
-                    session.update(episodeEntity);
-                }
-                remainingEpisodes.remove(episodeEntity);
-            }
-
-            // If we have episodes that are marked as deleted and are no longer contained in the feed the we delete
-            // them to save memory
-            remainingEpisodes.stream()
-                .filter(episodeEntity -> EpisodeDownloadState.DELETED.equals(episodeEntity.getDownloadState()))
-                .forEach(episodeEntity -> session.delete(episodeEntity));
-
-            DatabaseBackedFeed feedImpl = this.updateFeedFromDatabase(feedEntity, consolidatedEpisodes, session);
-            transaction.commit();
-            return feedImpl;
-
-        }
-    }
-
-    DatabaseBackedFeed updateFeedFromDatabase(FeedEntity feedEntity, List<EpisodeEntity> episodeEntities, Session session) {
-        synchronized (feedEntity) {
-            DatabaseBackedFeed feedImpl = this.getFeedsByEntity().get(feedEntity);
-            if (feedImpl == null) {
-                feedImpl = this.createFeed(feedEntity);
-                this.getFeedsByEntity().put(feedEntity, feedImpl);
+                feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntities, this.getSessionFactory());
+                this.getFeedsByFeedUrl().put(feedInput.getData().getUrl(), feedImpl);
                 this.getFeeds().add(feedImpl);
-            } else {
-                feedImpl.updateFeed(feedEntity);
+                FXCollections.sort(this.getFeeds(), Comparator.comparing(feed -> feed.getTitle().getValue()));
             }
-            feedImpl.updateEpisodes(this.updateEpisodes(episodeEntities));
-            return feedImpl;
         }
-    }
-
-    private DatabaseBackedFeed createFeed(FeedEntity feedEntity) {
-        DatabaseBackedFeed feedImpl = new DatabaseBackedFeed(feedEntity, this.getSessionFactory());
-        feedImpl.getEpisodes().addListener(this::onEpisodeListChange);
         return feedImpl;
     }
 
-    private List<DatabaseBackedEpisode> updateEpisodes(Collection<EpisodeEntity> episodeEntities) {
-        return episodeEntities.stream()
-            .filter(episode -> !EpisodeDownloadState.DELETED.equals(episode.getDownloadState()))
-            .map(this::updateEpisode)
-            .collect(Collectors.toList());
-    }
-
-    private DatabaseBackedEpisode updateEpisode(EpisodeEntity episodeEntity) {
-        DatabaseBackedEpisode episodeImpl = this.getEpisodesByEntity().get(episodeEntity);
-        if (episodeImpl == null) {
-            episodeImpl = this.createEpisode(episodeEntity);
-            this.getEpisodesByEntity().put(episodeEntity, episodeImpl);
-        } else {
-            episodeImpl.updateEpisode(episodeEntity);
-        }
-        return episodeImpl;
-    }
-
-    private DatabaseBackedEpisode createEpisode(EpisodeEntity episodeEntity) {
-        return new DatabaseBackedEpisode(episodeEntity, this.getSessionFactory());
-    }
-
-    private void deleteEpisodes(Collection<? extends Episode> episodes) {
-        try (Session session = this.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            for (Episode episode : episodes) {
-                DatabaseBackedEpisode episodeImpl = this.getEpisodesByEntity().remove(((DatabaseBackedEpisode)episode).getEntity());
-                if (episodeImpl != null) {
-                    log.debug("Deleting episode '{}' from feed '{}'", episodeImpl.getEntity(), episodeImpl.getEntity().getFeed());
-                    episodeImpl.getEntity().setDownloadState(EpisodeDownloadState.DELETED);
-                    this.deleteEpisodeFromStorage(episodeImpl);
-                    session.update(episodeImpl.getEntity());
-                }
-            }
-            transaction.commit();
+    private void onFeedListChange(ListChangeListener.Change<? extends Feed> change) {
+        while (change.next()) {
+            change.getAddedSubList().forEach(feed -> feed.getEpisodes().addListener(this::onFeedEpisodesListChange));
+            change.getRemoved().forEach(feed -> this.onFeedDelete((DatabaseBackedFeed)feed));
         }
     }
 
-    private void deleteEpisodeFromStorage(DatabaseBackedEpisode episode) {
+    private void onFeedEpisodesListChange(ListChangeListener.Change<? extends Episode> change) {
+        while (change.next()) {
+            change.getRemoved().forEach(episode -> this.onFeedEpisodeDelete((DatabaseBackedEpisode)episode));
+        }
+    }
+
+    private void onFeedDelete(DatabaseBackedFeed feed) {
+        log.error("Feed Delete not implemented yet!");
+    }
+
+    private void onFeedEpisodeDelete(DatabaseBackedEpisode episode) {
         log.error("Episode Delete not implemented completely yet! (Connect to Storage)");
     }
 
-    private void onFeedListChange(ListChangeListener.Change<? extends Feed> change) {
-        List<Feed> removedFeeds = new ArrayList<>();
-        while (change.next()) {
-            removedFeeds.addAll(change.getRemoved());
-        }
-        if (!removedFeeds.isEmpty()) {
-            log.info("Processing {} removed feeds", removedFeeds.size());
-            log.error("Feed List Change not implemented yet!");
-        }
-    }
-
-    private void onEpisodeListChange(ListChangeListener.Change<? extends Episode> change) {
-        List<Episode> removedEpisodes = new ArrayList<>();
-        while (change.next()) {
-            removedEpisodes.addAll(change.getRemoved());
-        }
-        if (!removedEpisodes.isEmpty()) {
-            log.info("Processing {} removed episodes", removedEpisodes.size());
-            this.deleteEpisodes(removedEpisodes);
-        }
-    }
-
-    SessionFactory getSessionFactory() {
+    private SessionFactory getSessionFactory() {
         return this.sessionFactory;
     }
     private void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    private Map<String, DatabaseBackedFeed> getFeedsByFeedUrl() {
+        return this.feedsByFeedUrl;
+    }
+    private void setFeedsByFeedUrl(Map<String, DatabaseBackedFeed> feedsByFeedUrl) {
+        this.feedsByFeedUrl = feedsByFeedUrl;
     }
 
     @Override
@@ -224,20 +158,6 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     }
     private void setFeeds(ObservableList<Feed> feeds) {
         this.feeds = feeds;
-    }
-
-    private Map<FeedEntity, DatabaseBackedFeed> getFeedsByEntity() {
-        return this.feedsByEntity;
-    }
-    private void setFeedsByEntity(Map<FeedEntity, DatabaseBackedFeed> feedsByEntity) {
-        this.feedsByEntity = feedsByEntity;
-    }
-
-    private Map<EpisodeEntity, DatabaseBackedEpisode> getEpisodesByEntity() {
-        return this.episodesByEntity;
-    }
-    private void setEpisodesByEntity(Map<EpisodeEntity, DatabaseBackedEpisode> episodesByEntity) {
-        this.episodesByEntity = episodesByEntity;
     }
 
 }

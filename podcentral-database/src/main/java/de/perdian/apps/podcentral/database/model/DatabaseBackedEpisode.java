@@ -24,6 +24,7 @@ import org.hibernate.SessionFactory;
 
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.model.EpisodeData;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -32,7 +33,7 @@ import javafx.beans.property.StringProperty;
 class DatabaseBackedEpisode implements Episode {
 
     private EpisodeEntity entity = null;
-    private DatabaseBackedEpisodeDownload download = null;
+    private StringProperty guid = null;
     private StringProperty title = null;
     private StringProperty subtitle = null;
     private StringProperty description = null;
@@ -44,6 +45,7 @@ class DatabaseBackedEpisode implements Episode {
     private StringProperty contentType = null;
     private StringProperty websiteUrl = null;
     private StringProperty imageUrl = null;
+    private DatabaseBackedEpisodeDownload download = null;
 
     public DatabaseBackedEpisode(EpisodeEntity episodeEntity, SessionFactory sessionFactory) {
         this.setEntity(episodeEntity);
@@ -52,6 +54,7 @@ class DatabaseBackedEpisode implements Episode {
         this.setCreationDate(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getCreationDate(), (e, v) -> e.getData().setCreationDate(v), SimpleObjectProperty::new, sessionFactory));
         this.setDescription(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v), SimpleStringProperty::new, sessionFactory));
         this.setDuration(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getDuration(), (e, v) -> e.getData().setDuration(v), SimpleObjectProperty::new, sessionFactory));
+        this.setGuid(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getGuid(), (e, v) -> e.getData().setGuid(v), SimpleStringProperty::new, sessionFactory));
         this.setImageUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setPublicationDate(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getPublicationDate(), (e, v) -> e.getData().setPublicationDate(v), SimpleObjectProperty::new, sessionFactory));
         this.setSize(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getSize(), (e, v) -> e.getData().setSize(v), SimpleObjectProperty::new, sessionFactory));
@@ -61,19 +64,19 @@ class DatabaseBackedEpisode implements Episode {
         this.setDownload(new DatabaseBackedEpisodeDownload(episodeEntity, sessionFactory));
     }
 
-    void updateEpisode(EpisodeEntity episodeEntity) {
-        this.getContentType().setValue(episodeEntity.getData().getContentType());
-        this.getContentUrl().setValue(episodeEntity.getData().getContentUrl());
-        this.getCreationDate().setValue(episodeEntity.getData().getCreationDate());
-        this.getDescription().setValue(episodeEntity.getData().getDescription());
-        this.getDuration().setValue(episodeEntity.getData().getDuration());
-        this.getImageUrl().setValue(episodeEntity.getData().getImageUrl());
-        this.getPublicationDate().setValue(episodeEntity.getData().getPublicationDate());
-        this.getSize().setValue(episodeEntity.getData().getSize());
-        this.getSubtitle().setValue(episodeEntity.getData().getSubtitle());
-        this.getTitle().setValue(episodeEntity.getData().getTitle());
-        this.getWebsiteUrl().setValue(episodeEntity.getData().getWebsiteUrl());
-        this.getDownload().updateEpisode(episodeEntity);
+    void updateData(EpisodeData episodeData) {
+        this.getContentType().setValue(episodeData.getContentType());
+        this.getContentUrl().setValue(episodeData.getContentUrl());
+        this.getCreationDate().setValue(episodeData.getCreationDate());
+        this.getDescription().setValue(episodeData.getDescription());
+        this.getDuration().setValue(episodeData.getDuration());
+        this.getGuid().setValue(episodeData.getGuid());
+        this.getImageUrl().setValue(episodeData.getImageUrl());
+        this.getPublicationDate().setValue(episodeData.getPublicationDate());
+        this.getSize().setValue(episodeData.getSize());
+        this.getSubtitle().setValue(episodeData.getSubtitle());
+        this.getTitle().setValue(episodeData.getTitle());
+        this.getWebsiteUrl().setValue(episodeData.getWebsiteUrl());
     }
 
     @Override
@@ -89,11 +92,11 @@ class DatabaseBackedEpisode implements Episode {
     }
 
     @Override
-    public DatabaseBackedEpisodeDownload getDownload() {
-        return this.download;
+    public StringProperty getGuid() {
+        return this.guid;
     }
-    private void setDownload(DatabaseBackedEpisodeDownload download) {
-        this.download = download;
+    private void setGuid(StringProperty guid) {
+        this.guid = guid;
     }
 
     @Override
@@ -182,6 +185,14 @@ class DatabaseBackedEpisode implements Episode {
     }
     public void setImageUrl(StringProperty imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public DatabaseBackedEpisodeDownload getDownload() {
+        return this.download;
+    }
+    private void setDownload(DatabaseBackedEpisodeDownload download) {
+        this.download = download;
     }
 
 }

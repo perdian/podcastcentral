@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import de.perdian.apps.podcentral.jobscheduler.Job;
@@ -33,16 +34,16 @@ import javafx.event.EventHandler;
 
 public class FeedDeleteEventHandler implements EventHandler<ActionEvent> {
 
-    private List<Feed> feeds = null;
-    private Map<Feed, List<Episode>> episodes = null;
+    private Supplier<List<Feed>> feedsSupplier = null;
+    private Supplier<Map<Feed, List<Episode>>> episodesSupplier = null;
     private Runnable clearSelectionCallback = null;
     private JobScheduler jobScheduler = null;
     private Library library = null;
     private Localization localization = null;
 
-    public FeedDeleteEventHandler(List<Feed> feeds, Map<Feed, List<Episode>> episodes, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
-        this.setFeeds(feeds);
-        this.setEpisodes(episodes);
+    public FeedDeleteEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<Map<Feed, List<Episode>>> episodesSupplier, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
+        this.setFeedsSupplier(feedsSupplier);
+        this.setEpisodesSupplier(episodesSupplier);
         this.setClearSelectionCallback(clearSelectionCallback);
         this.setLibrary(library);
         this.setJobScheduler(jobScheduler);
@@ -51,33 +52,35 @@ public class FeedDeleteEventHandler implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent event) {
-        if (!this.getFeeds().isEmpty() || !this.getEpisodes().isEmpty()) {
+        List<Feed> feeds = this.getFeedsSupplier().get();
+        Map<Feed, List<Episode>> episodes = this.getEpisodesSupplier().get();
+        if (!feeds.isEmpty() || !episodes.isEmpty()) {
             this.getJobScheduler().submitJob(new Job(this.getLocalization().deletingEntries(), progress -> {
 
-                List<Feed> feeds = new ArrayList<>(this.getFeeds());
-                Map<Feed, List<Episode>> episodes = this.getEpisodes().entrySet().stream().filter(entry -> feeds.contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                List<Feed> feedsToDelete = new ArrayList<>(feeds);
+                Map<Feed, List<Episode>> episodesToDelete = episodes.entrySet().stream().filter(entry -> !feedsToDelete.contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                 Set<Feed> allFeeds = new HashSet<>();
-                allFeeds.addAll(feeds);
-                allFeeds.addAll(episodes.keySet());
+                allFeeds.addAll(feedsToDelete);
+                allFeeds.addAll(episodesToDelete.keySet());
                 allFeeds.forEach(feed -> feed.getProcessors().add(this));
 
-                feeds.forEach(feed -> {
+                feedsToDelete.forEach(feed -> {
                     try {
                         this.getLibrary().getFeeds().remove(feed);
                     } finally {
                         feed.getProcessors().remove(this);
                     }
                 });
-                feeds.forEach(feed -> feed.getProcessors().remove(this));
+                feedsToDelete.forEach(feed -> feed.getProcessors().remove(this));
 
-                episodes.entrySet().forEach(entry -> {
+                episodesToDelete.entrySet().forEach(entry -> {
                     try {
                         entry.getKey().getEpisodes().removeAll(entry.getValue());
                     } finally {
                         entry.getKey().getProcessors().remove(this);
                     }
                 });
-                episodes.keySet().forEach(feed -> feed.getProcessors().remove(this));
+                episodesToDelete.keySet().forEach(feed -> feed.getProcessors().remove(this));
 
                 this.getClearSelectionCallback().run();
 
@@ -85,18 +88,19 @@ public class FeedDeleteEventHandler implements EventHandler<ActionEvent> {
         }
     }
 
-    private List<Feed> getFeeds() {
-        return this.feeds;
+
+    private Supplier<List<Feed>> getFeedsSupplier() {
+        return this.feedsSupplier;
     }
-    private void setFeeds(List<Feed> feeds) {
-        this.feeds = feeds;
+    private void setFeedsSupplier(Supplier<List<Feed>> feedsSupplier) {
+        this.feedsSupplier = feedsSupplier;
     }
 
-    private Map<Feed, List<Episode>> getEpisodes() {
-        return this.episodes;
+    private Supplier<Map<Feed, List<Episode>>> getEpisodesSupplier() {
+        return this.episodesSupplier;
     }
-    private void setEpisodes(Map<Feed, List<Episode>> episodes) {
-        this.episodes = episodes;
+    private void setEpisodesSupplier(Supplier<Map<Feed, List<Episode>>> episodesSupplier) {
+        this.episodesSupplier = episodesSupplier;
     }
 
     private Runnable getClearSelectionCallback() {

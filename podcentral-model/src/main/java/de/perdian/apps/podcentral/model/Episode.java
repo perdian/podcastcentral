@@ -24,6 +24,7 @@ import javafx.beans.property.StringProperty;
 
 public interface Episode {
 
+    StringProperty getGuid();
     StringProperty getTitle();
     StringProperty getSubtitle();
     StringProperty getDescription();

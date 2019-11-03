@@ -18,7 +18,6 @@ package de.perdian.apps.podcentral.ui.modules.feeds.add;
 import java.util.function.Consumer;
 
 import de.perdian.apps.podcentral.model.FeedInput;
-import de.perdian.apps.podcentral.model.FeedInputOptions;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.event.ActionEvent;
@@ -49,8 +48,7 @@ public class AddFeedAction implements EventHandler<ActionEvent> {
 
         Consumer<FeedInput> feedInputConsumer = feedInput -> {
             dialogStage.close();
-            FeedInputOptions feedInputOptions = new FeedInputOptions();
-            new Thread(() -> this.getLibrary().updateFeedFromInput(feedInput, feedInputOptions)).start();
+            new Thread(() -> this.getLibrary().addFeed(feedInput)).start();
         };
 
         DialogPane dialogPane = new DialogPane();

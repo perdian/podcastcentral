@@ -15,25 +15,17 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
-import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.support.treetable.TreeTableHelper;
-import javafx.application.Platform;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeSortMode;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
-import javafx.scene.input.ContextMenuEvent;
 
 public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
@@ -67,7 +59,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
         this.setShowRoot(false);
         this.setRoot(new LibraryTreeRootItem(library));
-        this.setOnContextMenuRequested(event -> this.onTreeTableViewContextMenuEvent(event, jobScheduler, library, localization));
+        this.setContextMenu(new LibraryTreeTableContextMenu(this, jobScheduler, library, localization));
         this.setEditable(true);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
@@ -87,28 +79,6 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 //            return tableRow;
 //        });
 
-    }
-
-    private List<Feed> collectSelectedFeeds() {
-        return this.getSelectionModel().getSelectedItems().stream()
-            .filter(item -> item.getValue() instanceof LibraryTreeTableValue.FeedTreeValue)
-            .map(item -> ((LibraryTreeTableValue.FeedTreeValue)item.getValue()).getFeed())
-            .collect(Collectors.toList());
-    }
-
-    private Map<Feed, List<Episode>> collectSelectedEpisodes() {
-        Map<Feed, List<Episode>> episodes = new HashMap<>();
-        this.getSelectionModel().getSelectedItems().stream()
-            .filter(item -> item.getValue() instanceof LibraryTreeTableValue.EpisodeTreeValue)
-            .map(item -> (LibraryTreeTableValue.EpisodeTreeValue)item.getValue())
-            .forEach(item -> episodes.compute(item.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(item.getEpisode()));
-        return episodes;
-    }
-
-    private void onTreeTableViewContextMenuEvent(ContextMenuEvent contextMenuEvent, JobScheduler jobScheduler, Library library, Localization localization) {
-        Runnable clearSelectionCallback = () -> Platform.runLater(() -> this.getSelectionModel().clearSelection());
-        LibraryTreeTableContextMenu contextMenu = new LibraryTreeTableContextMenu(this.collectSelectedFeeds(), this.collectSelectedEpisodes(), clearSelectionCallback, jobScheduler, library, localization);
-        contextMenu.show(this, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
     }
 
 }

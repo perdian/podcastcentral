@@ -76,6 +76,7 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeTableValue> {
                 }
                 if (change.wasPermutated()) {
                     List<TreeItem<LibraryTreeTableValue>> episodeTreeItems = change.getList().stream().map(episode -> episodeTreeItemsByEpisode.get(episode)).filter(Objects::nonNull).collect(Collectors.toList());
+                    feedTreeItem.getChildren().clear();
                     feedTreeItem.getChildren().setAll(episodeTreeItems);
                 }
             }

@@ -16,15 +16,15 @@
 package de.perdian.apps.podcentral.ui.modules.feeds;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import de.perdian.apps.podcentral.jobscheduler.Job;
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedInput;
-import de.perdian.apps.podcentral.model.FeedInputOptions;
-import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.event.ActionEvent;
@@ -35,15 +35,14 @@ public class FeedRefreshEventHandler implements EventHandler<ActionEvent> {
     private Supplier<List<Feed>> feedListSupplier = null;
     private Runnable clearSelectionCallback = null;
     private JobScheduler jobScheduler = null;
-    private Library library = null;
     private Localization localization = null;
-    private FeedInputOptions feedInputOptions = new FeedInputOptions();
+    private Set<Feed.RefreshOption> feedRefreshOptions = Collections.emptySet();
 
-    public FeedRefreshEventHandler(Supplier<List<Feed>> feedListSupplier, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
+    public FeedRefreshEventHandler(Supplier<List<Feed>> feedListSupplier, Set<Feed.RefreshOption> feedRefreshOptions, Runnable clearSelectionCallback, JobScheduler jobScheduler, Localization localization) {
         this.setFeedListSupplier(feedListSupplier);
+        this.setFeedRefreshOptions(feedRefreshOptions);
         this.setClearSelectionCallback(clearSelectionCallback);
         this.setJobScheduler(jobScheduler);
-        this.setLibrary(library);
         this.setLocalization(localization);
     }
 
@@ -71,7 +70,7 @@ public class FeedRefreshEventHandler implements EventHandler<ActionEvent> {
     private void handleRefreshFeed(Feed feed) throws Exception {
         FeedInputLoader feedInputLoader = new FeedInputLoader();
         FeedInput feedInput = feedInputLoader.loadFeedInputFromUrl(feed.getUrl().getValue());
-        this.getLibrary().updateFeedFromInput(feedInput, this.getFeedInputOptions());
+        feed.refresh(feedInput, this.getFeedRefreshOptions().toArray(Feed.RefreshOption[]::new));
     }
 
     private Supplier<List<Feed>> getFeedListSupplier() {
@@ -95,13 +94,6 @@ public class FeedRefreshEventHandler implements EventHandler<ActionEvent> {
         this.jobScheduler = jobScheduler;
     }
 
-    private Library getLibrary() {
-        return this.library;
-    }
-    private void setLibrary(Library library) {
-        this.library = library;
-    }
-
     private Localization getLocalization() {
         return this.localization;
     }
@@ -109,11 +101,11 @@ public class FeedRefreshEventHandler implements EventHandler<ActionEvent> {
         this.localization = localization;
     }
 
-    public FeedInputOptions getFeedInputOptions() {
-        return this.feedInputOptions;
+    private Set<Feed.RefreshOption> getFeedRefreshOptions() {
+        return this.feedRefreshOptions;
     }
-    public void setFeedInputOptions(FeedInputOptions feedInputOptions) {
-        this.feedInputOptions = feedInputOptions;
+    private void setFeedRefreshOptions(Set<Feed.RefreshOption> feedRefreshOptions) {
+        this.feedRefreshOptions = feedRefreshOptions;
     }
 
 }

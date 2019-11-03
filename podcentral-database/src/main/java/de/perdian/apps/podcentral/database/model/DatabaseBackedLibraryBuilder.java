@@ -16,15 +16,7 @@
 package de.perdian.apps.podcentral.database.model;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -46,9 +38,7 @@ public class DatabaseBackedLibraryBuilder implements LibraryBuilder {
     @Override
     public DatabaseBackedLibrary buildLibrary(Storage storage, Preferences preferences) {
         SessionFactory sessionFactory = this.buildHibernateSessionFactory(preferences);
-        DatabaseBackedLibrary library = new DatabaseBackedLibrary(sessionFactory, storage);
-        this.loadInitialFeeds(sessionFactory, library);
-        return library;
+        return new DatabaseBackedLibrary(sessionFactory, storage);
     }
 
     private SessionFactory buildHibernateSessionFactory(Preferences preferences) {
@@ -86,24 +76,6 @@ public class DatabaseBackedLibraryBuilder implements LibraryBuilder {
         StringBuilder databaseUrl = new StringBuilder();
         databaseUrl.append("jdbc:h2:file:").append(databaseFile.getAbsolutePath());
         return databaseUrl.toString();
-    }
-
-    private void loadInitialFeeds(SessionFactory sessionFactory, DatabaseBackedLibrary targetLibrary) {
-        try (Session session = sessionFactory.openSession()) {
-            log.info("Loading initial feeds from database");
-            List<EpisodeEntity> episodeEntities = session.createQuery("from EpisodeEntity").list();
-            Map<FeedEntity, List<EpisodeEntity>> episodeEntitiesByFeed = new HashMap<>();
-            for (EpisodeEntity episodeEntity : episodeEntities) {
-                episodeEntitiesByFeed.compute(episodeEntity.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episodeEntity);
-            }
-            List<FeedEntity> feedEntities = session.createQuery("from FeedEntity").list();
-            feedEntities.sort(Comparator.comparing(feedEntity -> feedEntity.getData().getTitle()));
-            for (FeedEntity feedEntity : feedEntities) {
-                log.debug("Loading initial feed from database: {}", ToStringBuilder.reflectionToString(feedEntity, ToStringStyle.NO_CLASS_NAME_STYLE));
-                targetLibrary.updateFeedFromDatabase(feedEntity, episodeEntitiesByFeed.get(feedEntity), session);
-            }
-            log.info("Loaded {} initial feeds from database", feedEntities.size());
-        }
     }
 
 }

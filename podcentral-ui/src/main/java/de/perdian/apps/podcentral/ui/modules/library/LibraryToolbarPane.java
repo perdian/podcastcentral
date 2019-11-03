@@ -1,5 +1,7 @@
 package de.perdian.apps.podcentral.ui.modules.library;
 
+import java.util.Set;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
@@ -21,7 +23,7 @@ public class LibraryToolbarPane extends BorderPane {
         ButtonBar.setButtonData(addFeedButton, ButtonData.LEFT);
 
         Button refreshFeedsButton = new Button(localization.refreshFeeds(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        refreshFeedsButton.setOnAction(new FeedRefreshEventHandler(() -> library.getFeeds(), () -> {}, jobScheduler, library, localization));
+        refreshFeedsButton.setOnAction(new FeedRefreshEventHandler(() -> library.getFeeds(), Set.of(), () -> {}, jobScheduler, localization));
         ButtonBar.setButtonData(refreshFeedsButton, ButtonData.LEFT);
 
         ButtonBar buttonBar = new ButtonBar();
