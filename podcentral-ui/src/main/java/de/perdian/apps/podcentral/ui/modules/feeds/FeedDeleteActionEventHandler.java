@@ -32,7 +32,7 @@ import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-public class FeedDeleteEventHandler implements EventHandler<ActionEvent> {
+public class FeedDeleteActionEventHandler implements EventHandler<ActionEvent> {
 
     private Supplier<List<Feed>> feedsSupplier = null;
     private Supplier<Map<Feed, List<Episode>>> episodesSupplier = null;
@@ -41,7 +41,7 @@ public class FeedDeleteEventHandler implements EventHandler<ActionEvent> {
     private Library library = null;
     private Localization localization = null;
 
-    public FeedDeleteEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<Map<Feed, List<Episode>>> episodesSupplier, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
+    public FeedDeleteActionEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<Map<Feed, List<Episode>>> episodesSupplier, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
         this.setFeedsSupplier(feedsSupplier);
         this.setEpisodesSupplier(episodesSupplier);
         this.setClearSelectionCallback(clearSelectionCallback);

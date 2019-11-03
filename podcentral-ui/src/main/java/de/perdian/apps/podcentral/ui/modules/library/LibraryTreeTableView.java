@@ -20,42 +20,67 @@ import java.util.List;
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.support.treetable.TreeTableHelper;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeSortMode;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.ProgressBarTreeTableCell;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 
 public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
     public LibraryTreeTableView(JobScheduler jobScheduler, Library library, Localization localization) {
 
-        TreeTableColumn<LibraryTreeTableValue, String> titleColumn = TreeTableHelper.createColumn(LibraryTreeTableValue::getTitle, localization.title());
+        TreeTableColumn<LibraryTreeTableValue, String> titleColumn = new TreeTableColumn<>(localization.title());
+        titleColumn.setCellValueFactory(cell -> cell.getValue().getValue().getTitle());
         titleColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
         titleColumn.setMinWidth(400);
         titleColumn.setMaxWidth(600);
         titleColumn.setPrefWidth(400);
         titleColumn.setEditable(true);
+        titleColumn.setReorderable(false);
 
-        TreeTableColumn<LibraryTreeTableValue, String> durationColumn = TreeTableHelper.createColumn(LibraryTreeTableValue::getDuration, localization.duration());
+        TreeTableColumn<LibraryTreeTableValue, String> durationColumn = new TreeTableColumn<>(localization.duration());
+        durationColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDuration());
         durationColumn.setMinWidth(80);
         durationColumn.setMaxWidth(80);
         durationColumn.setEditable(false);
         durationColumn.setSortable(false);
+        durationColumn.setReorderable(false);
 
-        TreeTableColumn<LibraryTreeTableValue, String> publicationDateColumn = TreeTableHelper.createColumn(LibraryTreeTableValue::getPublicationDate, localization.date());
+        TreeTableColumn<LibraryTreeTableValue, String> publicationDateColumn = new TreeTableColumn<>(localization.date());
+        publicationDateColumn.setCellValueFactory(cell -> cell.getValue().getValue().getPublicationDate());
         publicationDateColumn.setMinWidth(80);
         publicationDateColumn.setMaxWidth(80);
         publicationDateColumn.setEditable(false);
         publicationDateColumn.setSortable(false);
+        publicationDateColumn.setReorderable(false);
 
-        TreeTableColumn<LibraryTreeTableValue, String> descriptionColumn = TreeTableHelper.createColumn(LibraryTreeTableValue::getDescription, localization.description());
+        TreeTableColumn<LibraryTreeTableValue, Double> storageProgressColumn = new TreeTableColumn<>(localization.storage());
+        storageProgressColumn.setCellValueFactory(cell -> cell.getValue().getValue().getStorageProgress());
+        storageProgressColumn.setCellFactory(cell -> new InternalProgressBarTreeTableCell());
+        storageProgressColumn.setMinWidth(80);
+        storageProgressColumn.setMaxWidth(80);
+        storageProgressColumn.setSortable(false);
+        storageProgressColumn.setReorderable(false);
+
+        TreeTableColumn<LibraryTreeTableValue, String> storageProgressValueColumn = new TreeTableColumn<>();
+        storageProgressValueColumn.setCellValueFactory(cell -> cell.getValue().getValue().getStorageProgressLabel());
+        storageProgressValueColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+        storageProgressValueColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        storageProgressValueColumn.setMinWidth(50);
+        storageProgressValueColumn.setMaxWidth(50);
+        storageProgressValueColumn.setSortable(false);
+        storageProgressValueColumn.setReorderable(false);
+
+        TreeTableColumn<LibraryTreeTableValue, String> descriptionColumn = new TreeTableColumn<>(localization.description());
+        descriptionColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDescription());
         descriptionColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
         descriptionColumn.setMinWidth(400);
         descriptionColumn.setMaxWidth(Double.MAX_VALUE);
         descriptionColumn.setEditable(false);
         descriptionColumn.setSortable(false);
+        descriptionColumn.setReorderable(false);
 
         this.setShowRoot(false);
         this.setRoot(new LibraryTreeRootItem(library));
@@ -63,7 +88,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         this.setEditable(true);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
-        this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, descriptionColumn));
+        this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, storageProgressColumn, storageProgressValueColumn, descriptionColumn));
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 //        treeTableView.setRowFactory(tv -> {
 //            TreeTableRow<LibraryTreeTableValue> tableRow = new TreeTableRow<>();
@@ -78,6 +103,19 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 //            });
 //            return tableRow;
 //        });
+
+    }
+
+    static class InternalProgressBarTreeTableCell extends ProgressBarTreeTableCell<LibraryTreeTableValue> {
+
+        @Override
+        public void updateItem(Double item, boolean empty) {
+            if (item == null) {
+                super.updateItem(item, true);
+            } else {
+                super.updateItem(item, empty);
+            }
+        }
 
     }
 

@@ -15,9 +15,11 @@
  */
 package de.perdian.apps.podcentral.storage;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 
 class StorageFileImpl implements StorageFile {
@@ -32,6 +34,12 @@ class StorageFileImpl implements StorageFile {
 
     StorageFileImpl(StorageDirectory directory, StringProperty fileNameProperty) {
         this.setDirectory(directory);
+        this.setDownloadDate(new SimpleObjectProperty<>());
+        this.setDownloadedBytes(new SimpleObjectProperty<>());
+        this.setDownloadLocation(new SimpleObjectProperty<>());
+        this.setDownloadProgress(new SimpleObjectProperty<>(new SecureRandom().nextDouble()));
+        this.setState(new SimpleObjectProperty<>());
+        this.setTotalBytes(new SimpleObjectProperty<>());
     }
 
     private StorageDirectory getDirectory() {

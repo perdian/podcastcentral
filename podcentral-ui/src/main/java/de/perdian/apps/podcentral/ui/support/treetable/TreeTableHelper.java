@@ -24,11 +24,8 @@ import javafx.scene.control.TreeTableColumn;
 public class TreeTableHelper {
 
     public static <S, T> TreeTableColumn<S, T> createColumn(Function<S, Property<T>> sourcePropertyFunction, String title) {
-        TreeTableColumn<S, T> column = new TreeTableColumn<>();
-        column.setText(title);
-        column.setCellValueFactory(cell -> {
-            return cell.getValue() == null || cell.getValue().getValue() == null ? new SimpleObjectProperty<>() : sourcePropertyFunction.apply(cell.getValue().getValue());
-        });
+        TreeTableColumn<S, T> column = new TreeTableColumn<>(title);
+        column.setCellValueFactory(cell -> cell.getValue() == null || cell.getValue().getValue() == null ? new SimpleObjectProperty<>() : sourcePropertyFunction.apply(cell.getValue().getValue()));
         column.setReorderable(false);
         return column;
     }

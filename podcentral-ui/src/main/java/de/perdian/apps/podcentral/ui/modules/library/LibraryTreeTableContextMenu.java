@@ -29,8 +29,8 @@ import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.modules.feeds.FeedDeleteEventHandler;
-import de.perdian.apps.podcentral.ui.modules.feeds.FeedRefreshEventHandler;
+import de.perdian.apps.podcentral.ui.modules.feeds.FeedDeleteActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.feeds.FeedRefreshActionEventHandler;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,19 +50,19 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
         MenuItem refreshMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
-        refreshMenuItem.setOnAction(new FeedRefreshEventHandler(this::getSelectedFeeds, Set.of(), () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, localization));
+        refreshMenuItem.setOnAction(new FeedRefreshActionEventHandler(this::getSelectedFeeds, Set.of(), () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, localization));
         this.getItems().add(refreshMenuItem);
 
         MenuItem refreshRestoreEpisodesMenuItem = new MenuItem(localization.refreshRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshRestoreEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
-        refreshRestoreEpisodesMenuItem.setOnAction(new FeedRefreshEventHandler(this::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, localization));
+        refreshRestoreEpisodesMenuItem.setOnAction(new FeedRefreshActionEventHandler(this::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, localization));
         this.getItems().add(refreshRestoreEpisodesMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());
 
         MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.REMOVE));
         deleteMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()).and(Bindings.isEmpty(this.getSelectedEpisodes())));
-        deleteMenuItem.setOnAction(new FeedDeleteEventHandler(this::getSelectedFeeds, this::getSelectedEpisodes, () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, library, localization));
+        deleteMenuItem.setOnAction(new FeedDeleteActionEventHandler(this::getSelectedFeeds, this::getSelectedEpisodes, () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, library, localization));
         this.getItems().add(deleteMenuItem);
 
         this.setLibraryTreeTableView(libraryTreeTableView);

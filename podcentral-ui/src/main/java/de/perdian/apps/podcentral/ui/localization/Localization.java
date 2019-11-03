@@ -109,6 +109,10 @@ public interface Localization {
         return "Refreshing feeds";
     }
 
+    default String storage() {
+        return "Storage";
+    }
+
     default String title() {
         return "Title";
     }

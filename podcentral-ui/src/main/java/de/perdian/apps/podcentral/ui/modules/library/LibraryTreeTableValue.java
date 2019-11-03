@@ -15,6 +15,8 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -25,8 +27,11 @@ import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.support.properties.PropertiesHelper;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 interface LibraryTreeTableValue {
 
@@ -107,6 +112,21 @@ interface LibraryTreeTableValue {
             return PropertiesHelper.map(this.getEpisode().getPublicationDate(), date -> dateTimeFormatter.format(date.atZone(ZoneId.systemDefault())), null);
         }
 
+        @Override
+        public Property<Double> getStorageProgress() {
+            ObjectProperty<Double> progressProperty = new SimpleObjectProperty<>(this.getEpisode().getStorageFile().getDownloadProgress().getValue());
+            progressProperty.bind(this.getEpisode().getStorageFile().getDownloadProgress());
+            return progressProperty;
+        }
+
+        @Override
+        public Property<String> getStorageProgressLabel() {
+            NumberFormat numberFormat = new DecimalFormat("0");
+            StringProperty progressLabelProperty = new SimpleStringProperty(numberFormat.format(this.getEpisode().getStorageFile().getDownloadProgress().getValue() * 100d) + " %");
+            this.getEpisode().getStorageFile().getDownloadProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(numberFormat.format(newValue * 100d) + " %"));
+            return progressLabelProperty;
+        }
+
         Feed getFeed() {
             return this.feed;
         }
@@ -132,6 +152,13 @@ interface LibraryTreeTableValue {
     }
 
     default Property<String> getDuration() {
+        return new SimpleStringProperty();
+    }
+
+    default Property<Double> getStorageProgress() {
+        return new SimpleObjectProperty<>(null);
+    }
+    default Property<String> getStorageProgressLabel() {
         return new SimpleStringProperty();
     }
 
