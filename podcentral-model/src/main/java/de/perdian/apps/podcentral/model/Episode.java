@@ -15,13 +15,14 @@
  */
 package de.perdian.apps.podcentral.model;
 
+import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
 
-import de.perdian.apps.podcentral.storage.StorageFile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableObjectValue;
 
 public interface Episode {
 
@@ -30,14 +31,17 @@ public interface Episode {
     StringProperty getSubtitle();
     StringProperty getDescription();
     ObjectProperty<Duration> getDuration();
-    ObjectProperty<Long> getSize();
     ObjectProperty<Instant> getCreationDate();
     ObjectProperty<Instant> getPublicationDate();
     StringProperty getContentUrl();
+    ObjectProperty<Long> getContentSize();
     StringProperty getContentType();
     StringProperty getWebsiteUrl();
     StringProperty getImageUrl();
-    StorageFile getStorageFile();
+    ObjectProperty<File> getStorageFile();
+    ObservableObjectValue<EpisodeStorageState> getStorageState();
+    ObservableObjectValue<Long> getStorageFileSize();
+    ObservableObjectValue<Double> getStorageProgress();
 
     public static class PublishedDateComparator implements Comparator<Episode> {
 

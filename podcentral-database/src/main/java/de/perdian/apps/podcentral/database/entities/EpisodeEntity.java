@@ -17,6 +17,7 @@ package de.perdian.apps.podcentral.database.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,7 +28,7 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import de.perdian.apps.podcentral.model.EpisodeData;
-import de.perdian.apps.podcentral.storage.StorageState;
+import de.perdian.apps.podcentral.model.EpisodeStorageState;
 
 @Entity
 @Table(name = "episode")
@@ -38,7 +39,8 @@ public class EpisodeEntity implements Serializable {
     private Long id = null;
     private FeedEntity feed = null;
     private EpisodeData data = null;
-    private StorageState storageState = StorageState.NEW;
+    private EpisodeStorageState episodeStorageState = EpisodeStorageState.NEW;
+    private String storageFileLocation = null;
     private Boolean deleted = Boolean.FALSE;
 
     @Override
@@ -89,11 +91,19 @@ public class EpisodeEntity implements Serializable {
         this.data = data;
     }
 
-    public StorageState getStorageState() {
-        return this.storageState;
+    public EpisodeStorageState getStorageState() {
+        return this.episodeStorageState;
     }
-    public void setStorageState(StorageState storageState) {
-        this.storageState = storageState;
+    public void setStorageState(EpisodeStorageState episodeStorageState) {
+        this.episodeStorageState = episodeStorageState;
+    }
+
+    @Column(length = 1000)
+    public String getStorageFileLocation() {
+        return this.storageFileLocation;
+    }
+    public void setStorageFileLocation(String storageFileLocation) {
+        this.storageFileLocation = storageFileLocation;
     }
 
     public Boolean getDeleted() {

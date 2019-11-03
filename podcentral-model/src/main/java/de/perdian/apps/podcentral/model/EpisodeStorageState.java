@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.storage;
+package de.perdian.apps.podcentral.model;
 
-import java.time.Instant;
+public enum EpisodeStorageState {
 
-import javafx.beans.value.ObservableObjectValue;
-
-public interface StorageFile {
-
-    ObservableObjectValue<StorageState> getState();
-    ObservableObjectValue<Long> getTotalBytes();
-    ObservableObjectValue<Long> getDownloadedBytes();
-    ObservableObjectValue<String> getDownloadLocation();
-    ObservableObjectValue<Double> getDownloadProgress();
-    ObservableObjectValue<Instant> getDownloadDate();
+    NEW,
+    DOWNLOAD_COMPLETED,
+    DOWNLOAD_CANCELLED,
+    DOWNLOAD_ERRORED;
 
 }

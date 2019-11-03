@@ -48,6 +48,10 @@ public class EpisodeData implements Serializable {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
+    public String computeFileNameExtension() {
+        return ".mp3";
+    }
+
     @Column(length = 500)
     public String getGuid() {
         return this.guid;

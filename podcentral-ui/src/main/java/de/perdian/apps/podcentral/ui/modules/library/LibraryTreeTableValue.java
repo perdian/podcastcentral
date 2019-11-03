@@ -114,16 +114,16 @@ interface LibraryTreeTableValue {
 
         @Override
         public Property<Double> getStorageProgress() {
-            ObjectProperty<Double> progressProperty = new SimpleObjectProperty<>(this.getEpisode().getStorageFile().getDownloadProgress().getValue());
-            progressProperty.bind(this.getEpisode().getStorageFile().getDownloadProgress());
+            ObjectProperty<Double> progressProperty = new SimpleObjectProperty<>(this.getEpisode().getStorageProgress().getValue());
+            progressProperty.bind(this.getEpisode().getStorageProgress());
             return progressProperty;
         }
 
         @Override
         public Property<String> getStorageProgressLabel() {
             NumberFormat numberFormat = new DecimalFormat("0");
-            StringProperty progressLabelProperty = new SimpleStringProperty(numberFormat.format(this.getEpisode().getStorageFile().getDownloadProgress().getValue() * 100d) + " %");
-            this.getEpisode().getStorageFile().getDownloadProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(numberFormat.format(newValue * 100d) + " %"));
+            StringProperty progressLabelProperty = new SimpleStringProperty(numberFormat.format(this.getEpisode().getStorageProgress().getValue() * 100d) + " %");
+            this.getEpisode().getStorageProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(numberFormat.format(newValue * 100d) + " %"));
             return progressLabelProperty;
         }
 

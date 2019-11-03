@@ -15,10 +15,42 @@
  */
 package de.perdian.apps.podcentral.storage;
 
-import javafx.beans.property.StringProperty;
+import java.io.File;
+import java.io.IOException;
 
-public interface Storage {
+public class Storage {
 
-    StorageDirectory resolveDirectory(StringProperty directoryNameProperty);
+    private File rootDirectory = null;
+
+    Storage(File rootDirectory) {
+        this.setRootDirectory(rootDirectory);
+    }
+
+    public File resolveFileRelative(String... locations) {
+        File file = this.getRootDirectory();
+        for (String location : locations) {
+            file = new File(file, StorageHelper.cleanupFileName(location));
+        }
+        try {
+            return file.getCanonicalFile();
+        } catch (IOException e) {
+            return file;
+        }
+    }
+
+    public File resolveFileAbsolute(String location) {
+        try {
+            return new File(location).getCanonicalFile();
+        } catch (IOException e) {
+            return new File(location);
+        }
+    }
+
+    File getRootDirectory() {
+        return this.rootDirectory;
+    }
+    private void setRootDirectory(File rootDirectory) {
+        this.rootDirectory = rootDirectory;
+    }
 
 }

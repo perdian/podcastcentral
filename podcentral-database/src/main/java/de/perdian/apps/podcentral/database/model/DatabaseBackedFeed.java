@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.podcentral.database.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Session;
@@ -36,12 +38,11 @@ import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeData;
+import de.perdian.apps.podcentral.model.EpisodeStorageState;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedData;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.storage.Storage;
-import de.perdian.apps.podcentral.storage.StorageDirectory;
-import de.perdian.apps.podcentral.storage.StorageState;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -66,7 +67,7 @@ class DatabaseBackedFeed implements Feed {
     private ObservableList<Episode> episodes = null;
     private ObservableList<Object> processors = null;
     private ObservableBooleanValue busy = null;
-    private StorageDirectory storageDirectory = null;
+    private Storage storage = null;
 
     DatabaseBackedFeed(FeedEntity feedEntity, List<EpisodeEntity> episodeEntities, SessionFactory sessionFactory, Storage storage) {
         this.setEntity(feedEntity);
@@ -81,10 +82,10 @@ class DatabaseBackedFeed implements Feed {
         this.setTitle(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
-        this.setStorageDirectory(storage.resolveDirectory(this.getTitle()));
-        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(episodeEntity, sessionFactory, this.getStorageDirectory())).collect(Collectors.toList())));
+        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(episodeEntity, sessionFactory, StringUtils.isNotEmpty(episodeEntity.getStorageFileLocation()) ? storage.resolveFileAbsolute(episodeEntity.getStorageFileLocation()) : storage.resolveFileRelative(feedEntity.getData().getTitle(), episodeEntity.getData().getTitle() + episodeEntity.getData().computeFileNameExtension()))).collect(Collectors.toList())));
         this.setProcessors(FXCollections.observableArrayList());
         this.setBusy(Bindings.isNotEmpty(this.getProcessors()));
+        this.setStorage(storage);
     }
 
     void updateData(FeedData feedData) {
@@ -121,17 +122,18 @@ class DatabaseBackedFeed implements Feed {
                 if (episode != null && refreshOptionsSet.contains(RefreshOption.OVERWRITE_CHANGED_VALUES)) {
                     episode.updateData(episodeData);
                 } else if (episode == null) {
+                    File episodeFile = this.getStorage().resolveFileRelative(feedInput.getData().getTitle(), episodeData.getTitle() + episodeData.computeFileNameExtension());
                     if (episodeEntityFromDatabase != null && refreshOptionsSet.contains(RefreshOption.RESTORE_DELETED_EPISODES)) {
                         episodeEntityFromDatabase.setDeleted(Boolean.FALSE);
-                        episodeEntityFromDatabase.setStorageState(StorageState.NEW);
+                        episodeEntityFromDatabase.setStorageState(EpisodeStorageState.NEW);
                         session.update(episodeEntityFromDatabase);
-                        newEpisodes.add(new DatabaseBackedEpisode(episodeEntityFromDatabase, this.getSessionFactory(), this.getStorageDirectory()));
+                        newEpisodes.add(new DatabaseBackedEpisode(episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));
                     } else if (episodeEntityFromDatabase == null) {
                         episodeEntityFromDatabase = new EpisodeEntity();
                         episodeEntityFromDatabase.setFeed(this.getEntity());
                         episodeEntityFromDatabase.setData(episodeData);
                         session.update(episodeEntityFromDatabase);
-                        newEpisodes.add(new DatabaseBackedEpisode(episodeEntityFromDatabase, this.getSessionFactory(), this.getStorageDirectory()));
+                        newEpisodes.add(new DatabaseBackedEpisode(episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));
                     }
                 }
             }
@@ -283,12 +285,11 @@ class DatabaseBackedFeed implements Feed {
         this.busy = busy;
     }
 
-    @Override
-    public StorageDirectory getStorageDirectory() {
-        return this.storageDirectory;
+    private Storage getStorage() {
+        return this.storage;
     }
-    private void setStorageDirectory(StorageDirectory storageDirectory) {
-        this.storageDirectory = storageDirectory;
+    private void setStorage(Storage storage) {
+        this.storage = storage;
     }
 
 }

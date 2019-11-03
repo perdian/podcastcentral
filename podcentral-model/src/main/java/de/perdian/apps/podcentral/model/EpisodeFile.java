@@ -13,30 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.storage;
+package de.perdian.apps.podcentral.model;
 
 import java.io.File;
+import java.time.Instant;
 
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ObservableObjectValue;
 
-class StorageImpl implements Storage {
+public interface EpisodeFile {
 
-    private File rootDirectory = null;
-
-    StorageImpl(File storageDirectory) {
-        this.setRootDirectory(storageDirectory);
-    }
-
-    @Override
-    public StorageDirectory resolveDirectory(StringProperty directoryNameProperty) {
-        return new StorageDirectoryImpl();
-    }
-
-    private File getRootDirectory() {
-        return this.rootDirectory;
-    }
-    private void setRootDirectory(File rootDirectory) {
-        this.rootDirectory = rootDirectory;
-    }
+    ObjectProperty<File> getFile();
+    ObservableObjectValue<EpisodeStorageState> getState();
+    ObservableObjectValue<Long> getTotalBytes();
+    ObservableObjectValue<Long> getDownloadedBytes();
+    ObservableObjectValue<Double> getDownloadProgress();
+    ObservableObjectValue<Instant> getDownloadDate();
 
 }

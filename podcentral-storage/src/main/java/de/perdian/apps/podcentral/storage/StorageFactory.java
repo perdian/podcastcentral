@@ -33,7 +33,7 @@ public class StorageFactory {
             log.info("Creating storage location at directory: {}", downloadsDirectory.getAbsolutePath());
             downloadsDirectory.mkdirs();
         }
-        return new StorageImpl(downloadsDirectory);
+        return new Storage(downloadsDirectory);
     }
 
 }

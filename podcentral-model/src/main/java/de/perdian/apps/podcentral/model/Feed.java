@@ -15,7 +15,6 @@
  */
 package de.perdian.apps.podcentral.model;
 
-import de.perdian.apps.podcentral.storage.StorageDirectory;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
@@ -35,7 +34,6 @@ public interface Feed {
     ObservableList<Episode> getEpisodes();
     ObservableList<Object> getProcessors();
     ObservableBooleanValue getBusy();
-    StorageDirectory getStorageDirectory();
 
     void refresh(FeedInput feedInput, RefreshOption... refreshOptions);
 
