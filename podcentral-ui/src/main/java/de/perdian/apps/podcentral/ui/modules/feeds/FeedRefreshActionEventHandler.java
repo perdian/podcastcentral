@@ -54,7 +54,7 @@ public class FeedRefreshActionEventHandler implements EventHandler<ActionEvent> 
                 feedList.forEach(feed -> feed.getProcessors().add(this));
                 try {
                     progress.updateProgress(0d, null);
-                    for (int i=0; i < feedList.size(); i++) {
+                    for (int i = 0; i < feedList.size(); i++) {
                         progress.updateProgress((double)(i+1) / (double)feedList.size(), null);
                         this.handleRefreshFeed(feedList.get(i));
                         feedList.get(i).getProcessors().remove(this);
