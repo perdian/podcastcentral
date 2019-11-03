@@ -15,8 +15,6 @@
  */
 package de.perdian.apps.podcentral.ui.modules.scheduler;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.perdian.apps.podcentral.jobscheduler.ActiveJob;
 import de.perdian.apps.podcentral.jobscheduler.JobListener;
 import de.perdian.apps.podcentral.jobscheduler.JobProgressListener;
@@ -34,33 +32,26 @@ public class UiSchedulerPane extends GridPane {
 
     private Label jobLabel = null;
     private ProgressBar progressBar = null;
-    private Label progressLabel = null;
     private Localization localization = null;
 
     public UiSchedulerPane(JobScheduler jobScheduler, Localization localization) {
 
-        Label jobLabel = new Label(localization.noActivity());
-        jobLabel.setFont(Font.font(jobLabel.getFont().getFamily(), jobLabel.getFont().getSize() * 0.8));
-        jobLabel.setPrefWidth(200);
-        GridPane.setHgrow(jobLabel, Priority.ALWAYS);
-        this.setJobLabel(jobLabel);
-
-        Label progressLabel = new Label(" ");
-        progressLabel.setFont(Font.font(progressLabel.getFont().getFamily(), progressLabel.getFont().getSize() * 0.8));
-        progressLabel.setPrefWidth(200);
-        GridPane.setHgrow(progressLabel, Priority.ALWAYS);
-        this.setProgressLabel(progressLabel);
-
         ProgressBar progressBar = new ProgressBar(0);
         progressBar.setMaxWidth(Double.MAX_VALUE);
         GridPane.setHgrow(progressBar, Priority.ALWAYS);
-        GridPane.setMargin(progressBar, new Insets(1, 0, 1, 0));
+        GridPane.setMargin(progressBar, new Insets(0, 4, 0, 0));
         this.setProgressBar(progressBar);
 
+        Label jobLabel = new Label(localization.noActivity());
+        jobLabel.setFont(Font.font(jobLabel.getFont().getFamily(), jobLabel.getFont().getSize() * 0.8));
+        jobLabel.setPrefWidth(150);
+        GridPane.setHgrow(jobLabel, Priority.ALWAYS);
+        GridPane.setMargin(jobLabel, new Insets(0, 0, 0, 4));
+        this.setJobLabel(jobLabel);
+
         GridPane progressPane = new GridPane();
-        progressPane.add(jobLabel, 0, 0, 1, 1);
-        progressPane.add(progressLabel, 1, 0, 1, 1);
-        progressPane.add(progressBar, 0, 1, 2, 1);
+        progressPane.add(progressBar, 0, 0, 1, 1);
+        progressPane.add(jobLabel, 1, 0, 1, 1);
 
         this.add(progressPane, 0, 0, 1, 1);
         this.setLocalization(localization);
@@ -86,7 +77,6 @@ public class UiSchedulerPane extends GridPane {
             Platform.runLater(() -> {
                 UiSchedulerPane.this.getJobLabel().setText(UiSchedulerPane.this.getLocalization().noActivity());
                 UiSchedulerPane.this.getProgressBar().setProgress(0d);
-                UiSchedulerPane.this.getProgressLabel().setText(" ");
             });
         }
 
@@ -94,9 +84,6 @@ public class UiSchedulerPane extends GridPane {
         public void onProgress(Double progress, String message) {
             if (progress != null) {
                 Platform.runLater(() -> UiSchedulerPane.this.getProgressBar().setProgress(progress.doubleValue()));
-            }
-            if (StringUtils.isNotEmpty(message)) {
-                Platform.runLater(() -> UiSchedulerPane.this.getProgressLabel().setText(message));
             }
         }
 
@@ -114,13 +101,6 @@ public class UiSchedulerPane extends GridPane {
     }
     private void setProgressBar(ProgressBar progressBar) {
         this.progressBar = progressBar;
-    }
-
-    private Label getProgressLabel() {
-        return this.progressLabel;
-    }
-    private void setProgressLabel(Label progressLabel) {
-        this.progressLabel = progressLabel;
     }
 
     private Localization getLocalization() {

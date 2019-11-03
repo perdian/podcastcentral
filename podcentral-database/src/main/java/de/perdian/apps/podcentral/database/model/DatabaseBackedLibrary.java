@@ -26,6 +26,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +98,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
             feedImpl.refresh(feedInput);
         } else {
             try (Session session = this.getSessionFactory().openSession()) {
+                Transaction transaction = session.beginTransaction();
                 FeedEntity feedEntity = new FeedEntity();
                 feedEntity.setData(feedInput.getData());
                 session.save(feedEntity);
@@ -108,6 +110,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
                     session.save(episodeEntity);
                     episodeEntities.add(episodeEntity);
                 }
+                transaction.commit();
                 feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntities, this.getSessionFactory());
                 this.getFeedsByFeedUrl().put(feedInput.getData().getUrl(), feedImpl);
                 this.getFeeds().add(feedImpl);
@@ -131,6 +134,8 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     }
 
     private void onFeedDelete(DatabaseBackedFeed feed) {
+        this.getFeedsByFeedUrl().remove(feed.getUrl().getValue());
+        feed.deleteFromDatabase();
         log.error("Feed Delete not implemented yet!");
     }
 

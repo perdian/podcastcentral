@@ -23,12 +23,14 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
@@ -144,12 +146,23 @@ class DatabaseBackedFeed implements Feed {
         }
     }
 
+    void deleteFromDatabase() {
+        try (Session session = this.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            CriteriaDelete<EpisodeEntity> episodeEntityDelete = session.getCriteriaBuilder().createCriteriaDelete(EpisodeEntity.class);
+            episodeEntityDelete.where(session.getCriteriaBuilder().equal(episodeEntityDelete.from(EpisodeEntity.class).get("feed"), this.getEntity()));
+            session.createQuery(episodeEntityDelete).executeUpdate();
+            session.delete(this.getEntity());
+            transaction.commit();
+        }
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    private FeedEntity getEntity() {
+    FeedEntity getEntity() {
         return this.entity;
     }
     private void setEntity(FeedEntity entity) {

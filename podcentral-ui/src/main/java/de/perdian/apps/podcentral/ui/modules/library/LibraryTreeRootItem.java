@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeItem;
 
@@ -49,6 +51,9 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeTableValue> {
                     int feedTargetIndex = change.getList().indexOf(addedFeed);
                     this.getChildren().add(feedTargetIndex, feedTreeItem);
                     feedTreeItemsByFeed.put(addedFeed, feedTreeItem);
+                }
+                if (change.wasPermutated()) {
+                    FXCollections.sort(this.getChildren(), Comparator.comparing(item -> item.getValue().getTitle().getValue()));
                 }
             }
         });

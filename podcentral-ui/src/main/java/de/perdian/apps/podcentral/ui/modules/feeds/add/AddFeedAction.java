@@ -26,7 +26,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.DialogPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 public class AddFeedAction implements EventHandler<ActionEvent> {
 
@@ -41,8 +40,9 @@ public class AddFeedAction implements EventHandler<ActionEvent> {
     @Override
     public void handle(ActionEvent event) {
 
-        Stage dialogStage = new Stage(StageStyle.UTILITY);
+        Stage dialogStage = new Stage();
         dialogStage.sizeToScene();
+        dialogStage.setResizable(false);
         dialogStage.setTitle(this.getLocalization().addFeed());
         dialogStage.initModality(Modality.APPLICATION_MODAL);
 

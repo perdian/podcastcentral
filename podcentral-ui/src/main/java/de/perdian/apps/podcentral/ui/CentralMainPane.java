@@ -32,7 +32,7 @@ class CentralMainPane extends GridPane {
     public CentralMainPane(Central central, Localization localization) {
 
         LibraryPane libraryPane = new LibraryPane(central.getUiJobScheduler(), central.getLibrary(), localization);
-        libraryPane.setPadding(new Insets(8, 8, 8, 8));
+        libraryPane.setPadding(new Insets(10, 8, 8, 8));
         Tab libraryTab = new Tab(localization.library(), libraryPane);
         libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
         libraryTab.setClosable(false);
@@ -48,7 +48,7 @@ class CentralMainPane extends GridPane {
         GridPane.setVgrow(tabPane, Priority.ALWAYS);
 
         UiSchedulerPane uiSchedulerPane = new UiSchedulerPane(central.getUiJobScheduler(), localization);
-        uiSchedulerPane.setPadding(new Insets(4, 8, 8, 8));
+        uiSchedulerPane.setPadding(new Insets(0, 8, 8, 8));
 
         this.add(tabPane, 0, 0, 1, 1);
         this.add(uiSchedulerPane, 0, 1, 1, 1);

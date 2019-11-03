@@ -27,7 +27,7 @@ public class LibraryPane extends GridPane {
     public LibraryPane(JobScheduler jobScheduler, Library library, Localization localization) {
 
         LibraryToolbarPane toolbarPane = new LibraryToolbarPane(jobScheduler, library, localization);
-        GridPane.setMargin(toolbarPane, new Insets(0, 0, 4, 0));
+        GridPane.setMargin(toolbarPane, new Insets(0, 0, 8, 0));
         GridPane.setHgrow(toolbarPane, Priority.ALWAYS);
 
         LibraryTreeTableView treeTableView = new LibraryTreeTableView(jobScheduler, library, localization);
