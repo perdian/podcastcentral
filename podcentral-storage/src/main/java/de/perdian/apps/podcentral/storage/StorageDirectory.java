@@ -15,28 +15,10 @@
  */
 package de.perdian.apps.podcentral.storage;
 
-import java.io.File;
-
 import javafx.beans.property.StringProperty;
 
-class StorageImpl implements Storage {
+public interface StorageDirectory {
 
-    private File rootDirectory = null;
-
-    StorageImpl(File storageDirectory) {
-        this.setRootDirectory(storageDirectory);
-    }
-
-    @Override
-    public StorageDirectory resolveDirectory(StringProperty directoryNameProperty) {
-        return new StorageDirectoryImpl();
-    }
-
-    private File getRootDirectory() {
-        return this.rootDirectory;
-    }
-    private void setRootDirectory(File rootDirectory) {
-        this.rootDirectory = rootDirectory;
-    }
+    StorageFile resolveFile(StringProperty fileNameProperty);
 
 }

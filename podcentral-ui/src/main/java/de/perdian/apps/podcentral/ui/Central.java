@@ -54,7 +54,7 @@ public class Central {
         this.setDownloadJobScheduler(downloadJobScheduler);
 
         log.info("Creating storage");
-        Storage storage = StorageFactory.createStorage();
+        Storage storage = StorageFactory.createStorage(preferences);
         this.setStorage(storage);
 
         log.info("Loading library");

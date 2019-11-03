@@ -15,10 +15,10 @@
  */
 package de.perdian.apps.podcentral.storage;
 
-import java.io.File;
+import javafx.beans.property.StringProperty;
 
 public interface Storage {
 
-    File resolveStorageFile(String feedName, String episodeName, String type);
+    StorageDirectory resolveDirectory(StringProperty directoryNameProperty);
 
 }

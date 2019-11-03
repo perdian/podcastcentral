@@ -25,6 +25,8 @@ import org.hibernate.SessionFactory;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeData;
+import de.perdian.apps.podcentral.storage.StorageDirectory;
+import de.perdian.apps.podcentral.storage.StorageFile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -45,9 +47,9 @@ class DatabaseBackedEpisode implements Episode {
     private StringProperty contentType = null;
     private StringProperty websiteUrl = null;
     private StringProperty imageUrl = null;
-    private DatabaseBackedEpisodeDownload download = null;
+    private StorageFile storageFile = null;
 
-    public DatabaseBackedEpisode(EpisodeEntity episodeEntity, SessionFactory sessionFactory) {
+    public DatabaseBackedEpisode(EpisodeEntity episodeEntity, SessionFactory sessionFactory, StorageDirectory storageDirectory) {
         this.setEntity(episodeEntity);
         this.setContentType(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getContentType(), (e, v) -> e.getData().setContentType(v), SimpleStringProperty::new, sessionFactory));
         this.setContentUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getContentUrl(), (e, v) -> e.getData().setContentUrl(v), SimpleStringProperty::new, sessionFactory));
@@ -61,7 +63,7 @@ class DatabaseBackedEpisode implements Episode {
         this.setSubtitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v), SimpleStringProperty::new, sessionFactory));
         this.setTitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
-        this.setDownload(new DatabaseBackedEpisodeDownload(episodeEntity, sessionFactory));
+        this.setStorageFile(storageDirectory.resolveFile(this.getTitle()));
     }
 
     void updateData(EpisodeData episodeData) {
@@ -188,11 +190,11 @@ class DatabaseBackedEpisode implements Episode {
     }
 
     @Override
-    public DatabaseBackedEpisodeDownload getDownload() {
-        return this.download;
+    public StorageFile getStorageFile() {
+        return this.storageFile;
     }
-    private void setDownload(DatabaseBackedEpisodeDownload download) {
-        this.download = download;
+    public void setStorageFile(StorageFile storageFile) {
+        this.storageFile = storageFile;
     }
 
 }

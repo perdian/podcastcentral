@@ -12,7 +12,7 @@ public class ResetDatabaseExample {
         FeedInputLoader feedInputLoader = new FeedInputLoader();
 
         Preferences preferences = PreferencesFactory.createPreferences();
-        try (DatabaseBackedLibrary library = new DatabaseBackedLibraryBuilder().buildLibrary(StorageFactory.createStorage(), preferences)) {
+        try (DatabaseBackedLibrary library = new DatabaseBackedLibraryBuilder().buildLibrary(StorageFactory.createStorage(preferences), preferences)) {
             library.addFeed(feedInputLoader.loadFeedInputFromUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss"));
             library.addFeed(feedInputLoader.loadFeedInputFromUrl("http://omegataupodcast.net/category/podcast/feed"));
         } catch (Exception e) {

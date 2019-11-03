@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
 
+import de.perdian.apps.podcentral.storage.StorageFile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 
@@ -36,7 +37,7 @@ public interface Episode {
     StringProperty getContentType();
     StringProperty getWebsiteUrl();
     StringProperty getImageUrl();
-    EpisodeDownload getDownload();
+    StorageFile getStorageFile();
 
     public static class PublishedDateComparator implements Comparator<Episode> {
 

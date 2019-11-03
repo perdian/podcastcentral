@@ -47,11 +47,13 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(DatabaseBackedLibrary.class);
 
     private SessionFactory sessionFactory = null;
+    private Storage storage = null;
     private Map<String, DatabaseBackedFeed> feedsByFeedUrl = null;
     private ObservableList<Feed> feeds = null;
 
     DatabaseBackedLibrary(SessionFactory sessionFactory, Storage storage) {
         this.setSessionFactory(sessionFactory);
+        this.setStorage(storage);
         this.setFeedsByFeedUrl(new HashMap<>());
         this.setFeeds(FXCollections.observableArrayList());
         this.getFeeds().addListener(this::onFeedListChange);
@@ -82,7 +84,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
             List<FeedEntity> feedEntities = session.createQuery("from FeedEntity order by data.title asc").list();
             for (FeedEntity feedEntity : feedEntities) {
                 log.debug("Loading initial feed from database: {}", ToStringBuilder.reflectionToString(feedEntity, ToStringStyle.NO_CLASS_NAME_STYLE));
-                DatabaseBackedFeed feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntitiesByFeed.get(feedEntity), this.getSessionFactory());
+                DatabaseBackedFeed feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntitiesByFeed.get(feedEntity), this.getSessionFactory(), this.getStorage());
                 this.getFeeds().add(feedImpl);
                 this.getFeedsByFeedUrl().put(feedImpl.getUrl().getValue(), feedImpl);
             }
@@ -111,7 +113,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
                     episodeEntities.add(episodeEntity);
                 }
                 transaction.commit();
-                feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntities, this.getSessionFactory());
+                feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntities, this.getSessionFactory(), this.getStorage());
                 this.getFeedsByFeedUrl().put(feedInput.getData().getUrl(), feedImpl);
                 this.getFeeds().add(feedImpl);
                 FXCollections.sort(this.getFeeds(), Comparator.comparing(feed -> feed.getTitle().getValue()));
@@ -148,6 +150,13 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     }
     private void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    private Storage getStorage() {
+        return this.storage;
+    }
+    private void setStorage(Storage storage) {
+        this.storage = storage;
     }
 
     private Map<String, DatabaseBackedFeed> getFeedsByFeedUrl() {

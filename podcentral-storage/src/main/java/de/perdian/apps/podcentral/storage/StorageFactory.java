@@ -15,10 +15,25 @@
  */
 package de.perdian.apps.podcentral.storage;
 
+import java.io.File;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.perdian.apps.podcentral.preferences.Preferences;
+
 public class StorageFactory {
 
-    public static Storage createStorage() {
-        return null;
+    private static final Logger log = LoggerFactory.getLogger(StorageFactory.class);
+
+    public static Storage createStorage(Preferences preferences) {
+        File downloadsDirectory = new File(preferences.getApplicationDirectory(), "downloads");
+        log.info("Resolved storage location to directory: {}", downloadsDirectory);
+        if (!downloadsDirectory.exists()) {
+            log.info("Creating storage location at directory: {}", downloadsDirectory.getAbsolutePath());
+            downloadsDirectory.mkdirs();
+        }
+        return new StorageImpl(downloadsDirectory);
     }
 
 }
