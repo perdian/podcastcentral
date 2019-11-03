@@ -42,7 +42,10 @@ public class ActiveJob {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.NO_CLASS_NAME_STYLE);
+        ToStringBuilder toStringBuilder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        toStringBuilder.append("acceptedJob", this.getAcceptedJob());
+        toStringBuilder.append("status", this.getStatus());
+        return toStringBuilder.toString();
     }
 
     public void cancel(String reason) {

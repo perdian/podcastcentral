@@ -34,7 +34,9 @@ public class AcceptedJob {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.NO_CLASS_NAME_STYLE);
+        ToStringBuilder toStringBuilder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        toStringBuilder.append("job", this.getJob());
+        return toStringBuilder.toString();
     }
 
     static class PriorityComparator implements Comparator<AcceptedJob> {

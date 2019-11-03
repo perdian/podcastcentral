@@ -18,6 +18,9 @@ package de.perdian.apps.podcentral.jobscheduler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class Job {
 
     private String title = null;
@@ -31,6 +34,15 @@ public class Job {
     public Job(String title, JobRunnable runnable) {
         this.setTitle(title);
         this.setRunnable(runnable);
+    }
+
+    @Override
+    public String toString() {
+        ToStringBuilder toStringBuilder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        toStringBuilder.append("title", this.getTitle());
+        toStringBuilder.append("runnable", this.getRunnable());
+        toStringBuilder.append("priority", this.getPriority());
+        return toStringBuilder.toString();
     }
 
     public String getTitle() {
