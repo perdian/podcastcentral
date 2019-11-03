@@ -36,15 +36,13 @@ public class FeedDeleteActionEventHandler implements EventHandler<ActionEvent> {
 
     private Supplier<List<Feed>> feedsSupplier = null;
     private Supplier<Map<Feed, List<Episode>>> episodesSupplier = null;
-    private Runnable clearSelectionCallback = null;
     private JobScheduler jobScheduler = null;
     private Library library = null;
     private Localization localization = null;
 
-    public FeedDeleteActionEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<Map<Feed, List<Episode>>> episodesSupplier, Runnable clearSelectionCallback, JobScheduler jobScheduler, Library library, Localization localization) {
+    public FeedDeleteActionEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<Map<Feed, List<Episode>>> episodesSupplier, JobScheduler jobScheduler, Library library, Localization localization) {
         this.setFeedsSupplier(feedsSupplier);
         this.setEpisodesSupplier(episodesSupplier);
-        this.setClearSelectionCallback(clearSelectionCallback);
         this.setLibrary(library);
         this.setJobScheduler(jobScheduler);
         this.setLocalization(localization);
@@ -82,8 +80,6 @@ public class FeedDeleteActionEventHandler implements EventHandler<ActionEvent> {
                 });
                 episodesToDelete.keySet().forEach(feed -> feed.getProcessors().remove(this));
 
-                this.getClearSelectionCallback().run();
-
             }));
         }
     }
@@ -101,13 +97,6 @@ public class FeedDeleteActionEventHandler implements EventHandler<ActionEvent> {
     }
     private void setEpisodesSupplier(Supplier<Map<Feed, List<Episode>>> episodesSupplier) {
         this.episodesSupplier = episodesSupplier;
-    }
-
-    private Runnable getClearSelectionCallback() {
-        return this.clearSelectionCallback;
-    }
-    private void setClearSelectionCallback(Runnable clearSelectionCallback) {
-        this.clearSelectionCallback = clearSelectionCallback;
     }
 
     private JobScheduler getJobScheduler() {

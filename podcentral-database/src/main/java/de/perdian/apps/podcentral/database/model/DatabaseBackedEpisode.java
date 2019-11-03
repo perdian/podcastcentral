@@ -27,6 +27,7 @@ import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeData;
 import de.perdian.apps.podcentral.storage.StorageDirectory;
 import de.perdian.apps.podcentral.storage.StorageFile;
+import de.perdian.apps.podcentral.storage.StorageState;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -47,6 +48,7 @@ class DatabaseBackedEpisode implements Episode {
     private StringProperty contentType = null;
     private StringProperty websiteUrl = null;
     private StringProperty imageUrl = null;
+    private ObjectProperty<StorageState> storageState = null;
     private StorageFile storageFile = null;
 
     public DatabaseBackedEpisode(EpisodeEntity episodeEntity, SessionFactory sessionFactory, StorageDirectory storageDirectory) {
@@ -64,6 +66,8 @@ class DatabaseBackedEpisode implements Episode {
         this.setTitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setStorageFile(storageDirectory.resolveFile(this.getTitle()));
+        this.setStorageState(DatabaseHelper.createProperty(episodeEntity, e -> e.getStorageState(), (e, v) -> e.setStorageState(v), SimpleObjectProperty::new, sessionFactory));
+        this.getStorageState().bind(this.getStorageFile().getState());
     }
 
     void updateData(EpisodeData episodeData) {
@@ -193,8 +197,15 @@ class DatabaseBackedEpisode implements Episode {
     public StorageFile getStorageFile() {
         return this.storageFile;
     }
-    public void setStorageFile(StorageFile storageFile) {
+    private void setStorageFile(StorageFile storageFile) {
         this.storageFile = storageFile;
+    }
+
+    public ObjectProperty<StorageState> getStorageState() {
+        return this.storageState;
+    }
+    private void setStorageState(ObjectProperty<StorageState> storageState) {
+        this.storageState = storageState;
     }
 
 }

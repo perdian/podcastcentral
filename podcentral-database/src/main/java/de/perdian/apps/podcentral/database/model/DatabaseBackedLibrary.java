@@ -75,7 +75,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
         log.info("Loading initial feeds from database");
         try (Session session = this.getSessionFactory().openSession()) {
 
-            List<EpisodeEntity> episodeEntities = session.createQuery("from EpisodeEntity order by publicationDate desc").list();
+            List<EpisodeEntity> episodeEntities = session.createQuery("from EpisodeEntity where (deleted is null or deleted = false) order by publicationDate desc").list();
             Map<FeedEntity, List<EpisodeEntity>> episodeEntitiesByFeed = new LinkedHashMap<>();
             for (EpisodeEntity episodeEntity : episodeEntities) {
                 episodeEntitiesByFeed.compute(episodeEntity.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episodeEntity);
@@ -84,7 +84,8 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
             List<FeedEntity> feedEntities = session.createQuery("from FeedEntity order by data.title asc").list();
             for (FeedEntity feedEntity : feedEntities) {
                 log.debug("Loading initial feed from database: {}", ToStringBuilder.reflectionToString(feedEntity, ToStringStyle.NO_CLASS_NAME_STYLE));
-                DatabaseBackedFeed feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntitiesByFeed.get(feedEntity), this.getSessionFactory(), this.getStorage());
+                List<EpisodeEntity> episodeEntitiesForFeed = episodeEntitiesByFeed.get(feedEntity);
+                DatabaseBackedFeed feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntitiesForFeed, this.getSessionFactory(), this.getStorage());
                 this.getFeeds().add(feedImpl);
                 this.getFeedsByFeedUrl().put(feedImpl.getUrl().getValue(), feedImpl);
             }
@@ -142,6 +143,12 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     }
 
     private void onFeedEpisodeDelete(DatabaseBackedEpisode episode) {
+        try (Session session = this.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            episode.getEntity().setDeleted(Boolean.TRUE);
+            session.update(episode.getEntity());
+            transaction.commit();
+        }
         log.error("Episode Delete not implemented completely yet! (Connect to Storage)");
     }
 

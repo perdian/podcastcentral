@@ -35,17 +35,13 @@ public class FeedInputLoader {
 
     private static final Logger log = LoggerFactory.getLogger(FeedInputLoader.class);
 
-    private OkHttpClient okHttpClient = null;
+    private static final OkHttpClient HTTP_CLIENT = new OkHttpClient.Builder().build();
 
-    public FeedInputLoader() {
-        this.setOkHttpClient(new OkHttpClient.Builder().build());
-    }
-
-    public FeedInput loadFeedInputFromUrl(String feedUrl) throws Exception {
+    public static FeedInput loadFeedInputFromUrl(String feedUrl) throws Exception {
         try {
             Request httpRequest = new Request.Builder().get().url(feedUrl).build();
             Instant startTime = Instant.now();
-            try (Response httpResponse = this.getOkHttpClient().newCall(httpRequest).execute()) {
+            try (Response httpResponse = HTTP_CLIENT.newCall(httpRequest).execute()) {
                 log.debug("Loaded content (took {}) from feed URL: {}", Duration.between(startTime, Instant.now()), feedUrl);
                 List<Provider<FeedInputSource>> feedInputSources = ServiceLoader.load(FeedInputSource.class).stream().collect(Collectors.toList());
                 log.debug("Processing {} feed input sources for feed from URL: {}", feedInputSources.size(), feedUrl);
@@ -63,13 +59,6 @@ public class FeedInputLoader {
         } catch (IOException e) {
             throw new IOException("Cannot load feed from feed URL: " + feedUrl, e);
         }
-    }
-
-    private OkHttpClient getOkHttpClient() {
-        return this.okHttpClient;
-    }
-    private void setOkHttpClient(OkHttpClient okHttpClient) {
-        this.okHttpClient = okHttpClient;
     }
 
 }

@@ -9,12 +9,10 @@ public class ResetDatabaseExample {
 
     public static void main(String[] args) throws Exception {
 
-        FeedInputLoader feedInputLoader = new FeedInputLoader();
-
         Preferences preferences = PreferencesFactory.createPreferences();
         try (DatabaseBackedLibrary library = new DatabaseBackedLibraryBuilder().buildLibrary(StorageFactory.createStorage(preferences), preferences)) {
-            library.addFeed(feedInputLoader.loadFeedInputFromUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss"));
-            library.addFeed(feedInputLoader.loadFeedInputFromUrl("http://omegataupodcast.net/category/podcast/feed"));
+            library.addFeed(FeedInputLoader.loadFeedInputFromUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss"));
+            library.addFeed(FeedInputLoader.loadFeedInputFromUrl("http://omegataupodcast.net/category/podcast/feed"));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -20,7 +20,6 @@ public enum StorageState {
     NEW,
     DOWNLOAD_COMPLETED,
     DOWNLOAD_CANCELLED,
-    DOWNLOAD_ERRORED,
-    DELETED;
+    DOWNLOAD_ERRORED;
 
 }

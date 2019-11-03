@@ -112,8 +112,7 @@ public class AddFeedPane extends GridPane {
             try {
 
                 Platform.runLater(() -> AddFeedPane.this.getDetailsWrapperPane().setCenter(AddFeedPane.this.createLoadFeedBusyPane(feedUrl)));
-                FeedInputLoader feedInputLoader = new FeedInputLoader();
-                FeedInput feedInput = feedInputLoader.loadFeedInputFromUrl(feedUrl);
+                FeedInput feedInput = FeedInputLoader.loadFeedInputFromUrl(feedUrl);
                 FeedDataPane feedDataPane = new FeedDataPane(feedInput.getData(), AddFeedPane.this.getLocalization());
                 GridPane.setHgrow(feedDataPane, Priority.ALWAYS);
                 GridPane.setVgrow(feedDataPane, Priority.ALWAYS);

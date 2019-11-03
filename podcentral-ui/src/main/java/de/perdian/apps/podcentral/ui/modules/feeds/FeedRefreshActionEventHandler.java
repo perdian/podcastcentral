@@ -68,8 +68,7 @@ public class FeedRefreshActionEventHandler implements EventHandler<ActionEvent> 
     }
 
     private void handleRefreshFeed(Feed feed) throws Exception {
-        FeedInputLoader feedInputLoader = new FeedInputLoader();
-        FeedInput feedInput = feedInputLoader.loadFeedInputFromUrl(feed.getUrl().getValue());
+        FeedInput feedInput = FeedInputLoader.loadFeedInputFromUrl(feed.getUrl().getValue());
         feed.refresh(feedInput, this.getFeedRefreshOptions().toArray(Feed.RefreshOption[]::new));
     }
 

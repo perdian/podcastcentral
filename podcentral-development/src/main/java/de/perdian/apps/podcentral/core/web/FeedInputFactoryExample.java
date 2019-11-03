@@ -27,8 +27,7 @@ public class FeedInputFactoryExample {
 
     public static void main(String[] args) throws Exception {
 
-        FeedInputLoader feedInputLoader = new FeedInputLoader();
-        FeedInput feedInput = feedInputLoader.loadFeedInputFromUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss");
+        FeedInput feedInput = FeedInputLoader.loadFeedInputFromUrl("https://podcasts.files.bbci.co.uk/w13xttx2.rss");
         log.info("Loaded feed: {}", feedInput);
 
     }

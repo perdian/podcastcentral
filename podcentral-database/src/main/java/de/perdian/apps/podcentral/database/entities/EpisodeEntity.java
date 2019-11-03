@@ -16,9 +16,7 @@
 package de.perdian.apps.podcentral.database.entities;
 
 import java.io.Serializable;
-import java.time.Instant;
 
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,9 +38,8 @@ public class EpisodeEntity implements Serializable {
     private Long id = null;
     private FeedEntity feed = null;
     private EpisodeData data = null;
-    private Instant downloadDate = null;
-    private StorageState downloadState = StorageState.NEW;
-    private String localPath = null;
+    private StorageState storageState = StorageState.NEW;
+    private Boolean deleted = Boolean.FALSE;
 
     @Override
     public int hashCode() {
@@ -92,26 +89,18 @@ public class EpisodeEntity implements Serializable {
         this.data = data;
     }
 
-    public Instant getDownloadDate() {
-        return this.downloadDate;
+    public StorageState getStorageState() {
+        return this.storageState;
     }
-    public void setDownloadDate(Instant downloadDate) {
-        this.downloadDate = downloadDate;
-    }
-
-    public StorageState getDownloadState() {
-        return this.downloadState;
-    }
-    public void setDownloadState(StorageState downloadState) {
-        this.downloadState = downloadState;
+    public void setStorageState(StorageState storageState) {
+        this.storageState = storageState;
     }
 
-    @Column(length = 500)
-    public String getLocalPath() {
-        return this.localPath;
+    public Boolean getDeleted() {
+        return this.deleted;
     }
-    public void setLocalPath(String localPath) {
-        this.localPath = localPath;
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

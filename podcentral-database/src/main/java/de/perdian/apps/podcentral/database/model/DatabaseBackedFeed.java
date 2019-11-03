@@ -122,7 +122,8 @@ class DatabaseBackedFeed implements Feed {
                     episode.updateData(episodeData);
                 } else if (episode == null) {
                     if (episodeEntityFromDatabase != null && refreshOptionsSet.contains(RefreshOption.RESTORE_DELETED_EPISODES)) {
-                        episodeEntityFromDatabase.setDownloadState(StorageState.NEW);
+                        episodeEntityFromDatabase.setDeleted(Boolean.FALSE);
+                        episodeEntityFromDatabase.setStorageState(StorageState.NEW);
                         session.update(episodeEntityFromDatabase);
                         newEpisodes.add(new DatabaseBackedEpisode(episodeEntityFromDatabase, this.getSessionFactory(), this.getStorageDirectory()));
                     } else if (episodeEntityFromDatabase == null) {
@@ -142,7 +143,7 @@ class DatabaseBackedFeed implements Feed {
             // If we have episodes that are marked as deleted and are no longer contained in the feed the we delete
             // them to save memory
             episodeEntitiesByGuid.values().stream()
-                .filter(episodeEntity -> StorageState.DELETED.equals(episodeEntity.getDownloadState()))
+                .filter(episodeEntity -> Boolean.TRUE.equals(episodeEntity.getDeleted()))
                 .forEach(episodeEntity -> session.delete(episodeEntity));
 
         }

@@ -62,7 +62,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
         MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.REMOVE));
         deleteMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()).and(Bindings.isEmpty(this.getSelectedEpisodes())));
-        deleteMenuItem.setOnAction(new FeedDeleteActionEventHandler(this::getSelectedFeeds, this::getSelectedEpisodes, () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), jobScheduler, library, localization));
+        deleteMenuItem.setOnAction(new FeedDeleteActionEventHandler(this::getSelectedFeeds, this::getSelectedEpisodes, jobScheduler, library, localization));
         this.getItems().add(deleteMenuItem);
 
         this.setLibraryTreeTableView(libraryTreeTableView);
