@@ -61,6 +61,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         storageProgressColumn.setCellFactory(cell -> new InternalProgressBarTreeTableCell());
         storageProgressColumn.setMinWidth(80);
         storageProgressColumn.setMaxWidth(80);
+        storageProgressColumn.setEditable(false);
         storageProgressColumn.setSortable(false);
         storageProgressColumn.setReorderable(false);
 
@@ -70,6 +71,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         storageProgressValueColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         storageProgressValueColumn.setMinWidth(50);
         storageProgressValueColumn.setMaxWidth(50);
+        storageProgressValueColumn.setEditable(false);
         storageProgressValueColumn.setSortable(false);
         storageProgressValueColumn.setReorderable(false);
 
