@@ -151,8 +151,9 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
         @Override
         public void updateItem(EpisodeStorageState item, boolean empty) {
-            if (item == null) {
-                super.updateItem(item, true);
+            super.updateItem(item, empty);
+            if (item == null || empty) {
+                this.setGraphic(null);
             } else {
                 Label newLabel = new Label(item.name());
                 newLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS));
