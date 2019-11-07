@@ -24,14 +24,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.model.EpisodeStorageState;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.support.properties.PropertiesHelper;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 
 interface LibraryTreeTableValue {
 
@@ -102,29 +104,32 @@ interface LibraryTreeTableValue {
         }
 
         @Override
-        public Property<String> getDuration() {
+        public ObservableValue<String> getDuration() {
             return PropertiesHelper.map(this.getEpisode().getDuration(), duration -> duration == null ? "" : DurationFormatUtils.formatDuration(duration.toMillis(), "HH:mm:ss"), null);
         }
 
         @Override
-        public Property<String> getPublicationDate() {
+        public ObservableValue<String> getPublicationDate() {
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             return PropertiesHelper.map(this.getEpisode().getPublicationDate(), date -> dateTimeFormatter.format(date.atZone(ZoneId.systemDefault())), null);
         }
 
         @Override
-        public Property<Double> getStorageProgress() {
-            ObjectProperty<Double> progressProperty = new SimpleObjectProperty<>(this.getEpisode().getStorageProgress().getValue());
-            progressProperty.bind(this.getEpisode().getStorageProgress());
-            return progressProperty;
+        public ObservableValue<Double> getStorageProgress() {
+            return this.getEpisode().getStorageProgress();
         }
 
         @Override
-        public Property<String> getStorageProgressLabel() {
+        public ObservableValue<String> getStorageProgressLabel() {
             NumberFormat numberFormat = new DecimalFormat("0");
             StringProperty progressLabelProperty = new SimpleStringProperty(numberFormat.format(this.getEpisode().getStorageProgress().getValue() * 100d) + " %");
             this.getEpisode().getStorageProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(numberFormat.format(newValue * 100d) + " %"));
             return progressLabelProperty;
+        }
+
+        @Override
+        public ObservableValue<EpisodeStorageState> getEpisodeStorageState() {
+            return this.getEpisode().getStorageState();
         }
 
         Feed getFeed() {
@@ -147,19 +152,22 @@ interface LibraryTreeTableValue {
     Property<String> getDescription();
     void delete();
 
-    default Property<String> getPublicationDate() {
-        return new SimpleStringProperty();
+    default ObservableValue<String> getPublicationDate() {
+        return new ReadOnlyStringWrapper();
     }
 
-    default Property<String> getDuration() {
-        return new SimpleStringProperty();
+    default ObservableValue<String> getDuration() {
+        return new ReadOnlyStringWrapper();
     }
 
-    default Property<Double> getStorageProgress() {
-        return new SimpleObjectProperty<>(null);
+    default ObservableValue<Double> getStorageProgress() {
+        return new ReadOnlyObjectWrapper<>(null);
     }
-    default Property<String> getStorageProgressLabel() {
-        return new SimpleStringProperty();
+    default ObservableValue<String> getStorageProgressLabel() {
+        return new ReadOnlyStringWrapper();
+    }
+    default ObservableValue<EpisodeStorageState> getEpisodeStorageState() {
+        return new ReadOnlyObjectWrapper<>(null);
     }
 
 }

@@ -84,7 +84,6 @@ public class FeedDeleteActionEventHandler implements EventHandler<ActionEvent> {
         }
     }
 
-
     private Supplier<List<Feed>> getFeedsSupplier() {
         return this.feedsSupplier;
     }

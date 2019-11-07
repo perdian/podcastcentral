@@ -59,6 +59,7 @@ public class CentralApplication extends Application {
                 log.info("Creating central");
                 Central central = new Central(localization);
                 CentralMainPane centralMainPane = new CentralMainPane(central, localization);
+                Scene centralScene = new Scene(centralMainPane);
 
                 log.info("Creating main JavaFX window");
                 Platform.runLater(() -> {
@@ -66,7 +67,7 @@ public class CentralApplication extends Application {
                     primaryStage.setMinHeight(600);
                     primaryStage.setTitle(localization.podCentral());
                     primaryStage.setOnCloseRequest(event -> System.exit(0));
-                    primaryStage.setScene(new Scene(centralMainPane));
+                    primaryStage.setScene(centralScene);
                     primaryStage.setWidth(1200);
                     primaryStage.setHeight(800);
                     primaryStage.show();

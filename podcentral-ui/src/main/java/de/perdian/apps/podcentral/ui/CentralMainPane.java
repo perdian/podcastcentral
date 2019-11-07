@@ -31,7 +31,7 @@ class CentralMainPane extends GridPane {
 
     public CentralMainPane(Central central, Localization localization) {
 
-        LibraryPane libraryPane = new LibraryPane(central.getUiJobScheduler(), central.getLibrary(), localization);
+        LibraryPane libraryPane = new LibraryPane(central.getUiJobScheduler(), central.getDownloadJobScheduler(), central.getLibrary(), localization);
         libraryPane.setPadding(new Insets(10, 8, 8, 8));
         Tab libraryTab = new Tab(localization.library(), libraryPane);
         libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));

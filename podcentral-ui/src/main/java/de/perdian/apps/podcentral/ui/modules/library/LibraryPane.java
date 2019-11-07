@@ -24,13 +24,13 @@ import javafx.scene.layout.Priority;
 
 public class LibraryPane extends GridPane {
 
-    public LibraryPane(JobScheduler jobScheduler, Library library, Localization localization) {
+    public LibraryPane(JobScheduler uiJobScheduler, JobScheduler downloadJobScheduler, Library library, Localization localization) {
 
-        LibraryToolbarPane toolbarPane = new LibraryToolbarPane(jobScheduler, library, localization);
+        LibraryToolbarPane toolbarPane = new LibraryToolbarPane(uiJobScheduler, library, localization);
         GridPane.setMargin(toolbarPane, new Insets(0, 0, 8, 0));
         GridPane.setHgrow(toolbarPane, Priority.ALWAYS);
 
-        LibraryTreeTableView treeTableView = new LibraryTreeTableView(jobScheduler, library, localization);
+        LibraryTreeTableView treeTableView = new LibraryTreeTableView(uiJobScheduler, downloadJobScheduler, library, localization);
         GridPane.setHgrow(treeTableView, Priority.ALWAYS);
         GridPane.setVgrow(treeTableView, Priority.ALWAYS);
 

@@ -114,7 +114,10 @@ class DatabaseBackedEpisode implements Episode {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        ToStringBuilder toStringBuilder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        toStringBuilder.append("title", this.getTitle());
+        toStringBuilder.append("contentUrl", this.getContentUrl());
+        return toStringBuilder.toString();
     }
 
     EpisodeEntity getEntity() {

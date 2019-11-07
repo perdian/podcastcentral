@@ -41,6 +41,14 @@ public interface Localization {
         return "Description";
     }
 
+    default String downloadSelectedEpisodes() {
+        return "Download selected episodes";
+    }
+
+    default String downloadAllEpisodesFromFeed() {
+        return "Download all episodes from feed";
+    }
+
     default String downloads() {
         return "Downloads";
     }
@@ -107,6 +115,10 @@ public interface Localization {
 
     default String refreshingFeeds() {
         return "Refreshing feeds";
+    }
+
+    default String schedulingEpisodeDownloads() {
+        return "Scheduling episode downloads";
     }
 
     default String storage() {
