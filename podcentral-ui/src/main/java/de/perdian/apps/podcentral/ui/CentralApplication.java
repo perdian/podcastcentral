@@ -45,12 +45,14 @@ public class CentralApplication extends Application {
 
         Localization localization = new Localization() {};
 
+        Scene loaderScene = new Scene(this.createLoaderPane(localization));
+        loaderScene.getStylesheets().add("META-INF/stylesheets/podcentral.css");
         Stage loaderStage = new Stage();
         loaderStage.initOwner(primaryStage);
         loaderStage.setTitle(localization.podCentral());
         loaderStage.setOnCloseRequest(event -> System.exit(0));
         loaderStage.resizableProperty().setValue(false);
-        loaderStage.setScene(new Scene(this.createLoaderPane(localization)));
+        loaderStage.setScene(loaderScene);
         loaderStage.sizeToScene();
         loaderStage.show();
 
@@ -61,6 +63,7 @@ public class CentralApplication extends Application {
                 Central central = new Central(localization);
                 CentralMainPane centralMainPane = new CentralMainPane(central, localization);
                 Scene centralScene = new Scene(centralMainPane);
+                centralScene.getStylesheets().add("META-INF/stylesheets/podcentral.css");
 
                 log.info("Creating main JavaFX window");
                 Platform.runLater(() -> {

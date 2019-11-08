@@ -50,11 +50,6 @@
             <version>${javafx.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx-fontawesome</artifactId>
             <version>${fontawesomefx.version}</version>
@@ -66,39 +61,6 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.2</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>de.perdian.apps.podcentral.ui.CentralApplicationLauncher</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
-                <configuration>
-                    <finalName>podcentral</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>macos-bundle</id>
@@ -107,9 +69,11 @@
                     <plugin>
                         <groupId>de.perdian.maven.plugins</groupId>
                         <artifactId>macosappbundler-maven-plugin</artifactId>
-                        <version>1.1.0</version>
+                        <version>1.3.0</version>
                         <configuration>
                             <plist>
+                                <CFBundleName>PodCentral</CFBundleName>
+                                <CFBundleDisplayName>PodCentral</CFBundleDisplayName>
                                 <CFBundleIconFile>src/bundle/macos/resources/podcentral.icns</CFBundleIconFile>
                                 <JVMMainClassName>de.perdian.apps.podcentral.ui.CentralApplicationLauncher</JVMMainClassName>
                                 <JVMVersion>${java.version}+</JVMVersion>

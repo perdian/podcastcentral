@@ -9,6 +9,7 @@
     <modules>
         <module>podcentral-database</module>
         <module>podcentral-development</module>
+        <module>podcentral-downloader</module>
         <module>podcentral-model</module>
         <module>podcentral-jobscheduler</module>
         <module>podcentral-preferences</module>
@@ -50,7 +51,7 @@
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
         <h2.version>1.4.200</h2.version>
         <hibernate.version>5.4.7.Final</hibernate.version>
-        <java.version>12</java.version>
+        <java.version>11</java.version>
         <javafx.version>12</javafx.version>
         <javax.persistence.version>2.2</javax.persistence.version>
         <jaxen.version>1.2.0</jaxen.version>
