@@ -17,12 +17,24 @@ package de.perdian.apps.podcentral.ui.localization;
 
 public interface Localization {
 
+    default String activeDownloads() {
+        return "Active downloads";
+    }
+
     default String addFeed() {
         return "Add feed";
     }
 
+    default String cancelAllDownloads() {
+        return "Cancel all downloads";
+    }
+
     default String cancelDownloads() {
         return "Cancel downloads";
+    }
+
+    default String cancelled() {
+        return "Cancelled";
     }
 
     default String cancellingEpisodeDownloads() {
@@ -31,6 +43,10 @@ public interface Localization {
 
     default String cannotLoadFeedFromUrl(String feedUrl) {
         return "Cannot load feed from URL: " + feedUrl;
+    }
+
+    default String completed() {
+        return "Completed";
     }
 
     default String date() {
@@ -57,12 +73,28 @@ public interface Localization {
         return "Download all episodes from feed";
     }
 
+    default String downloading() {
+        return "Downloading";
+    }
+
     default String downloads() {
         return "Downloads";
     }
 
+    default String downloadsActive(int value) {
+        return value + " downloads active";
+    }
+
+    default String downloadsScheduled(int value) {
+        return value + " downloads scheduled";
+    }
+
     default String duration() {
         return "Duration";
+    }
+
+    default String errored() {
+        return "Errored";
     }
 
     default String feedUrl() {
@@ -93,8 +125,12 @@ public interface Localization {
         return "Loading library...";
     }
 
-    default String noActivity() {
-        return "No activity";
+    default String new_() {
+        return "New";
+    }
+
+    default String noDownloadsActive() {
+        return "No downloads active";
     }
 
     default String noFeedLoadedYet() {
@@ -123,6 +159,14 @@ public interface Localization {
 
     default String refreshingFeeds() {
         return "Refreshing feeds";
+    }
+
+    default String scheduled() {
+        return "Scheduled";
+    }
+
+    default String scheduledDownloads() {
+        return "Scheduled downloads";
     }
 
     default String schedulingEpisodeDownloads() {

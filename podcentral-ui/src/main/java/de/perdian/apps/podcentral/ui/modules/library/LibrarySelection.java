@@ -77,7 +77,7 @@ class LibrarySelection {
                 .filter(item -> item instanceof LibraryTreeTableValue.FeedTreeValue)
                 .flatMap(item -> ((LibraryTreeTableValue.FeedTreeValue)item).getFeed().getEpisodes().stream())
                 .filter(episode -> !EpisodeContentDownloadState.COMPLETED.equals(episode.getContentDownloadState().getValue()))
-                .collect(Collectors.toSet())
+                .collect(Collectors.toList())
         );
     }
 
@@ -87,7 +87,7 @@ class LibrarySelection {
                 .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
                 .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
                 .filter(episode -> !EpisodeContentDownloadState.COMPLETED.equals(episode.getContentDownloadState().getValue()))
-                .collect(Collectors.toSet())
+                .collect(Collectors.toList())
         );
     }
 
@@ -97,7 +97,7 @@ class LibrarySelection {
                 .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
                 .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
                 .filter(episode -> List.of(EpisodeContentDownloadState.SCHEDULED, EpisodeContentDownloadState.DOWNLOADING).contains(episode.getContentDownloadState().getValue()))
-                .collect(Collectors.toSet())
+                .collect(Collectors.toList())
         );
     }
 

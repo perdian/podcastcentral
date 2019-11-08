@@ -67,8 +67,8 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         TreeTableColumn<LibraryTreeTableValue, EpisodeContentDownloadState> contentDownloadStateColumn = new TreeTableColumn<>();
         contentDownloadStateColumn.setCellValueFactory(cell -> cell.getValue().getValue().getContentDownloadState());
         contentDownloadStateColumn.setCellFactory(cell -> new InternalEpisodeStorageStateTreeTableCell(localization));
-        contentDownloadStateColumn.setMinWidth(80);
-        contentDownloadStateColumn.setMaxWidth(80);
+        contentDownloadStateColumn.setMinWidth(100);
+        contentDownloadStateColumn.setMaxWidth(100);
         contentDownloadStateColumn.setEditable(false);
         contentDownloadStateColumn.setSortable(false);
         contentDownloadStateColumn.setReorderable(false);
@@ -156,8 +156,33 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
             if (item == null || empty) {
                 this.setGraphic(null);
             } else {
-                Label newLabel = new Label(item.name());
-                newLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS));
+                Label newLabel = new Label();
+                switch (item) {
+                    case CANCELLED:
+                        newLabel.setText(this.getLocalization().cancelled());
+                        newLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.WINDOW_CLOSE));
+                        break;
+                    case COMPLETED:
+                        newLabel.setText(this.getLocalization().completed());
+                        newLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CHECK));
+                        break;
+                    case DOWNLOADING:
+                        newLabel.setText(this.getLocalization().downloading());
+                        newLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.SPINNER));
+                        break;
+                    case NEW:
+                        newLabel.setText(this.getLocalization().new_());
+                        newLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.SQUARE_ALT));
+                        break;
+                    case SCHEDULED:
+                        newLabel.setText(this.getLocalization().scheduled());
+                        newLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CLOCK_ALT));
+                        break;
+                    case ERRORED:
+                        newLabel.setText(this.getLocalization().errored());
+                        newLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.EXCLAMATION_TRIANGLE));
+                        break;
+                }
                 this.setGraphic(newLabel);
             }
         }

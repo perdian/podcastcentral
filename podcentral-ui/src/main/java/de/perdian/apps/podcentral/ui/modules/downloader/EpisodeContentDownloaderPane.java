@@ -16,16 +16,47 @@
 package de.perdian.apps.podcentral.ui.modules.downloader;
 
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
+import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 
-public class EpisodeContentDownloaderPane extends BorderPane {
+public class EpisodeContentDownloaderPane extends GridPane {
 
-    public EpisodeContentDownloaderPane(EpisodeContentDownloader episodeContentDownloader, Localization localization) {
-        this.setCenter(new Label("DUMMY"));
-        this.setPadding(new Insets(8, 8, 8, 8));
+    public EpisodeContentDownloaderPane(JobScheduler uiJobScheduler, EpisodeContentDownloader episodeContentDownloader, Localization localization) {
+
+        EpisodeContentDownloaderToolbar toolbarPane = new EpisodeContentDownloaderToolbar(uiJobScheduler, episodeContentDownloader, localization);
+        GridPane.setMargin(toolbarPane, new Insets(0, 0, 8, 0));
+        GridPane.setHgrow(toolbarPane, Priority.ALWAYS);
+
+        GridPane scheduledDownloadsPane = new GridPane();
+        TitledPane scheduledDownloadsTitledPane = new TitledPane(localization.scheduledDownloads(), scheduledDownloadsPane);
+        scheduledDownloadsTitledPane.setCollapsible(false);
+        scheduledDownloadsTitledPane.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setHgrow(scheduledDownloadsTitledPane, Priority.ALWAYS);
+        GridPane.setVgrow(scheduledDownloadsTitledPane, Priority.ALWAYS);
+
+        GridPane activeDownloadsPane = new GridPane();
+        TitledPane activeDownloadsTitledPane = new TitledPane(localization.activeDownloads(), activeDownloadsPane);
+        activeDownloadsTitledPane.setCollapsible(false);
+        activeDownloadsTitledPane.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setHgrow(activeDownloadsTitledPane, Priority.ALWAYS);
+        GridPane.setVgrow(activeDownloadsTitledPane, Priority.ALWAYS);
+
+        ColumnConstraints leftColumnConstraints = new ColumnConstraints();
+        leftColumnConstraints.setPercentWidth(30);
+        ColumnConstraints rightColumnConstraints = new ColumnConstraints();
+        rightColumnConstraints.setPercentWidth(70 );
+        this.getColumnConstraints().addAll(leftColumnConstraints, rightColumnConstraints);
+
+        this.setHgap(8);
+        this.add(toolbarPane, 0, 0, 2, 1);
+        this.add(scheduledDownloadsTitledPane, 0, 1, 1, 1);
+        this.add(activeDownloadsTitledPane, 1, 1, 1, 1);
+
     }
 
 }

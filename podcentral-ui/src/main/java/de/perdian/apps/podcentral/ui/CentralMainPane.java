@@ -20,7 +20,6 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.modules.downloader.EpisodeContentDownloaderPane;
 import de.perdian.apps.podcentral.ui.modules.library.LibraryPane;
-import de.perdian.apps.podcentral.ui.modules.scheduler.UiSchedulerPane;
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -37,7 +36,7 @@ class CentralMainPane extends GridPane {
         libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
         libraryTab.setClosable(false);
 
-        EpisodeContentDownloaderPane episodeContentDownloaderPane = new EpisodeContentDownloaderPane(central.getEpisodeContentDownloader(), localization);
+        EpisodeContentDownloaderPane episodeContentDownloaderPane = new EpisodeContentDownloaderPane(central.getUiJobScheduler(), central.getEpisodeContentDownloader(), localization);
         episodeContentDownloaderPane.setPadding(new Insets(8, 8, 8, 8));
         Tab schedulerTab = new Tab(localization.downloads(), episodeContentDownloaderPane);
         schedulerTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
@@ -47,11 +46,10 @@ class CentralMainPane extends GridPane {
         GridPane.setHgrow(tabPane, Priority.ALWAYS);
         GridPane.setVgrow(tabPane, Priority.ALWAYS);
 
-        UiSchedulerPane uiSchedulerPane = new UiSchedulerPane(central.getUiJobScheduler(), localization);
-        uiSchedulerPane.setPadding(new Insets(0, 8, 8, 8));
+        CentralStatusBar statusPane = new CentralStatusBar(central.getUiJobScheduler(), central.getEpisodeContentDownloader(), localization);
 
         this.add(tabPane, 0, 0, 1, 1);
-        this.add(uiSchedulerPane, 0, 1, 1, 1);
+        this.add(statusPane, 0, 1, 1, 1);
 
     }
 
