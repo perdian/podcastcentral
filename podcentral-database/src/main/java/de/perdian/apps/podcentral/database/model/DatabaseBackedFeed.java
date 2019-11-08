@@ -37,8 +37,8 @@ import org.hibernate.Transaction;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
 import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
 import de.perdian.apps.podcentral.model.EpisodeData;
-import de.perdian.apps.podcentral.model.EpisodeStorageState;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedData;
 import de.perdian.apps.podcentral.model.FeedInput;
@@ -82,7 +82,7 @@ class DatabaseBackedFeed implements Feed {
         this.setTitle(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
-        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(episodeEntity, sessionFactory, StringUtils.isNotEmpty(episodeEntity.getStorageFileLocation()) ? storage.resolveFileAbsolute(episodeEntity.getStorageFileLocation()) : storage.resolveFileRelative(feedEntity.getData().getTitle(), episodeEntity.getData().getTitle() + episodeEntity.getData().computeFileNameExtension()))).collect(Collectors.toList())));
+        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(this, episodeEntity, sessionFactory, StringUtils.isNotEmpty(episodeEntity.getContentFileLocation()) ? storage.resolveFileAbsolute(episodeEntity.getContentFileLocation()) : storage.resolveFileRelative(feedEntity.getData().getTitle(), episodeEntity.getData().getTitle() + episodeEntity.getData().computeFileNameExtension()))).collect(Collectors.toList())));
         this.setProcessors(FXCollections.observableArrayList());
         this.setBusy(Bindings.isNotEmpty(this.getProcessors()));
         this.setStorage(storage);
@@ -125,15 +125,15 @@ class DatabaseBackedFeed implements Feed {
                     File episodeFile = this.getStorage().resolveFileRelative(feedInput.getData().getTitle(), episodeData.getTitle() + episodeData.computeFileNameExtension());
                     if (episodeEntityFromDatabase != null && refreshOptionsSet.contains(RefreshOption.RESTORE_DELETED_EPISODES)) {
                         episodeEntityFromDatabase.setDeleted(Boolean.FALSE);
-                        episodeEntityFromDatabase.setStorageState(EpisodeStorageState.NEW);
+                        episodeEntityFromDatabase.setStorageState(EpisodeContentDownloadState.NEW);
                         session.update(episodeEntityFromDatabase);
-                        newEpisodes.add(new DatabaseBackedEpisode(episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));
+                        newEpisodes.add(new DatabaseBackedEpisode(this, episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));
                     } else if (episodeEntityFromDatabase == null) {
                         episodeEntityFromDatabase = new EpisodeEntity();
                         episodeEntityFromDatabase.setFeed(this.getEntity());
                         episodeEntityFromDatabase.setData(episodeData);
                         session.update(episodeEntityFromDatabase);
-                        newEpisodes.add(new DatabaseBackedEpisode(episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));
+                        newEpisodes.add(new DatabaseBackedEpisode(this, episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));
                     }
                 }
             }

@@ -23,4 +23,7 @@ public interface Library {
 
     Feed addFeed(FeedInput feedInput);
 
+    boolean addListener(LibraryListener listener);
+    boolean removeListener(LibraryListener listener);
+
 }

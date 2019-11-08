@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.model.FeedInput;
-import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
+import de.perdian.apps.podcentral.sources.feeds.FeedInputLoader;
 
 public class FeedInputFactoryExample {
 

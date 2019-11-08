@@ -22,7 +22,6 @@ import java.util.Comparator;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableObjectValue;
 
 public interface Episode {
 
@@ -38,10 +37,9 @@ public interface Episode {
     StringProperty getContentType();
     StringProperty getWebsiteUrl();
     StringProperty getImageUrl();
-    ObjectProperty<File> getStorageFile();
-    ObservableObjectValue<EpisodeStorageState> getStorageState();
-    ObservableObjectValue<Long> getStorageFileSize();
-    ObservableObjectValue<Double> getStorageProgress();
+    ObjectProperty<File> getContentFile();
+    ObjectProperty<EpisodeContentDownloadState> getContentDownloadState();
+    ObjectProperty<Double> getContentDownloadProgress();
 
     public static class PublishedDateComparator implements Comparator<Episode> {
 

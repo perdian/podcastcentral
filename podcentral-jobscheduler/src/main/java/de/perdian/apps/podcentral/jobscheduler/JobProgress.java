@@ -17,13 +17,16 @@ package de.perdian.apps.podcentral.jobscheduler;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class JobProgress {
 
     private List<JobProgressListener> progressListeners = null;
+    private Supplier<JobStatus> statusSupplier = null;
 
-    JobProgress(List<JobProgressListener> progressListeners) {
+    JobProgress(List<JobProgressListener> progressListeners, Supplier<JobStatus> statusSupplier) {
         this.setProgressListeners(progressListeners == null ? Collections.emptyList() : progressListeners);
+        this.setStatusSupplier(statusSupplier);
     }
 
     public void updateProgress(Double progress, String message) {
@@ -35,6 +38,16 @@ public class JobProgress {
     }
     private void setProgressListeners(List<JobProgressListener> progressListeners) {
         this.progressListeners = progressListeners;
+    }
+
+    public JobStatus getStatus() {
+        return this.getStatusSupplier().get();
+    }
+    private Supplier<JobStatus> getStatusSupplier() {
+        return this.statusSupplier;
+    }
+    private void setStatusSupplier(Supplier<JobStatus> statusSupplier) {
+        this.statusSupplier = statusSupplier;
     }
 
 }

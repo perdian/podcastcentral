@@ -47,7 +47,7 @@ public class JobScheduler {
         this.setJobSchedulerListeners(new CopyOnWriteArrayList<>());
         this.setScheduledJobs(new PriorityQueue<>(10, new AcceptedJob.PriorityComparator()));
         this.setActiveJobs(new ArrayList<>());
-        this.setProcessorCount(1);
+        this.setProcessorCount(processorCount);
     }
 
     public synchronized boolean isBusy() {
@@ -117,14 +117,18 @@ public class JobScheduler {
             this.startJobCallable(activeJob);
 
             activeJob.setEndTime(this.getClock().instant());
-            activeJob.setStatus(JobStatus.COMPLETED);
+            if (!JobStatus.CANCELLED.equals(activeJob.getStatus())) {
+                activeJob.setStatus(JobStatus.COMPLETED);
+            }
             log.info("Job completed: {} in {}", activeJob, Duration.between(activeJob.getStartTime(), activeJob.getEndTime()));
 
         } catch (Exception e) {
 
             activeJob.setEndTime(this.getClock().instant());
             activeJob.setException(e);
-            activeJob.setStatus(JobStatus.COMPLETED);
+            if (!JobStatus.CANCELLED.equals(activeJob.getStatus())) {
+                activeJob.setStatus(JobStatus.COMPLETED);
+            }
             log.info("Exception occured during job execution: " + activeJob, e);
 
         } finally {
@@ -147,7 +151,7 @@ public class JobScheduler {
     }
 
     private void startJobCallable(ActiveJob activeJob) throws Exception {
-        activeJob.getAcceptedJob().getJob().getRunnable().run(new JobProgress(activeJob.getProgressListeners()));
+        activeJob.getAcceptedJob().getJob().getRunnable().run(new JobProgress(activeJob.getProgressListeners(), activeJob::getStatus));
     }
 
     private synchronized void checkWaitingRequests() {

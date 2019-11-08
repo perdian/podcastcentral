@@ -7,8 +7,8 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.modules.feeds.FeedRefreshActionEventHandler;
-import de.perdian.apps.podcentral.ui.modules.feeds.add.AddFeedAction;
+import de.perdian.apps.podcentral.ui.modules.feeds.RefreshFeedsActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.feeds.components.add.AddFeedAction;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -23,7 +23,7 @@ public class LibraryToolbarPane extends BorderPane {
         ButtonBar.setButtonData(addFeedButton, ButtonData.LEFT);
 
         Button refreshFeedsButton = new Button(localization.refreshFeeds(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        refreshFeedsButton.setOnAction(new FeedRefreshActionEventHandler(() -> library.getFeeds(), Set.of(), () -> {}, jobScheduler, localization));
+        refreshFeedsButton.setOnAction(new RefreshFeedsActionEventHandler(() -> library.getFeeds(), Set.of(), () -> {}, jobScheduler, localization));
         ButtonBar.setButtonData(refreshFeedsButton, ButtonData.LEFT);
 
         ButtonBar buttonBar = new ButtonBar();

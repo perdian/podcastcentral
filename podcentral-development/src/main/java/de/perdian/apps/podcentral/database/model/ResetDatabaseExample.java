@@ -2,7 +2,7 @@ package de.perdian.apps.podcentral.database.model;
 
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
-import de.perdian.apps.podcentral.retrieval.FeedInputLoader;
+import de.perdian.apps.podcentral.sources.feeds.FeedInputLoader;
 import de.perdian.apps.podcentral.storage.StorageFactory;
 
 public class ResetDatabaseExample {

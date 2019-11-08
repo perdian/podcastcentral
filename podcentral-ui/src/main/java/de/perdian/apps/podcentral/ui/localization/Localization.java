@@ -21,6 +21,14 @@ public interface Localization {
         return "Add feed";
     }
 
+    default String cancelDownloads() {
+        return "Cancel downloads";
+    }
+
+    default String cancellingEpisodeDownloads() {
+        return "Cancelling episode downloads";
+    }
+
     default String cannotLoadFeedFromUrl(String feedUrl) {
         return "Cannot load feed from URL: " + feedUrl;
     }

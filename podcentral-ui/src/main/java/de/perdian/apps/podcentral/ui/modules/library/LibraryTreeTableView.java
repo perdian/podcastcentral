@@ -19,8 +19,9 @@ import java.util.List;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
-import de.perdian.apps.podcentral.model.EpisodeStorageState;
+import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
 import javafx.scene.control.Label;
@@ -34,7 +35,7 @@ import javafx.scene.control.cell.TextFieldTreeTableCell;
 
 public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
-    public LibraryTreeTableView(JobScheduler uiJobScheduler, JobScheduler downloadJobScheduler, Library library, Localization localization) {
+    public LibraryTreeTableView(JobScheduler uiJobScheduler, EpisodeContentDownloader episodeContentDownloader, Library library, Localization localization) {
 
         TreeTableColumn<LibraryTreeTableValue, String> titleColumn = new TreeTableColumn<>(localization.title());
         titleColumn.setCellValueFactory(cell -> cell.getValue().getValue().getTitle());
@@ -63,33 +64,33 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         publicationDateColumn.setSortable(false);
         publicationDateColumn.setReorderable(false);
 
-        TreeTableColumn<LibraryTreeTableValue, EpisodeStorageState> storageStateColumn = new TreeTableColumn<>();
-        storageStateColumn.setCellValueFactory(cell -> cell.getValue().getValue().getEpisodeStorageState());
-        storageStateColumn.setCellFactory(cell -> new InternalEpisodeStorageStateTreeTableCell(localization));
-        storageStateColumn.setMinWidth(80);
-        storageStateColumn.setMaxWidth(80);
-        storageStateColumn.setEditable(false);
-        storageStateColumn.setSortable(false);
-        storageStateColumn.setReorderable(false);
+        TreeTableColumn<LibraryTreeTableValue, EpisodeContentDownloadState> contentDownloadStateColumn = new TreeTableColumn<>();
+        contentDownloadStateColumn.setCellValueFactory(cell -> cell.getValue().getValue().getContentDownloadState());
+        contentDownloadStateColumn.setCellFactory(cell -> new InternalEpisodeStorageStateTreeTableCell(localization));
+        contentDownloadStateColumn.setMinWidth(80);
+        contentDownloadStateColumn.setMaxWidth(80);
+        contentDownloadStateColumn.setEditable(false);
+        contentDownloadStateColumn.setSortable(false);
+        contentDownloadStateColumn.setReorderable(false);
 
-        TreeTableColumn<LibraryTreeTableValue, Double> storageProgressColumn = new TreeTableColumn<>(localization.storage());
-        storageProgressColumn.setCellValueFactory(cell -> cell.getValue().getValue().getStorageProgress());
-        storageProgressColumn.setCellFactory(cell -> new InternalProgressBarTreeTableCell());
-        storageProgressColumn.setMinWidth(80);
-        storageProgressColumn.setMaxWidth(80);
-        storageProgressColumn.setEditable(false);
-        storageProgressColumn.setSortable(false);
-        storageProgressColumn.setReorderable(false);
+        TreeTableColumn<LibraryTreeTableValue, Double> contentDownloadProgressColumn = new TreeTableColumn<>(localization.storage());
+        contentDownloadProgressColumn.setCellValueFactory(cell -> cell.getValue().getValue().getContentDownloadProgress());
+        contentDownloadProgressColumn.setCellFactory(cell -> new InternalProgressBarTreeTableCell());
+        contentDownloadProgressColumn.setMinWidth(80);
+        contentDownloadProgressColumn.setMaxWidth(80);
+        contentDownloadProgressColumn.setEditable(false);
+        contentDownloadProgressColumn.setSortable(false);
+        contentDownloadProgressColumn.setReorderable(false);
 
-        TreeTableColumn<LibraryTreeTableValue, String> storageProgressValueColumn = new TreeTableColumn<>();
-        storageProgressValueColumn.setCellValueFactory(cell -> cell.getValue().getValue().getStorageProgressLabel());
-        storageProgressValueColumn.setCellFactory(cell -> new InternalTextFieldCell());
-        storageProgressValueColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
-        storageProgressValueColumn.setMinWidth(50);
-        storageProgressValueColumn.setMaxWidth(50);
-        storageProgressValueColumn.setEditable(false);
-        storageProgressValueColumn.setSortable(false);
-        storageProgressValueColumn.setReorderable(false);
+        TreeTableColumn<LibraryTreeTableValue, String> contentDownloadProgressValueColumn = new TreeTableColumn<>();
+        contentDownloadProgressValueColumn.setCellValueFactory(cell -> cell.getValue().getValue().getContentDownloadProgressLabel());
+        contentDownloadProgressValueColumn.setCellFactory(cell -> new InternalTextFieldCell());
+        contentDownloadProgressValueColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        contentDownloadProgressValueColumn.setMinWidth(50);
+        contentDownloadProgressValueColumn.setMaxWidth(50);
+        contentDownloadProgressValueColumn.setEditable(false);
+        contentDownloadProgressValueColumn.setSortable(false);
+        contentDownloadProgressValueColumn.setReorderable(false);
 
         TreeTableColumn<LibraryTreeTableValue, String> descriptionColumn = new TreeTableColumn<>(localization.description());
         descriptionColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDescription());
@@ -102,11 +103,11 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
         this.setShowRoot(false);
         this.setRoot(new LibraryTreeRootItem(library));
-        this.setContextMenu(new LibraryTreeTableContextMenu(this, uiJobScheduler, downloadJobScheduler, library, localization));
+        this.setContextMenu(new LibraryTreeTableContextMenu(this, uiJobScheduler, episodeContentDownloader, library, localization));
         this.setEditable(true);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
-        this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, storageStateColumn, storageProgressColumn, storageProgressValueColumn, descriptionColumn));
+        this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, contentDownloadStateColumn, contentDownloadProgressColumn, contentDownloadProgressValueColumn, descriptionColumn));
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 //        treeTableView.setRowFactory(tv -> {
@@ -141,7 +142,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
     }
 
-    static class InternalEpisodeStorageStateTreeTableCell extends TreeTableCell<LibraryTreeTableValue, EpisodeStorageState> {
+    static class InternalEpisodeStorageStateTreeTableCell extends TreeTableCell<LibraryTreeTableValue, EpisodeContentDownloadState> {
 
         private Localization localization = null;
 
@@ -150,7 +151,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         }
 
         @Override
-        public void updateItem(EpisodeStorageState item, boolean empty) {
+        public void updateItem(EpisodeContentDownloadState item, boolean empty) {
             super.updateItem(item, empty);
             if (item == null || empty) {
                 this.setGraphic(null);

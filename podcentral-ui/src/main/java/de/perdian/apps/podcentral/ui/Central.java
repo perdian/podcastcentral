@@ -15,14 +15,16 @@
  */
 package de.perdian.apps.podcentral.ui;
 
-import java.util.ServiceLoader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
 import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
+import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.model.LibraryBuilder;
+import de.perdian.apps.podcentral.model.LibraryListener;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.storage.Storage;
@@ -36,7 +38,7 @@ public class Central {
     private Preferences preferences = null;
     private Library library = null;
     private JobScheduler uiJobScheduler = null;
-    private JobScheduler downloadJobScheduler = null;
+    private EpisodeContentDownloader episodeContentDownloader = null;
     private Storage storage = null;
 
     public Central(Localization localization) {
@@ -49,17 +51,26 @@ public class Central {
         JobScheduler uiJobScheduler = new JobScheduler(1);
         this.setUiJobScheduler(uiJobScheduler);
 
-        log.info("Creating download job scheduler");
-        JobScheduler downloadJobScheduler = new JobScheduler(5);
-        this.setDownloadJobScheduler(downloadJobScheduler);
-
         log.info("Creating storage");
         Storage storage = StorageFactory.createStorage(preferences);
         this.setStorage(storage);
 
         log.info("Loading library");
-        LibraryBuilder libraryBuilder = ServiceLoader.load(LibraryBuilder.class).findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryBuilder.class.getName()));
-        this.setLibrary(libraryBuilder.buildLibrary(storage, preferences));
+        LibraryBuilder libraryBuilder = LibraryBuilder.createInstance();
+        Library library = libraryBuilder.buildLibrary(storage, preferences);
+        this.setLibrary(library);
+
+        log.info("Creating episode content downloader");
+        EpisodeContentDownloader episodeContentDownloader = EpisodeContentDownloader.createInstance();
+        this.setEpisodeContentDownloader(episodeContentDownloader);
+        library.addListener(new LibraryListener() {
+            @Override public void onFeedDeleted(Feed feed) {
+                feed.getEpisodes().forEach(episode -> episodeContentDownloader.cancelDownload(episode));
+            }
+            @Override public void onEpisodeDeleted(Feed feed, Episode episode) {
+                episodeContentDownloader.cancelDownload(episode);
+            }
+        });
 
     }
 
@@ -84,11 +95,11 @@ public class Central {
         this.uiJobScheduler = uiJobScheduler;
     }
 
-    public JobScheduler getDownloadJobScheduler() {
-        return this.downloadJobScheduler;
+    public EpisodeContentDownloader getEpisodeContentDownloader() {
+        return this.episodeContentDownloader;
     }
-    private void setDownloadJobScheduler(JobScheduler downloadJobScheduler) {
-        this.downloadJobScheduler = downloadJobScheduler;
+    private void setEpisodeContentDownloader(EpisodeContentDownloader episodeContentDownloader) {
+        this.episodeContentDownloader = episodeContentDownloader;
     }
 
     public Storage getStorage() {

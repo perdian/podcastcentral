@@ -15,10 +15,18 @@
  */
 package de.perdian.apps.podcentral.model;
 
+import java.util.ServiceLoader;
+
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.storage.Storage;
 
 public interface LibraryBuilder {
+
+    static LibraryBuilder createInstance() {
+        return ServiceLoader.load(LibraryBuilder.class)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Cannot find ServiceLoader for class: " + LibraryBuilder.class.getName()));
+    }
 
     Library buildLibrary(Storage storage, Preferences preferences);
 

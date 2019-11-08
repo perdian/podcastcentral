@@ -12,7 +12,7 @@
         <module>podcentral-model</module>
         <module>podcentral-jobscheduler</module>
         <module>podcentral-preferences</module>
-        <module>podcentral-retrieval</module>
+        <module>podcentral-sources</module>
         <module>podcentral-storage</module>
         <module>podcentral-ui</module>
     </modules>

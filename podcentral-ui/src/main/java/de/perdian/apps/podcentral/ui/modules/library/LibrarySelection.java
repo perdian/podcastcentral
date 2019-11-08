@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.EpisodeStorageState;
+import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
 import de.perdian.apps.podcentral.model.Feed;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,10 +32,12 @@ class LibrarySelection {
 
     private ObservableList<Episode> downloadableEpisodes = null;
     private ObservableList<Episode> downloadableFeedEpisodes = null;
+    private ObservableList<Episode> cancelableEpisodes = null;
     private ObservableMap<Feed, List<Episode>> selectedEpisodes = null;
     private ObservableList<Feed> selectedFeeds = null;
 
     LibrarySelection() {
+        this.setCancelableEpisodes(FXCollections.observableArrayList());
         this.setDownloadableEpisodes(FXCollections.observableArrayList());
         this.setDownloadableFeedEpisodes(FXCollections.observableArrayList());
         this.setSelectedEpisodes(FXCollections.observableHashMap());
@@ -47,6 +49,7 @@ class LibrarySelection {
         this.collectSelectedEpisodes(values);
         this.collectDownloadableFeedEpisodes(values);
         this.collectDownloadableEpisodes(values);
+        this.collectCancelableEpisodes(values);
     }
 
     private void collectSelectedFeeds(List<LibraryTreeTableValue> values) {
@@ -73,7 +76,7 @@ class LibrarySelection {
             values.stream()
                 .filter(item -> item instanceof LibraryTreeTableValue.FeedTreeValue)
                 .flatMap(item -> ((LibraryTreeTableValue.FeedTreeValue)item).getFeed().getEpisodes().stream())
-                .filter(episode -> !EpisodeStorageState.DOWNLOAD_COMPLETED.equals(episode.getStorageState().getValue()))
+                .filter(episode -> !EpisodeContentDownloadState.COMPLETED.equals(episode.getContentDownloadState().getValue()))
                 .collect(Collectors.toSet())
         );
     }
@@ -83,7 +86,17 @@ class LibrarySelection {
             values.stream()
                 .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
                 .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
-                .filter(episode -> !EpisodeStorageState.DOWNLOAD_COMPLETED.equals(episode.getStorageState().getValue()))
+                .filter(episode -> !EpisodeContentDownloadState.COMPLETED.equals(episode.getContentDownloadState().getValue()))
+                .collect(Collectors.toSet())
+        );
+    }
+
+    private void collectCancelableEpisodes(List<LibraryTreeTableValue> values) {
+        this.getCancelableEpisodes().setAll(
+            values.stream()
+                .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
+                .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
+                .filter(episode -> List.of(EpisodeContentDownloadState.SCHEDULED, EpisodeContentDownloadState.DOWNLOADING).contains(episode.getContentDownloadState().getValue()))
                 .collect(Collectors.toSet())
         );
     }
@@ -100,6 +113,13 @@ class LibrarySelection {
     }
     private void setSelectedEpisodes(ObservableMap<Feed, List<Episode>> selectedEpisodes) {
         this.selectedEpisodes = selectedEpisodes;
+    }
+
+    ObservableList<Episode> getCancelableEpisodes() {
+        return this.cancelableEpisodes;
+    }
+    private void setCancelableEpisodes(ObservableList<Episode> cancelableEpisodes) {
+        this.cancelableEpisodes = cancelableEpisodes;
     }
 
     ObservableList<Episode> getDownloadableFeedEpisodes() {

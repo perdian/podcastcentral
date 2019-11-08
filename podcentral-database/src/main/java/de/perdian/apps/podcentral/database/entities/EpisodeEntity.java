@@ -27,8 +27,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
 import de.perdian.apps.podcentral.model.EpisodeData;
-import de.perdian.apps.podcentral.model.EpisodeStorageState;
 
 @Entity
 @Table(name = "episode")
@@ -39,8 +39,8 @@ public class EpisodeEntity implements Serializable {
     private Long id = null;
     private FeedEntity feed = null;
     private EpisodeData data = null;
-    private EpisodeStorageState episodeStorageState = EpisodeStorageState.NEW;
-    private String storageFileLocation = null;
+    private EpisodeContentDownloadState episodeContentDownloadState = EpisodeContentDownloadState.NEW;
+    private String contentFileLocation = null;
     private Boolean deleted = Boolean.FALSE;
 
     @Override
@@ -91,19 +91,19 @@ public class EpisodeEntity implements Serializable {
         this.data = data;
     }
 
-    public EpisodeStorageState getStorageState() {
-        return this.episodeStorageState;
+    public EpisodeContentDownloadState getStorageState() {
+        return this.episodeContentDownloadState;
     }
-    public void setStorageState(EpisodeStorageState episodeStorageState) {
-        this.episodeStorageState = episodeStorageState;
+    public void setStorageState(EpisodeContentDownloadState episodeContentDownloadState) {
+        this.episodeContentDownloadState = episodeContentDownloadState;
     }
 
     @Column(length = 1000)
-    public String getStorageFileLocation() {
-        return this.storageFileLocation;
+    public String getContentFileLocation() {
+        return this.contentFileLocation;
     }
-    public void setStorageFileLocation(String storageFileLocation) {
-        this.storageFileLocation = storageFileLocation;
+    public void setContentFileLocation(String contentFileLocation) {
+        this.contentFileLocation = contentFileLocation;
     }
 
     public Boolean getDeleted() {

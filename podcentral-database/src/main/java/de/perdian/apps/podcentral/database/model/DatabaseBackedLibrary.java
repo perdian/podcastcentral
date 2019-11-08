@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -37,6 +38,7 @@ import de.perdian.apps.podcentral.model.EpisodeData;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.Library;
+import de.perdian.apps.podcentral.model.LibraryListener;
 import de.perdian.apps.podcentral.storage.Storage;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -50,6 +52,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     private Storage storage = null;
     private Map<String, DatabaseBackedFeed> feedsByFeedUrl = null;
     private ObservableList<Feed> feeds = null;
+    private List<LibraryListener> listeners = null;
 
     DatabaseBackedLibrary(SessionFactory sessionFactory, Storage storage) {
         this.setSessionFactory(sessionFactory);
@@ -57,6 +60,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
         this.setFeedsByFeedUrl(new HashMap<>());
         this.setFeeds(FXCollections.observableArrayList());
         this.getFeeds().addListener(this::onFeedListChange);
+        this.setListeners(new CopyOnWriteArrayList<>());
         this.loadInitialFeeds();
     }
 
@@ -126,13 +130,17 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     private void onFeedListChange(ListChangeListener.Change<? extends Feed> change) {
         while (change.next()) {
             change.getAddedSubList().forEach(feed -> feed.getEpisodes().addListener(this::onFeedEpisodesListChange));
+            change.getAddedSubList().forEach(feed -> this.getListeners().forEach(listener -> listener.onFeedAdded(feed)));
             change.getRemoved().forEach(feed -> this.onFeedDelete((DatabaseBackedFeed)feed));
+            change.getRemoved().forEach(feed -> this.getListeners().forEach(listener -> listener.onFeedDeleted(feed)));
         }
     }
 
     private void onFeedEpisodesListChange(ListChangeListener.Change<? extends Episode> change) {
         while (change.next()) {
+            change.getAddedSubList().forEach(episode -> this.getListeners().forEach(listener -> listener.onEpisodeAdded(((DatabaseBackedEpisode)episode).getFeed(), episode)));
             change.getRemoved().forEach(episode -> this.onFeedEpisodeDelete((DatabaseBackedEpisode)episode));
+            change.getRemoved().forEach(episode -> this.getListeners().forEach(listener -> listener.onEpisodeDeleted(((DatabaseBackedEpisode)episode).getFeed(), episode)));
         }
     }
 
@@ -179,6 +187,21 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     }
     private void setFeeds(ObservableList<Feed> feeds) {
         this.feeds = feeds;
+    }
+
+    @Override
+    public boolean addListener(LibraryListener listener) {
+        return this.getListeners().add(listener);
+    }
+    @Override
+    public boolean removeListener(LibraryListener listener) {
+        return this.getListeners().remove(listener);
+    }
+    private List<LibraryListener> getListeners() {
+        return this.listeners;
+    }
+    private void setListeners(List<LibraryListener> listeners) {
+        this.listeners = listeners;
     }
 
 }
