@@ -28,6 +28,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -40,7 +41,7 @@ public class CentralApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-//        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
+        primaryStage.getIcons().add(new Image(CentralApplication.class.getClassLoader().getResourceAsStream("META-INF/icons/podcast.png")));
 
         Localization localization = new Localization() {};
 

@@ -65,6 +65,10 @@ public interface Localization {
         return "Description";
     }
 
+    default String download() {
+        return "Download";
+    }
+
     default String downloadSelectedEpisodes() {
         return "Download selected episodes";
     }
@@ -145,6 +149,10 @@ public interface Localization {
         return "PodCentral";
     }
 
+    default String progress() {
+        return "Progress";
+    }
+
     default String refresh() {
         return "Refresh";
     }
@@ -171,10 +179,6 @@ public interface Localization {
 
     default String schedulingEpisodeDownloads() {
         return "Scheduling episode downloads";
-    }
-
-    default String storage() {
-        return "Storage";
     }
 
     default String title() {
