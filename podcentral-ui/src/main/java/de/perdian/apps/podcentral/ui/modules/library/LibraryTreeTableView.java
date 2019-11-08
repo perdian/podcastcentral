@@ -169,7 +169,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
                         break;
                     case DOWNLOADING:
                         contentPane.setLeft(new Label(this.getLocalization().downloading()));
-                        contentPane.setRight(new Label("", new FontAwesomeIconView(FontAwesomeIcon.SPINNER)));
+                        contentPane.setRight(new Label("", new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD)));
                         break;
                     case NEW:
                         contentPane.setLeft(new Label(this.getLocalization().new_()));
