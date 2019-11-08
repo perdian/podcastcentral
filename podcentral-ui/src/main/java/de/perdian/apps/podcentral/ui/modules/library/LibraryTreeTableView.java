@@ -24,6 +24,7 @@ import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeSortMode;
@@ -157,32 +158,38 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
             if (item == null || empty) {
                 this.setGraphic(null);
             } else {
-                BorderPane contentPane = new BorderPane();
+                Label textLabel = new Label();
+                Label iconLabel = new Label();
+                iconLabel.setMaxHeight(Double.MAX_VALUE);
+                iconLabel.setAlignment(Pos.CENTER);
                 switch (item) {
                     case CANCELLED:
-                        contentPane.setLeft(new Label(this.getLocalization().cancelled()));
-                        contentPane.setRight(new Label("", new FontAwesomeIconView(FontAwesomeIcon.WINDOW_CLOSE)));
+                        textLabel.setText(this.getLocalization().cancelled());
+                        iconLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.WINDOW_CLOSE));
                         break;
                     case COMPLETED:
-                        contentPane.setLeft(new Label(this.getLocalization().completed()));
-                        contentPane.setRight(new Label("", new FontAwesomeIconView(FontAwesomeIcon.CHECK)));
+                        textLabel.setText(this.getLocalization().completed());
+                        iconLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CHECK));
                         break;
                     case DOWNLOADING:
-                        contentPane.setLeft(new Label(this.getLocalization().downloading()));
-                        contentPane.setRight(new Label("", new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD)));
+                        textLabel.setText(this.getLocalization().downloading());
+                        iconLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
                         break;
                     case NEW:
-                        contentPane.setLeft(new Label(this.getLocalization().new_()));
+                        textLabel.setText(this.getLocalization().new_());
                         break;
                     case SCHEDULED:
-                        contentPane.setLeft(new Label(this.getLocalization().scheduled()));
-                        contentPane.setRight(new Label("", new FontAwesomeIconView(FontAwesomeIcon.CLOCK_ALT)));
+                        textLabel.setText(this.getLocalization().scheduled());
+                        iconLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CLOCK_ALT));
                         break;
                     case ERRORED:
-                        contentPane.setLeft(new Label(this.getLocalization().errored()));
-                        contentPane.setRight(new Label("", new FontAwesomeIconView(FontAwesomeIcon.EXCLAMATION_TRIANGLE)));
+                        textLabel.setText(this.getLocalization().errored());
+                        iconLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.EXCLAMATION_TRIANGLE));
                         break;
                 }
+                BorderPane contentPane = new BorderPane();
+                contentPane.setLeft(textLabel);
+                contentPane.setRight(iconLabel);
                 this.setGraphic(contentPane);
             }
         }
