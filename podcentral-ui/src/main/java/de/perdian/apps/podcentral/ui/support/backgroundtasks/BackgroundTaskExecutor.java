@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.support.tasks;
+package de.perdian.apps.podcentral.ui.support.backgroundtasks;
 
 import de.perdian.apps.podcentral.preferences.Preferences;
 import javafx.beans.value.ObservableDoubleValue;

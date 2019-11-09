@@ -16,7 +16,7 @@
 package de.perdian.apps.podcentral.ui.modules.feeds.components.data;
 
 import de.perdian.apps.podcentral.model.FeedData;
-import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.Label;

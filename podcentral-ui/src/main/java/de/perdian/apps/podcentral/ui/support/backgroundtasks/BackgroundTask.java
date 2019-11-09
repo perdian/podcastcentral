@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.support.tasks;
+package de.perdian.apps.podcentral.ui.support.backgroundtasks;
 
-public interface BackgroundProgress {
+@FunctionalInterface
+public interface BackgroundTask {
 
-    void updateProgress(Double progress, String text);
+    void execute(BackgroundProgress progress) throws Exception;
 
 }

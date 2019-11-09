@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.sources.feeds.FeedInputLoader;
-import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.modules.feeds.components.data.FeedDataPane;
 import de.perdian.apps.podcentral.ui.support.errors.ExceptionDialogBuilder;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;

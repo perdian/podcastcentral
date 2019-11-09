@@ -1,8 +1,8 @@
 package de.perdian.apps.podcentral.ui.modules.feeds.add;
 
 import de.perdian.apps.podcentral.ui.Central;
-import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.modules.feeds.components.add.AddFeedAction;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;

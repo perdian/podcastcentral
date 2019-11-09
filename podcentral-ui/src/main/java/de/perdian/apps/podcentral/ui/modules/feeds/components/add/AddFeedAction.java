@@ -21,7 +21,7 @@ import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.FeedInputState;
 import de.perdian.apps.podcentral.model.Library;
-import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;

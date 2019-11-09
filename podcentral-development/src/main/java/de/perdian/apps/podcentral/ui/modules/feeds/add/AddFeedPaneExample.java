@@ -1,7 +1,7 @@
 package de.perdian.apps.podcentral.ui.modules.feeds.add;
 
-import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.modules.feeds.components.add.AddFeedPane;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;

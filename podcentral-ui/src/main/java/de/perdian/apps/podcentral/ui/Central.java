@@ -28,8 +28,8 @@ import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.storage.Storage;
 import de.perdian.apps.podcentral.storage.StorageFactory;
-import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
+import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 
 public class Central {
 

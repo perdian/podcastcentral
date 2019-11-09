@@ -25,8 +25,8 @@ import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.FeedInputState;
 import de.perdian.apps.podcentral.sources.feeds.FeedInputLoader;
-import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
+import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;

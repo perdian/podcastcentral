@@ -16,8 +16,8 @@
 package de.perdian.apps.podcentral.ui.modules.downloader;
 
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
-import de.perdian.apps.podcentral.ui.localization.Localization;
-import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
+import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.geometry.Insets;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;

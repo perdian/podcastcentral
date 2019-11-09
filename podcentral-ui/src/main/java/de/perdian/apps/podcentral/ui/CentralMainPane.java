@@ -17,9 +17,9 @@ package de.perdian.apps.podcentral.ui;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.podcentral.ui.localization.Localization;
 import de.perdian.apps.podcentral.ui.modules.downloader.EpisodeContentDownloaderPane;
 import de.perdian.apps.podcentral.ui.modules.library.LibraryPane;
+import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
