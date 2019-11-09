@@ -144,6 +144,10 @@ public interface Localization {
         return "Loading library...";
     }
 
+    default String missing() {
+        return "Missing";
+    }
+
     default String new_() {
         return "New";
     }

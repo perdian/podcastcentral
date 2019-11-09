@@ -18,6 +18,7 @@ package de.perdian.apps.podcentral.model;
 public enum EpisodeDownloadState {
 
     NEW,
+    MISSING,
     SCHEDULED,
     DOWNLOADING,
     COMPLETED,

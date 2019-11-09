@@ -104,11 +104,14 @@ class DatabaseBackedEpisode implements Episode {
                 this.getDownloadState().setValue(EpisodeDownloadState.NEW);
                 this.getDownloadProgress().setValue(0d);
             } else {
+                this.getDownloadState().setValue(EpisodeDownloadState.ERRORED);
                 this.getDownloadProgress().setValue(0d);
             }
         } else {
             this.getDownloadProgress().setValue(0d);
-            if (List.of(EpisodeDownloadState.ERRORED, EpisodeDownloadState.COMPLETED).contains(this.getDownloadState().getValue())) {
+            if (EpisodeDownloadState.COMPLETED.equals(this.getDownloadState().getValue())) {
+                this.getDownloadState().setValue(EpisodeDownloadState.MISSING);
+            } else if (EpisodeDownloadState.ERRORED.equals(this.getDownloadState().getValue())) {
                 this.getDownloadState().setValue(EpisodeDownloadState.ERRORED);
             } else {
                 this.getDownloadState().setValue(EpisodeDownloadState.NEW);

@@ -61,7 +61,7 @@ class EpisodeDownloaderJobRunnable implements TaskRunnable {
                 if (expectedLength == null || expectedLength.longValue() != actualLength) {
                     this.getEpisode().getContentSize().setValue(actualLength);
                 }
-                byte[] downloadBuffer = new byte[1024 * 16];
+                byte[] downloadBuffer = new byte[1024 * 32];
                 try (InputStream downloadStream = new BufferedInputStream(downloadResponse.body().byteStream())) {
                     File targetFile = this.getEpisode().getContentFile().getValue();
                     if (!targetFile.getParentFile().exists()) {
@@ -73,6 +73,7 @@ class EpisodeDownloaderJobRunnable implements TaskRunnable {
                         for (int bytesRead = downloadStream.read(downloadBuffer); bytesRead > -1; bytesRead = downloadStream.read(downloadBuffer)) {
                             targetStream.write(downloadBuffer, 0, bytesRead);
                             totalBytesRead += bytesRead;
+                            this.getEpisode().getDownloadedBytes().setValue(totalBytesRead);
                             progress.updateProgress((double)totalBytesRead / (double)actualLength, null);
                         }
                     }

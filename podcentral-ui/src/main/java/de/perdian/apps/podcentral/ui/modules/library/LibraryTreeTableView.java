@@ -30,6 +30,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeSortMode;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.ProgressBarTreeTableCell;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
@@ -114,21 +115,11 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, downloadStateColumn, downloadProgressColumn, downloadProgressValueColumn, descriptionColumn));
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.setOnKeyPressed(new LibraryTreeTableKeyListener(librarySelection, backgroundTaskExecutor, episodeDownloader, library, localization));
-
-        // treeTableView.setRowFactory(tv -> {
-        // TreeTableRow<LibraryTreeTableValue> tableRow = new TreeTableRow<>();
-        // tableRow.setOnDragDetected(event -> {
-        // System.err.println("DRAG!!!");
-        // Dragboard db = tableRow.startDragAndDrop(TransferMode.COPY);
-        //
-        // ClipboardContent content = new ClipboardContent();
-        // content.putFiles(List.of(new
-        // File("/Users/perdian/Downloads/w13xttx2.rss")));
-        // db.setContent(content);
-        // event.consume();
-        // });
-        // return tableRow;
-        // });
+        this.setRowFactory(tv -> {
+            TreeTableRow<LibraryTreeTableValue> tableRow = new TreeTableRow<>();
+            tableRow.setOnDragDetected(new LibraryTreeTableMouseEventHandler(librarySelection));
+            return tableRow;
+         });
 
     }
 
@@ -181,6 +172,10 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
                         break;
                     case NEW:
                         textLabel.setText(this.getLocalization().new_());
+                        break;
+                    case MISSING:
+                        textLabel.setText(this.getLocalization().missing());
+                        iconLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.QUESTION));
                         break;
                     case SCHEDULED:
                         textLabel.setText(this.getLocalization().scheduled());

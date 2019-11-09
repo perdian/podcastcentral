@@ -121,9 +121,10 @@ interface LibraryTreeTableValue {
 
         @Override
         public ObservableValue<String> getDownloadProgressLabel() {
+            Double progressValue = this.getEpisode().getDownloadProgress().getValue();
             NumberFormat numberFormat = new DecimalFormat("0");
-            StringProperty progressLabelProperty = new SimpleStringProperty(numberFormat.format(this.getEpisode().getDownloadProgress().getValue() * 100d) + " %");
-            this.getEpisode().getDownloadProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(numberFormat.format(newValue * 100d) + " %"));
+            StringProperty progressLabelProperty = new SimpleStringProperty(progressValue == null || Double.valueOf(0).equals(progressValue) ? "" : (numberFormat.format(progressValue * 100d) + " %"));
+            this.getEpisode().getDownloadProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(newValue == null  || Double.valueOf(0).equals(newValue) ? "" : (numberFormat.format(newValue * 100d) + " %")));
             return progressLabelProperty;
         }
 

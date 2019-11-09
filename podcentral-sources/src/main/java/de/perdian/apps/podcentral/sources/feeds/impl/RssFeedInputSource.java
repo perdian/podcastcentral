@@ -118,7 +118,7 @@ public class RssFeedInputSource implements FeedInputSource {
         episodeData.setContentUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@url", "media:content/@url")).orElse(null));
         episodeData.setDescription(XmlHelper.getFirstMatchingValue(itemNode, List.of("description", "itunes:summary")).orElse(null));
         episodeData.setDuration(XmlHelper.getFirstMatchingValue(itemNode, List.of("itunes:duration")).map(stringValue -> DURATION_PARSING_HELPER.parse(stringValue).orElse(null)).orElse(null));
-        episodeData.setImageUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("image/url")).orElse(null));
+        episodeData.setImageUrl(XmlHelper.getFirstMatchingValue(itemNode, List.of("image/url", "itunes:image/@href")).orElse(null));
         episodeData.setPublicationDate(XmlHelper.getFirstMatchingValue(itemNode, List.of("pubDate")).map(DateHelper::parseInstant).orElse(null));
         episodeData.setSize(XmlHelper.getFirstMatchingValue(itemNode, List.of("enclosure/@length", "media:content/@fileSize")).map(Long::valueOf).orElse(null));
         episodeData.setSubtitle(XmlHelper.getFirstMatchingValue(itemNode, List.of("itunes:subtitle")).orElse(null));
