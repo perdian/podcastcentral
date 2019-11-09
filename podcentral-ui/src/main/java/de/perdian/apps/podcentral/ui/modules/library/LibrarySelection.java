@@ -25,8 +25,11 @@ import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.model.Feed;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableView.TreeTableViewSelectionModel;
 
 class LibrarySelection {
 
@@ -35,21 +38,35 @@ class LibrarySelection {
     private ObservableList<Episode> cancelableEpisodes = null;
     private ObservableMap<Feed, List<Episode>> selectedEpisodes = null;
     private ObservableList<Feed> selectedFeeds = null;
+    private TreeTableViewSelectionModel<LibraryTreeTableValue> selectionModel = null;
 
-    LibrarySelection() {
+    LibrarySelection(TreeTableViewSelectionModel<LibraryTreeTableValue> selectionModel) {
+        this.setSelectionModel(selectionModel);
         this.setCancelableEpisodes(FXCollections.observableArrayList());
         this.setDownloadableEpisodes(FXCollections.observableArrayList());
         this.setDownloadableFeedEpisodes(FXCollections.observableArrayList());
         this.setSelectedEpisodes(FXCollections.observableHashMap());
         this.setSelectedFeeds(FXCollections.observableArrayList());
+        this.update();
+        selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<LibraryTreeTableValue>> change) -> this.update(change.getList().stream().map(TreeItem::getValue).collect(Collectors.toList())));
     }
 
-    public void update(List<LibraryTreeTableValue> values) {
+    public LibrarySelection clear() {
+        this.getSelectionModel().clearSelection();
+        return this.update();
+    }
+
+    public LibrarySelection update() {
+        return this.update(this.getSelectionModel().getSelectedItems().stream().map(TreeItem::getValue).collect(Collectors.toList()));
+    }
+
+    private LibrarySelection update(List<LibraryTreeTableValue> values) {
         this.collectSelectedFeeds(values);
         this.collectSelectedEpisodes(values);
         this.collectDownloadableFeedEpisodes(values);
         this.collectDownloadableEpisodes(values);
         this.collectCancelableEpisodes(values);
+        return this;
     }
 
     private void collectSelectedFeeds(List<LibraryTreeTableValue> values) {
@@ -99,6 +116,13 @@ class LibrarySelection {
                 .filter(episode -> List.of(EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.DOWNLOADING).contains(episode.getDownloadState().getValue()))
                 .collect(Collectors.toList())
         );
+    }
+
+    TreeTableViewSelectionModel<LibraryTreeTableValue> getSelectionModel() {
+        return this.selectionModel;
+    }
+    private void setSelectionModel(TreeTableViewSelectionModel<LibraryTreeTableValue> selectionModel) {
+        this.selectionModel = selectionModel;
     }
 
     ObservableList<Feed> getSelectedFeeds() {

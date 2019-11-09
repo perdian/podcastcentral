@@ -103,14 +103,17 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         descriptionColumn.setSortable(false);
         descriptionColumn.setReorderable(false);
 
+        LibrarySelection librarySelection = new LibrarySelection(this.getSelectionModel());
+
         this.setShowRoot(false);
         this.setRoot(new LibraryTreeRootItem(library));
-        this.setContextMenu(new LibraryTreeTableContextMenu(this, backgroundTaskExecutor, episodeDownloader, library, localization));
+        this.setContextMenu(new LibraryTreeTableContextMenu(librarySelection, backgroundTaskExecutor, episodeDownloader, library, localization));
         this.setEditable(true);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, downloadStateColumn, downloadProgressColumn, downloadProgressValueColumn, descriptionColumn));
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        this.setOnKeyPressed(new LibraryTreeTableKeyListener(librarySelection, backgroundTaskExecutor, episodeDownloader, library, localization));
 
         // treeTableView.setRowFactory(tv -> {
         // TreeTableRow<LibraryTreeTableValue> tableRow = new TreeTableRow<>();

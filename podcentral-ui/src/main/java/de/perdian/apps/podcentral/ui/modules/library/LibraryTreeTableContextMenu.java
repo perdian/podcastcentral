@@ -16,7 +16,6 @@
 package de.perdian.apps.podcentral.ui.modules.library;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -30,22 +29,16 @@ import de.perdian.apps.podcentral.ui.modules.feeds.RefreshFeedsActionEventHandle
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.beans.binding.Bindings;
-import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TreeItem;
 
 class LibraryTreeTableContextMenu extends ContextMenu {
 
-    private LibraryTreeTableView libraryTreeTableView = null;
     private LibrarySelection librarySelection = null;
 
-    public LibraryTreeTableContextMenu(LibraryTreeTableView libraryTreeTableView, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
-
-        LibrarySelection librarySelection = new LibrarySelection();
-        libraryTreeTableView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<LibraryTreeTableValue>> change) -> librarySelection.update(change.getList().stream().map(TreeItem::getValue).collect(Collectors.toList())));
+    public LibraryTreeTableContextMenu(LibrarySelection librarySelection, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
         this.setLibrarySelection(librarySelection);
 
         MenuItem startDownloadSelectedEpisodesMenuItem = new MenuItem(localization.downloadSelectedEpisodes());
@@ -69,12 +62,12 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
         MenuItem refreshMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()));
-        refreshMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(), () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), backgroundTaskExecutor, localization));
+        refreshMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(), () -> librarySelection.getSelectionModel().clearSelection(), backgroundTaskExecutor, localization));
         this.getItems().add(refreshMenuItem);
 
         MenuItem refreshRestoreEpisodesMenuItem = new MenuItem(localization.refreshRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshRestoreEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()));
-        refreshRestoreEpisodesMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), () -> this.getLibraryTreeTableView().getSelectionModel().clearSelection(), backgroundTaskExecutor, localization));
+        refreshRestoreEpisodesMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), () -> librarySelection.getSelectionModel().clearSelection(), backgroundTaskExecutor, localization));
         this.getItems().add(refreshRestoreEpisodesMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());
@@ -84,21 +77,12 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         deleteMenuItem.setOnAction(new DeleteFeedsActionEventHandler(librarySelection::getSelectedFeeds, librarySelection::getSelectedEpisodes, backgroundTaskExecutor, library, localization));
         this.getItems().add(deleteMenuItem);
 
-        this.setLibraryTreeTableView(libraryTreeTableView);
-
     }
 
     @Override
     public void show(Node anchor, double screenX, double screenY) {
-        this.getLibrarySelection().update(this.getLibraryTreeTableView().getSelectionModel().getSelectedItems().stream().map(TreeItem::getValue).collect(Collectors.toList()));
+        this.getLibrarySelection().update();
         super.show(anchor, screenX, screenY);
-    }
-
-    private LibraryTreeTableView getLibraryTreeTableView() {
-        return this.libraryTreeTableView;
-    }
-    private void setLibraryTreeTableView(LibraryTreeTableView libraryTreeTableView) {
-        this.libraryTreeTableView = libraryTreeTableView;
     }
 
     private LibrarySelection getLibrarySelection() {

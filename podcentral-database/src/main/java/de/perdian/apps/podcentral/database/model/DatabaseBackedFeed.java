@@ -127,6 +127,7 @@ class DatabaseBackedFeed implements Feed {
                 if (episode != null && refreshOptionsSet.contains(RefreshOption.OVERWRITE_CHANGED_VALUES)) {
                     episode.updateData(episodeData);
                 } else if (episode == null) {
+                    Transaction transaction = session.beginTransaction();
                     File episodeFile = this.getStorage().resolveFileRelative(feedInput.getData().getTitle(), episodeData.getTitle() + episodeData.computeFileNameExtension());
                     if (episodeEntityFromDatabase != null && refreshOptionsSet.contains(RefreshOption.RESTORE_DELETED_EPISODES)) {
                         episodeEntityFromDatabase.setDeleted(Boolean.FALSE);
@@ -140,6 +141,7 @@ class DatabaseBackedFeed implements Feed {
                         session.update(episodeEntityFromDatabase);
                         newEpisodes.add(new DatabaseBackedEpisode(this, episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));
                     }
+                    transaction.commit();
                 }
             }
             if (!newEpisodes.isEmpty()) {
