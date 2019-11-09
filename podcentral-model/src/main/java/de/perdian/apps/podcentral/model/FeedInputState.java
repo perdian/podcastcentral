@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.jobscheduler;
+package de.perdian.apps.podcentral.model;
 
-public enum JobStatus {
+public enum FeedInputState {
 
-    ACTIVE,
-    COMPLETED,
-    CANCELLED;
+    OKAY,
+    ERRORED;
 
 }

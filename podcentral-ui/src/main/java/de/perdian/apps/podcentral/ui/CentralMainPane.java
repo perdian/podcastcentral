@@ -30,13 +30,13 @@ class CentralMainPane extends GridPane {
 
     public CentralMainPane(Central central, Localization localization) {
 
-        LibraryPane libraryPane = new LibraryPane(central.getUiJobScheduler(), central.getEpisodeContentDownloader(), central.getLibrary(), localization);
+        LibraryPane libraryPane = new LibraryPane(central.getBackgroundTaskExecutor(), central.getEpisodeContentDownloader(), central.getLibrary(), localization);
         libraryPane.setPadding(new Insets(10, 8, 8, 8));
         Tab libraryTab = new Tab(localization.library(), libraryPane);
         libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
         libraryTab.setClosable(false);
 
-        EpisodeContentDownloaderPane episodeContentDownloaderPane = new EpisodeContentDownloaderPane(central.getUiJobScheduler(), central.getEpisodeContentDownloader(), localization);
+        EpisodeContentDownloaderPane episodeContentDownloaderPane = new EpisodeContentDownloaderPane(central.getBackgroundTaskExecutor(), central.getEpisodeContentDownloader(), localization);
         episodeContentDownloaderPane.setPadding(new Insets(8, 8, 8, 8));
         Tab schedulerTab = new Tab(localization.downloads(), episodeContentDownloaderPane);
         schedulerTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
@@ -46,7 +46,7 @@ class CentralMainPane extends GridPane {
         GridPane.setHgrow(tabPane, Priority.ALWAYS);
         GridPane.setVgrow(tabPane, Priority.ALWAYS);
 
-        CentralStatusBar statusPane = new CentralStatusBar(central.getUiJobScheduler(), central.getEpisodeContentDownloader(), localization);
+        CentralStatusBar statusPane = new CentralStatusBar(central.getBackgroundTaskExecutor(), central.getEpisodeContentDownloader(), localization);
 
         this.add(tabPane, 0, 0, 1, 1);
         this.add(statusPane, 0, 1, 1, 1);

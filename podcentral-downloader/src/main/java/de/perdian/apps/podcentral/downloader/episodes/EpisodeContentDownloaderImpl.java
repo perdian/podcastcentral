@@ -3,30 +3,29 @@ package de.perdian.apps.podcentral.downloader.episodes;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.perdian.apps.podcentral.jobscheduler.AcceptedJob;
-import de.perdian.apps.podcentral.jobscheduler.ActiveJob;
-import de.perdian.apps.podcentral.jobscheduler.Job;
-import de.perdian.apps.podcentral.jobscheduler.JobListener;
-import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
-import de.perdian.apps.podcentral.jobscheduler.JobStatus;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
+import de.perdian.apps.podcentral.taskexecutor.Task;
+import de.perdian.apps.podcentral.taskexecutor.TaskExecutor;
+import de.perdian.apps.podcentral.taskexecutor.TaskListener;
+import de.perdian.apps.podcentral.taskexecutor.TaskRequest;
+import de.perdian.apps.podcentral.taskexecutor.TaskStatus;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 class EpisodeContentDownloaderImpl implements EpisodeContentDownloader {
 
     private Object lock = null;
-    private JobScheduler jobScheduler = null;
+    private TaskExecutor taskExecutor = null;
     private ObservableList<Episode> scheduledEpisodes = null;
     private ObservableList<Episode> downloadingEpisodes = null;
-    private Map<Episode, AcceptedJob> episodeToAcceptedJob = null;
+    private Map<Episode, Task> episodeToAcceptedJob = null;
 
     public EpisodeContentDownloaderImpl() {
-        JobScheduler jobScheduler = new JobScheduler(5);
-        jobScheduler.addJobListener(new JobListenerImpl());
+        TaskExecutor taskExecutor = new TaskExecutor(5);
+        taskExecutor.addTaskListener(new TaskListenerImpl());
         this.setLock(new Object());
-        this.setJobScheduler(jobScheduler);
+        this.setJobScheduler(taskExecutor);
         this.setScheduledEpisodes(FXCollections.observableArrayList());
         this.setDownloadingEpisodes(FXCollections.observableArrayList());
         this.setEpisodeToAcceptedJob(new HashMap<>());
@@ -37,9 +36,9 @@ class EpisodeContentDownloaderImpl implements EpisodeContentDownloader {
         synchronized (this.getLock()) {
             if (!this.getEpisodeToAcceptedJob().containsKey(episode)) {
                 EpisodeContentDownloaderJobRunnable jobRunnable = new EpisodeContentDownloaderJobRunnable(episode);
-                Job job = new Job(episode.getTitle().getValue(), jobRunnable);
-                job.addProgressListener((progress, text) -> episode.getContentDownloadProgress().setValue(progress));
-                this.getJobScheduler().submitJob(job);
+                TaskRequest taskRequest = new TaskRequest(episode.getTitle().getValue(), jobRunnable);
+                taskRequest.addProgressListener((progress, text) -> episode.getContentDownloadProgress().setValue(progress));
+                this.getJobScheduler().submitTask(taskRequest);
             }
         }
     }
@@ -47,53 +46,45 @@ class EpisodeContentDownloaderImpl implements EpisodeContentDownloader {
     @Override
     public void cancelDownload(Episode episode) {
         synchronized (this.getLock()) {
-            AcceptedJob acceptedJob = this.getEpisodeToAcceptedJob().get(episode);
-            if (acceptedJob != null) {
-                acceptedJob.cancel(null);
+            Task task = this.getEpisodeToAcceptedJob().get(episode);
+            if (task != null) {
+                task.cancel(null);
             }
         }
     }
 
-    class JobListenerImpl implements JobListener {
-        @Override public void onJobAccepted(AcceptedJob acceptedJob) {
+    class TaskListenerImpl implements TaskListener {
+        @Override public void onTaskScheduled(Task task) {
             synchronized (EpisodeContentDownloaderImpl.this.getLock()) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)acceptedJob.getJob().getRunnable();
+                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)task.getRequest().getRunnable();
                 EpisodeContentDownloaderImpl.this.getScheduledEpisodes().add(jobRunnable.getEpisode());
-                EpisodeContentDownloaderImpl.this.getEpisodeToAcceptedJob().put(jobRunnable.getEpisode(), acceptedJob);
+                EpisodeContentDownloaderImpl.this.getEpisodeToAcceptedJob().put(jobRunnable.getEpisode(), task);
                 jobRunnable.getEpisode().getContentDownloadState().setValue(EpisodeContentDownloadState.SCHEDULED);
             }
         }
-        @Override public void onJobCancelled(AcceptedJob acceptedJob) {
+        @Override public void onTaskCancelled(Task task) {
             synchronized (EpisodeContentDownloaderImpl.this.getLock()) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)acceptedJob.getJob().getRunnable();
+                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)task.getRequest().getRunnable();
                 EpisodeContentDownloaderImpl.this.getScheduledEpisodes().remove(jobRunnable.getEpisode());
                 EpisodeContentDownloaderImpl.this.getEpisodeToAcceptedJob().remove(jobRunnable.getEpisode());
                 jobRunnable.getEpisode().getContentDownloadState().setValue(EpisodeContentDownloadState.CANCELLED);
             }
         }
-        @Override public void onJobStarting(ActiveJob activeJob) {
+        @Override public void onTaskStarted(Task task) {
             synchronized (EpisodeContentDownloaderImpl.this.getLock()) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)activeJob.getAcceptedJob().getJob().getRunnable();
+                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)task.getRequest().getRunnable();
                 EpisodeContentDownloaderImpl.this.getScheduledEpisodes().remove(jobRunnable.getEpisode());
                 EpisodeContentDownloaderImpl.this.getDownloadingEpisodes().add(jobRunnable.getEpisode());
-                EpisodeContentDownloaderImpl.this.getEpisodeToAcceptedJob().put(jobRunnable.getEpisode(), activeJob.getAcceptedJob());
+                EpisodeContentDownloaderImpl.this.getEpisodeToAcceptedJob().put(jobRunnable.getEpisode(), task);
                 jobRunnable.getEpisode().getContentDownloadState().setValue(EpisodeContentDownloadState.DOWNLOADING);
             }
         }
-        @Override public void onJobCompleted(ActiveJob activeJob) {
+        @Override public void onTaskCompleted(Task task) {
             synchronized (EpisodeContentDownloaderImpl.this.getLock()) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)activeJob.getAcceptedJob().getJob().getRunnable();
+                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)task.getRequest().getRunnable();
                 EpisodeContentDownloaderImpl.this.getDownloadingEpisodes().remove(jobRunnable.getEpisode());
                 EpisodeContentDownloaderImpl.this.getEpisodeToAcceptedJob().remove(jobRunnable.getEpisode());
-                jobRunnable.getEpisode().getContentDownloadState().setValue(JobStatus.CANCELLED.equals(activeJob.getStatus()) ? EpisodeContentDownloadState.CANCELLED : EpisodeContentDownloadState.COMPLETED);
-            }
-        }
-        @Override public void onJobCancelled(ActiveJob activeJob) {
-            synchronized (EpisodeContentDownloaderImpl.this.getLock()) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)activeJob.getAcceptedJob().getJob().getRunnable();
-                EpisodeContentDownloaderImpl.this.getScheduledEpisodes().remove(jobRunnable.getEpisode());
-                EpisodeContentDownloaderImpl.this.getEpisodeToAcceptedJob().remove(jobRunnable.getEpisode());
-                jobRunnable.getEpisode().getContentDownloadState().setValue(EpisodeContentDownloadState.CANCELLED);
+                jobRunnable.getEpisode().getContentDownloadState().setValue(TaskStatus.CANCELLED.equals(task.getStatus()) ? EpisodeContentDownloadState.CANCELLED : EpisodeContentDownloadState.COMPLETED);
             }
         }
     }
@@ -105,17 +96,17 @@ class EpisodeContentDownloaderImpl implements EpisodeContentDownloader {
         this.lock = lock;
     }
 
-    private JobScheduler getJobScheduler() {
-        return this.jobScheduler;
+    private TaskExecutor getJobScheduler() {
+        return this.taskExecutor;
     }
-    private void setJobScheduler(JobScheduler jobScheduler) {
-        this.jobScheduler = jobScheduler;
+    private void setJobScheduler(TaskExecutor taskExecutor) {
+        this.taskExecutor = taskExecutor;
     }
 
-    private Map<Episode, AcceptedJob> getEpisodeToAcceptedJob() {
+    private Map<Episode, Task> getEpisodeToAcceptedJob() {
         return this.episodeToAcceptedJob;
     }
-    private void setEpisodeToAcceptedJob(Map<Episode, AcceptedJob> episodeToAcceptedJob) {
+    private void setEpisodeToAcceptedJob(Map<Episode, Task> episodeToAcceptedJob) {
         this.episodeToAcceptedJob = episodeToAcceptedJob;
     }
 

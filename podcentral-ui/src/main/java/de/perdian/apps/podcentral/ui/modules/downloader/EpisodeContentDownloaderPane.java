@@ -16,8 +16,8 @@
 package de.perdian.apps.podcentral.ui.modules.downloader;
 
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
-import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
 import javafx.geometry.Insets;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -26,9 +26,9 @@ import javafx.scene.layout.Priority;
 
 public class EpisodeContentDownloaderPane extends GridPane {
 
-    public EpisodeContentDownloaderPane(JobScheduler uiJobScheduler, EpisodeContentDownloader episodeContentDownloader, Localization localization) {
+    public EpisodeContentDownloaderPane(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeContentDownloader episodeContentDownloader, Localization localization) {
 
-        EpisodeContentDownloaderToolbar toolbarPane = new EpisodeContentDownloaderToolbar(uiJobScheduler, episodeContentDownloader, localization);
+        EpisodeContentDownloaderToolbar toolbarPane = new EpisodeContentDownloaderToolbar(backgroundTaskExecutor, episodeContentDownloader, localization);
         GridPane.setMargin(toolbarPane, new Insets(0, 0, 8, 0));
         GridPane.setHgrow(toolbarPane, Priority.ALWAYS);
 

@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.jobscheduler;
+package de.perdian.apps.podcentral.taskexecutor;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class JobProgress {
+public class TaskProgress {
 
-    private List<JobProgressListener> progressListeners = null;
-    private Supplier<JobStatus> statusSupplier = null;
+    private List<TaskProgressListener> progressListeners = null;
+    private Supplier<TaskStatus> statusSupplier = null;
 
-    JobProgress(List<JobProgressListener> progressListeners, Supplier<JobStatus> statusSupplier) {
+    TaskProgress(List<TaskProgressListener> progressListeners, Supplier<TaskStatus> statusSupplier) {
         this.setProgressListeners(progressListeners == null ? Collections.emptyList() : progressListeners);
         this.setStatusSupplier(statusSupplier);
     }
@@ -33,20 +33,20 @@ public class JobProgress {
         this.getProgressListeners().forEach(l -> l.onProgress(progress, message));
     }
 
-    private List<JobProgressListener> getProgressListeners() {
+    private List<TaskProgressListener> getProgressListeners() {
         return this.progressListeners;
     }
-    private void setProgressListeners(List<JobProgressListener> progressListeners) {
+    private void setProgressListeners(List<TaskProgressListener> progressListeners) {
         this.progressListeners = progressListeners;
     }
 
-    public JobStatus getStatus() {
+    public TaskStatus getStatus() {
         return this.getStatusSupplier().get();
     }
-    private Supplier<JobStatus> getStatusSupplier() {
+    private Supplier<TaskStatus> getStatusSupplier() {
         return this.statusSupplier;
     }
-    private void setStatusSupplier(Supplier<JobStatus> statusSupplier) {
+    private void setStatusSupplier(Supplier<TaskStatus> statusSupplier) {
         this.statusSupplier = statusSupplier;
     }
 

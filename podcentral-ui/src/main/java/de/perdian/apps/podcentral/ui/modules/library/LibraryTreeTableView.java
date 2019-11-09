@@ -20,10 +20,10 @@ import java.util.List;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
-import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
@@ -37,12 +37,12 @@ import javafx.scene.layout.BorderPane;
 
 public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
-    public LibraryTreeTableView(JobScheduler uiJobScheduler, EpisodeContentDownloader episodeContentDownloader, Library library, Localization localization) {
+    public LibraryTreeTableView(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeContentDownloader episodeContentDownloader, Library library, Localization localization) {
 
         TreeTableColumn<LibraryTreeTableValue, String> titleColumn = new TreeTableColumn<>(localization.title());
         titleColumn.setCellValueFactory(cell -> cell.getValue().getValue().getTitle());
         titleColumn.setCellFactory(cell -> new InternalTextFieldCell());
-        titleColumn.setMinWidth(400);
+        titleColumn.setMinWidth(350);
         titleColumn.setMaxWidth(600);
         titleColumn.setPrefWidth(400);
         titleColumn.setEditable(false);
@@ -51,8 +51,8 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         TreeTableColumn<LibraryTreeTableValue, String> durationColumn = new TreeTableColumn<>(localization.duration());
         durationColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDuration());
         durationColumn.setCellFactory(cell -> new InternalTextFieldCell());
-        durationColumn.setMinWidth(80);
-        durationColumn.setMaxWidth(80);
+        durationColumn.setMinWidth(70);
+        durationColumn.setMaxWidth(70);
         durationColumn.setEditable(false);
         durationColumn.setSortable(false);
         durationColumn.setReorderable(false);
@@ -97,7 +97,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         TreeTableColumn<LibraryTreeTableValue, String> descriptionColumn = new TreeTableColumn<>(localization.description());
         descriptionColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDescription());
         descriptionColumn.setCellFactory(cell -> new InternalTextFieldCell());
-        descriptionColumn.setMinWidth(400);
+        descriptionColumn.setMinWidth(300);
         descriptionColumn.setMaxWidth(Double.MAX_VALUE);
         descriptionColumn.setEditable(false);
         descriptionColumn.setSortable(false);
@@ -105,7 +105,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
         this.setShowRoot(false);
         this.setRoot(new LibraryTreeRootItem(library));
-        this.setContextMenu(new LibraryTreeTableContextMenu(this, uiJobScheduler, episodeContentDownloader, library, localization));
+        this.setContextMenu(new LibraryTreeTableContextMenu(this, backgroundTaskExecutor, episodeContentDownloader, library, localization));
         this.setEditable(true);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);

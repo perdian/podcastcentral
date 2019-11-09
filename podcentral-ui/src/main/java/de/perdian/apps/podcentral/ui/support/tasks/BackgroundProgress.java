@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.jobscheduler;
+package de.perdian.apps.podcentral.ui.support.tasks;
 
-public interface JobRunnable {
+public interface BackgroundProgress {
 
-    void run(JobProgress progress) throws Exception;
+    void updateProgress(Double progress, String text);
 
 }

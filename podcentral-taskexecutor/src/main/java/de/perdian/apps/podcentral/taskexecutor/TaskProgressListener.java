@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.jobscheduler;
+package de.perdian.apps.podcentral.taskexecutor;
 
-public interface JobProgressListener {
+public interface TaskProgressListener {
 
-    void onProgress(Double progress, String message);
+    void onProgress(Double progress, String text);
 
 }

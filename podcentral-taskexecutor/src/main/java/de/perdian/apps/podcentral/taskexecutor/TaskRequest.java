@@ -13,27 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.jobscheduler;
+package de.perdian.apps.podcentral.taskexecutor;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class Job {
+public class TaskRequest {
 
     private String title = null;
-    private JobRunnable runnable = null;
+    private String description = null;
+    private String previewImageUrl = null;
+    private TaskRunnable runnable = null;
     private int priority = 0;
-    private List<JobProgressListener> progressListeners = new ArrayList<>();
+    private List<TaskProgressListener> progressListeners = null;
 
-    public Job() {
+    public TaskRequest() {
     }
 
-    public Job(String title, JobRunnable runnable) {
+    public TaskRequest(String title, TaskRunnable runnable) {
         this.setTitle(title);
         this.setRunnable(runnable);
+        this.setProgressListeners(new CopyOnWriteArrayList<>());
     }
 
     @Override
@@ -52,10 +55,24 @@ public class Job {
         this.title = title;
     }
 
-    public JobRunnable getRunnable() {
+    public String getDescription() {
+        return this.description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getPreviewImageUrl() {
+        return this.previewImageUrl;
+    }
+    public void setPreviewImageUrl(String previewImageUrl) {
+        this.previewImageUrl = previewImageUrl;
+    }
+
+    public TaskRunnable getRunnable() {
         return this.runnable;
     }
-    public void setRunnable(JobRunnable runnable) {
+    public void setRunnable(TaskRunnable runnable) {
         this.runnable = runnable;
     }
 
@@ -66,16 +83,16 @@ public class Job {
         this.priority = priority;
     }
 
-    public boolean addProgressListener(JobProgressListener jobProgressListener) {
-        return this.getProgressListeners().add(jobProgressListener);
+    public boolean addProgressListener(TaskProgressListener progressListener) {
+        return this.getProgressListeners().add(progressListener);
     }
-    public boolean removeProgressListener(JobProgressListener jobProgressListener) {
-        return this.getProgressListeners().remove(jobProgressListener);
+    public boolean removeProgressListener(TaskProgressListener progressListener) {
+        return this.getProgressListeners().remove(progressListener);
     }
-    public List<JobProgressListener> getProgressListeners() {
+    List<TaskProgressListener> getProgressListeners() {
         return this.progressListeners;
     }
-    public void setProgressListeners(List<JobProgressListener> progressListeners) {
+    private void setProgressListeners(List<TaskProgressListener> progressListeners) {
         this.progressListeners = progressListeners;
     }
 

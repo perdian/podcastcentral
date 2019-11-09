@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import de.perdian.apps.podcentral.jobscheduler.Job;
-import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedInput;
+import de.perdian.apps.podcentral.model.FeedInputState;
 import de.perdian.apps.podcentral.sources.feeds.FeedInputLoader;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -34,15 +34,15 @@ public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent>
 
     private Supplier<List<Feed>> feedListSupplier = null;
     private Runnable clearSelectionCallback = null;
-    private JobScheduler jobScheduler = null;
+    private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Localization localization = null;
     private Set<Feed.RefreshOption> feedRefreshOptions = Collections.emptySet();
 
-    public RefreshFeedsActionEventHandler(Supplier<List<Feed>> feedListSupplier, Set<Feed.RefreshOption> feedRefreshOptions, Runnable clearSelectionCallback, JobScheduler jobScheduler, Localization localization) {
+    public RefreshFeedsActionEventHandler(Supplier<List<Feed>> feedListSupplier, Set<Feed.RefreshOption> feedRefreshOptions, Runnable clearSelectionCallback, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setFeedListSupplier(feedListSupplier);
         this.setFeedRefreshOptions(feedRefreshOptions);
         this.setClearSelectionCallback(clearSelectionCallback);
-        this.setJobScheduler(jobScheduler);
+        this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setLocalization(localization);
     }
 
@@ -50,7 +50,7 @@ public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent>
     public void handle(ActionEvent event) {
         List<Feed> feedList = new ArrayList<>(this.getFeedListSupplier().get());
         if (!feedList.isEmpty()) {
-            this.getJobScheduler().submitJob(new Job(this.getLocalization().refreshingFeeds(), progress -> {
+            this.getBackgroundTaskExecutor().execute(this.getLocalization().refreshingFeeds(), progress -> {
                 feedList.forEach(feed -> feed.getProcessors().add(this));
                 try {
                     progress.updateProgress(0d, null);
@@ -63,13 +63,19 @@ public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent>
                 } finally {
                     feedList.forEach(feed -> feed.getProcessors().remove(this));
                 }
-            }));
+            });
         }
     }
 
     private void handleRefreshFeed(Feed feed) throws Exception {
-        FeedInput feedInput = FeedInputLoader.loadFeedInputFromUrl(feed.getUrl().getValue());
-        feed.refresh(feedInput, this.getFeedRefreshOptions().toArray(Feed.RefreshOption[]::new));
+        try {
+            FeedInput feedInput = FeedInputLoader.loadFeedInputFromUrl(feed.getUrl().getValue());
+            feed.refresh(feedInput, this.getFeedRefreshOptions().toArray(Feed.RefreshOption[]::new));
+            feed.getInputState().setValue(FeedInputState.OKAY);
+        } catch (Exception e) {
+            feed.getInputState().setValue(FeedInputState.ERRORED);
+            throw e;
+        }
     }
 
     private Supplier<List<Feed>> getFeedListSupplier() {
@@ -86,11 +92,11 @@ public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent>
         this.clearSelectionCallback = clearSelectionCallback;
     }
 
-    private JobScheduler getJobScheduler() {
-        return this.jobScheduler;
+    private BackgroundTaskExecutor getBackgroundTaskExecutor() {
+        return this.backgroundTaskExecutor;
     }
-    private void setJobScheduler(JobScheduler jobScheduler) {
-        this.jobScheduler = jobScheduler;
+    private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
+        this.backgroundTaskExecutor = backgroundTaskExecutor;
     }
 
     private Localization getLocalization() {

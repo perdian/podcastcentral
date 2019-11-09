@@ -15,30 +15,23 @@
  */
 package de.perdian.apps.podcentral.ui.support.tasks;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.perdian.apps.podcentral.preferences.Preferences;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableStringValue;
 
-import javafx.concurrent.Task;
+public interface BackgroundTaskExecutor {
 
-public class TaskExecutor {
-
-    private static final Logger log = LoggerFactory.getLogger(TaskExecutor.class);
-
-    public void submit(Task<?> task) {
-        new Thread(task).start();
+    static BackgroundTaskExecutor createInstance(Preferences preferences) {
+        return new BackgroundTaskExecutorImpl();
     }
 
-    public void submit(Runnable runnable) {
-        this.submit(new Task<>() {
-            @Override protected Object call() throws Exception {
-                try {
-                    runnable.run();
-                } catch (Exception e) {
-                    log.error("Cannot execute task", e);
-                }
-                return null;
-            }
-        });
+    void execute(String title, BackgroundTask task);
+
+    default void execute(String title, Runnable runnable) {
+        this.execute(title, progress -> runnable.run());
     }
+
+    ObservableDoubleValue getProgress();
+    ObservableStringValue getText();
 
 }

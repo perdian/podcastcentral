@@ -13,57 +13,81 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.jobscheduler;
+package de.perdian.apps.podcentral.taskexecutor;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class ActiveJob {
+public class Task {
 
-    private JobScheduler owner = null;
-    private AcceptedJob acceptedJob = null;
+    private TaskExecutor owner = null;
+    private TaskRequest request = null;
+    private TaskStatus status = null;
+    private Instant submitTime = null;
     private Instant startTime = null;
     private Instant endTime = null;
     private Instant cancelTime = null;
     private String cancelReason = null;
-    private JobStatus status = null;
     private Exception exception = null;
-    private List<JobProgressListener> progressListeners = null;
 
-    ActiveJob(JobScheduler owner, AcceptedJob acceptedJob) {
+    Task(TaskExecutor owner) {
         this.setOwner(owner);
-        this.setAcceptedJob(acceptedJob);
-        this.setProgressListeners(new ArrayList<>(acceptedJob.getJob().getProgressListeners()));
     }
 
     @Override
     public String toString() {
         ToStringBuilder toStringBuilder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
-        toStringBuilder.append("acceptedJob", this.getAcceptedJob());
+        toStringBuilder.append("request", this.getRequest());
         toStringBuilder.append("status", this.getStatus());
         return toStringBuilder.toString();
     }
 
     public void cancel(String reason) {
-        this.getOwner().cancelJob(this, reason);
+        this.getOwner().cancelTask(this, reason);
     }
 
-    public JobScheduler getOwner() {
+    static class PriorityComparator implements Comparator<Task> {
+
+        @Override
+        public int compare(Task o1, Task o2) {
+            return Integer.compare(o1.getRequest().getPriority(), o2.getRequest().getPriority());
+        }
+
+    }
+
+    public void forceStart() {
+        this.getOwner().executeTask(this, true);
+    }
+
+    private TaskExecutor getOwner() {
         return this.owner;
     }
-    private void setOwner(JobScheduler owner) {
+    private void setOwner(TaskExecutor owner) {
         this.owner = owner;
     }
 
-    public AcceptedJob getAcceptedJob() {
-        return this.acceptedJob;
+    public TaskRequest getRequest() {
+        return this.request;
     }
-    private void setAcceptedJob(AcceptedJob acceptedJob) {
-        this.acceptedJob = acceptedJob;
+    void setRequest(TaskRequest request) {
+        this.request = request;
+    }
+
+    public TaskStatus getStatus() {
+        return this.status;
+    }
+    void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public Instant getSubmitTime() {
+        return this.submitTime;
+    }
+    void setSubmitTime(Instant submitTime) {
+        this.submitTime = submitTime;
     }
 
     public Instant getStartTime() {
@@ -94,31 +118,11 @@ public class ActiveJob {
         this.cancelReason = cancelReason;
     }
 
-    public JobStatus getStatus() {
-        return this.status;
-    }
-    void setStatus(JobStatus status) {
-        this.status = status;
-    }
-
     public Exception getException() {
         return this.exception;
     }
     void setException(Exception exception) {
         this.exception = exception;
-    }
-
-    public boolean addProgressListeners(JobProgressListener progressListener) {
-        return this.getProgressListeners().add(progressListener);
-    }
-    public boolean removeProgressListeners(JobProgressListener progressListener) {
-        return this.getProgressListeners().remove(progressListener);
-    }
-    public List<JobProgressListener> getProgressListeners() {
-        return this.progressListeners;
-    }
-    private void setProgressListeners(List<JobProgressListener> progressListeners) {
-        this.progressListeners = progressListeners;
     }
 
 }

@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
-import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
@@ -30,6 +29,7 @@ import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.storage.Storage;
 import de.perdian.apps.podcentral.storage.StorageFactory;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
 
 public class Central {
 
@@ -37,7 +37,7 @@ public class Central {
 
     private Preferences preferences = null;
     private Library library = null;
-    private JobScheduler uiJobScheduler = null;
+    private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private EpisodeContentDownloader episodeContentDownloader = null;
     private Storage storage = null;
 
@@ -47,9 +47,8 @@ public class Central {
         Preferences preferences = PreferencesFactory.createPreferences();
         this.setPreferences(preferences);
 
-        log.info("Creating UI job scheduler");
-        JobScheduler uiJobScheduler = new JobScheduler(1);
-        this.setUiJobScheduler(uiJobScheduler);
+        log.info("Creating background task executor");
+        this.setBackgroundTaskExecutor(BackgroundTaskExecutor.createInstance(preferences));
 
         log.info("Creating storage");
         Storage storage = StorageFactory.createStorage(preferences);
@@ -88,11 +87,11 @@ public class Central {
         this.library = library;
     }
 
-    public JobScheduler getUiJobScheduler() {
-        return this.uiJobScheduler;
+    public BackgroundTaskExecutor getBackgroundTaskExecutor() {
+        return this.backgroundTaskExecutor;
     }
-    private void setUiJobScheduler(JobScheduler uiJobScheduler) {
-        this.uiJobScheduler = uiJobScheduler;
+    private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
+        this.backgroundTaskExecutor = backgroundTaskExecutor;
     }
 
     public EpisodeContentDownloader getEpisodeContentDownloader() {

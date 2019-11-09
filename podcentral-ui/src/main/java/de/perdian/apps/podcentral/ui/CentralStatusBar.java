@@ -20,20 +20,16 @@ import org.controlsfx.control.StatusBar;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
-import de.perdian.apps.podcentral.jobscheduler.ActiveJob;
-import de.perdian.apps.podcentral.jobscheduler.JobListener;
-import de.perdian.apps.podcentral.jobscheduler.JobProgressListener;
-import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 
 class CentralStatusBar extends StatusBar {
 
-    CentralStatusBar(JobScheduler uiJobScheduler, EpisodeContentDownloader episodeContentDowloader, Localization localization) {
+    CentralStatusBar(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeContentDownloader episodeContentDowloader, Localization localization) {
 
         Label episodeContentDownloaderLabel = new Label(localization.noDownloadsActive());
         episodeContentDownloaderLabel.setPadding(new Insets(0, 4, 0, 16));
@@ -46,7 +42,7 @@ class CentralStatusBar extends StatusBar {
                     episodeContentDownloaderLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CHECK));
                 } else {
                     episodeContentDownloaderLabel.setText(localization.downloadsActive(change.getList().size()));
-                    episodeContentDownloaderLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.SPINNER));
+                    episodeContentDownloaderLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
                 }
             });
         });
@@ -55,36 +51,8 @@ class CentralStatusBar extends StatusBar {
         this.setText("");
         this.getRightItems().add(episodeContentDownloaderLabel);
 
-        uiJobScheduler.addJobListener(new JobListenerImpl());
-
-    }
-
-    class JobListenerImpl implements JobListener, JobProgressListener {
-
-        @Override
-        public void onJobStarting(ActiveJob job) {
-            job.getProgressListeners().add(this);
-            Platform.runLater(() -> {
-                CentralStatusBar.this.setText(job.getAcceptedJob().getJob().getTitle());
-                CentralStatusBar.this.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
-            });
-        }
-
-        @Override
-        public void onJobCompleted(ActiveJob job) {
-            job.getProgressListeners().remove(this);
-            Platform.runLater(() -> {
-                CentralStatusBar.this.setText("");
-                CentralStatusBar.this.setProgress(0d);
-            });
-        }
-
-        @Override
-        public void onProgress(Double progress, String message) {
-            if (progress != null) {
-                Platform.runLater(() -> CentralStatusBar.this.setProgress(progress.doubleValue()));
-            }
-        }
+        backgroundTaskExecutor.getProgress().addListener((o, oldValue, newValue) -> Platform.runLater(() -> this.setProgress(newValue == null ? 0 : newValue.doubleValue())));
+        backgroundTaskExecutor.getText().addListener((o, oldValue, newValue) -> Platform.runLater(() -> this.setText(newValue)));
 
     }
 

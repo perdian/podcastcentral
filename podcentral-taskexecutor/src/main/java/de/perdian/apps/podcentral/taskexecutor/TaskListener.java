@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.jobscheduler;
+package de.perdian.apps.podcentral.taskexecutor;
 
-public interface JobListener {
+public interface TaskListener {
 
-    default void onJobAccepted(AcceptedJob job) {
+    default void onTaskScheduled(Task task) {
     }
 
-    default void onJobCancelled(AcceptedJob job) {
+    default void onTaskCancelled(Task task) {
     }
 
-    default void onJobStarting(ActiveJob job) {
+    default void onTaskStarted(Task task) {
     }
 
-    default void onJobCompleted(ActiveJob job) {
+    default void onTaskCompleted(Task task) {
     }
 
-    default void onJobCancelled(ActiveJob job) {
+    default void onProcessorCountUpdated(int newProcessorCount) {
     }
 
 }

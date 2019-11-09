@@ -19,23 +19,22 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
-import de.perdian.apps.podcentral.jobscheduler.Job;
-import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 public class StartDownloadEpisodesActionEventHandler implements EventHandler<ActionEvent> {
 
     private Supplier<List<Episode>> episodesSupplier = null;
-    private JobScheduler uiJobScheduler = null;
+    private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private EpisodeContentDownloader episodeContentDownloader = null;
     private Localization localization = null;
 
-    public StartDownloadEpisodesActionEventHandler(Supplier<List<Episode>> episodesSupplier, JobScheduler uiJobScheduler, EpisodeContentDownloader episodeContentDownloader, Localization localization) {
+    public StartDownloadEpisodesActionEventHandler(Supplier<List<Episode>> episodesSupplier, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeContentDownloader episodeContentDownloader, Localization localization) {
         this.setEpisodesSupplier(episodesSupplier);
-        this.setUiJobScheduler(uiJobScheduler);
+        this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setEpisodeContentDownloader(episodeContentDownloader);
         this.setLocalization(localization);
     }
@@ -44,12 +43,12 @@ public class StartDownloadEpisodesActionEventHandler implements EventHandler<Act
     public void handle(ActionEvent event) {
         List<Episode> episodes = this.getEpisodesSupplier().get();
         if (!episodes.isEmpty()) {
-            this.getUiJobScheduler().submitJob(new Job(this.getLocalization().schedulingEpisodeDownloads(), progress -> {
+            this.getBackgroundTaskExecutor().execute(this.getLocalization().schedulingEpisodeDownloads(), progress -> {
                 for (int i=0; i < episodes.size(); i++) {
                     progress.updateProgress((double)i / (double)episodes.size(), null);
                     this.getEpisodeContentDownloader().scheduleDownload(episodes.get(i));
                 }
-            }));
+            });
         }
     }
 
@@ -60,11 +59,11 @@ public class StartDownloadEpisodesActionEventHandler implements EventHandler<Act
         this.episodesSupplier = episodesSupplier;
     }
 
-    private JobScheduler getUiJobScheduler() {
-        return this.uiJobScheduler;
+    private BackgroundTaskExecutor getBackgroundTaskExecutor() {
+        return this.backgroundTaskExecutor;
     }
-    private void setUiJobScheduler(JobScheduler uiJobScheduler) {
-        this.uiJobScheduler = uiJobScheduler;
+    private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
+        this.backgroundTaskExecutor = backgroundTaskExecutor;
     }
 
     private EpisodeContentDownloader getEpisodeContentDownloader() {

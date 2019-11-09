@@ -23,12 +23,11 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import de.perdian.apps.podcentral.jobscheduler.Job;
-import de.perdian.apps.podcentral.jobscheduler.JobScheduler;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.localization.Localization;
+import de.perdian.apps.podcentral.ui.support.tasks.BackgroundTaskExecutor;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -36,15 +35,15 @@ public class DeleteFeedsActionEventHandler implements EventHandler<ActionEvent> 
 
     private Supplier<List<Feed>> feedsSupplier = null;
     private Supplier<Map<Feed, List<Episode>>> episodesSupplier = null;
-    private JobScheduler jobScheduler = null;
+    private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Library library = null;
     private Localization localization = null;
 
-    public DeleteFeedsActionEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<Map<Feed, List<Episode>>> episodesSupplier, JobScheduler jobScheduler, Library library, Localization localization) {
+    public DeleteFeedsActionEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<Map<Feed, List<Episode>>> episodesSupplier, BackgroundTaskExecutor backgroundTaskExecutor, Library library, Localization localization) {
         this.setFeedsSupplier(feedsSupplier);
         this.setEpisodesSupplier(episodesSupplier);
         this.setLibrary(library);
-        this.setJobScheduler(jobScheduler);
+        this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setLocalization(localization);
     }
 
@@ -53,7 +52,7 @@ public class DeleteFeedsActionEventHandler implements EventHandler<ActionEvent> 
         List<Feed> feeds = this.getFeedsSupplier().get();
         Map<Feed, List<Episode>> episodes = this.getEpisodesSupplier().get();
         if (!feeds.isEmpty() || !episodes.isEmpty()) {
-            this.getJobScheduler().submitJob(new Job(this.getLocalization().deletingEntries(), progress -> {
+            this.getBackgroundTaskExecutor().execute(this.getLocalization().deletingEntries(), progress -> {
 
                 List<Feed> feedsToDelete = new ArrayList<>(feeds);
                 Map<Feed, List<Episode>> episodesToDelete = episodes.entrySet().stream().filter(entry -> !feedsToDelete.contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -80,7 +79,7 @@ public class DeleteFeedsActionEventHandler implements EventHandler<ActionEvent> 
                 });
                 episodesToDelete.keySet().forEach(feed -> feed.getProcessors().remove(this));
 
-            }));
+            });
         }
     }
 
@@ -98,11 +97,11 @@ public class DeleteFeedsActionEventHandler implements EventHandler<ActionEvent> 
         this.episodesSupplier = episodesSupplier;
     }
 
-    private JobScheduler getJobScheduler() {
-        return this.jobScheduler;
+    private BackgroundTaskExecutor getBackgroundTaskExecutor() {
+        return this.backgroundTaskExecutor;
     }
-    private void setJobScheduler(JobScheduler jobScheduler) {
-        this.jobScheduler = jobScheduler;
+    private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
+        this.backgroundTaskExecutor = backgroundTaskExecutor;
     }
 
     private Library getLibrary() {

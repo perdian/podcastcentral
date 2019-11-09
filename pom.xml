@@ -11,10 +11,10 @@
         <module>podcentral-development</module>
         <module>podcentral-downloader</module>
         <module>podcentral-model</module>
-        <module>podcentral-jobscheduler</module>
         <module>podcentral-preferences</module>
         <module>podcentral-sources</module>
         <module>podcentral-storage</module>
+        <module>podcentral-taskexecutor</module>
         <module>podcentral-ui</module>
     </modules>
 

@@ -26,6 +26,7 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import de.perdian.apps.podcentral.model.FeedData;
+import de.perdian.apps.podcentral.model.FeedInputState;
 
 @Entity
 @Table(name = "feed")
@@ -35,6 +36,7 @@ public class FeedEntity implements Serializable {
 
     private Long id = null;
     private FeedData data = null;
+    private FeedInputState inputState = null;
 
     @Override
     public int hashCode() {
@@ -74,6 +76,13 @@ public class FeedEntity implements Serializable {
     }
     public void setData(FeedData data) {
         this.data = data;
+    }
+
+    public FeedInputState getInputState() {
+        return this.inputState;
+    }
+    public void setInputState(FeedInputState inputState) {
+        this.inputState = inputState;
     }
 
 }

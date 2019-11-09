@@ -1,11 +1,11 @@
 package de.perdian.apps.podcentral.downloader.episodes;
 
-import de.perdian.apps.podcentral.jobscheduler.JobProgress;
-import de.perdian.apps.podcentral.jobscheduler.JobRunnable;
-import de.perdian.apps.podcentral.jobscheduler.JobStatus;
 import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.taskexecutor.TaskProgress;
+import de.perdian.apps.podcentral.taskexecutor.TaskRunnable;
+import de.perdian.apps.podcentral.taskexecutor.TaskStatus;
 
-class EpisodeContentDownloaderJobRunnable implements JobRunnable {
+class EpisodeContentDownloaderJobRunnable implements TaskRunnable {
 
     private Episode episode = null;
 
@@ -14,9 +14,9 @@ class EpisodeContentDownloaderJobRunnable implements JobRunnable {
     }
 
     @Override
-    public void run(JobProgress progress) throws Exception {
+    public void run(TaskProgress progress) throws Exception {
         int maxValue = 200;
-        for (int i=0; i < maxValue && JobStatus.ACTIVE.equals(progress.getStatus()); i++) {
+        for (int i=0; i < maxValue && TaskStatus.ACTIVE.equals(progress.getStatus()); i++) {
             Thread.sleep(75);
             progress.updateProgress((double)i / (double)maxValue, null);
         }

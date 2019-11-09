@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.podcentral.model;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
@@ -31,6 +32,7 @@ public interface Feed {
     StringProperty getLanguageCode();
     StringProperty getImageUrl();
     StringProperty getCategory();
+    ObjectProperty<FeedInputState> getInputState();
     ObservableList<Episode> getEpisodes();
     ObservableList<Object> getProcessors();
     ObservableBooleanValue getBusy();
