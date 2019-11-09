@@ -2,14 +2,17 @@ package de.perdian.apps.podcentral.downloader.episodes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeDownloadState;
+import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.taskexecutor.Task;
 import de.perdian.apps.podcentral.taskexecutor.TaskExecutor;
 import de.perdian.apps.podcentral.taskexecutor.TaskListener;
 import de.perdian.apps.podcentral.taskexecutor.TaskRequest;
 import de.perdian.apps.podcentral.taskexecutor.TaskStatus;
+import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -19,16 +22,34 @@ class EpisodeDownloaderImpl implements EpisodeDownloader {
     private TaskExecutor taskExecutor = null;
     private ObservableList<Episode> scheduledEpisodes = null;
     private ObservableList<Episode> downloadingEpisodes = null;
+    private IntegerProperty numberOfDownloadSlots = null;
     private Map<Episode, Task> episodeToTask = null;
 
-    public EpisodeDownloaderImpl() {
-        TaskExecutor taskExecutor = new TaskExecutor(5);
+    public EpisodeDownloaderImpl(Preferences preferences) {
+
+        IntegerProperty numberOfDownloadSlots = preferences.getIntegerProperty("EpisodeDownloader.numberOfDownloadSlots", 5);
+        TaskExecutor taskExecutor = new TaskExecutor(numberOfDownloadSlots.getValue().intValue());
         taskExecutor.addTaskListener(new TaskListenerImpl());
+        taskExecutor.addTaskListener(new TaskListener() {
+            @Override public void onProcessorCountUpdated(int newProcessorCount) {
+                if (newProcessorCount != numberOfDownloadSlots.getValue().intValue()) {
+                    numberOfDownloadSlots.setValue(newProcessorCount);
+                }
+            }
+        });
+        numberOfDownloadSlots.addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(oldValue, newValue) ) {
+                taskExecutor.setProcessorCount(newValue.intValue());
+            }
+        });
+
         this.setLock(new Object());
         this.setTaskExecutor(taskExecutor);
         this.setScheduledEpisodes(FXCollections.observableArrayList());
         this.setDownloadingEpisodes(FXCollections.observableArrayList());
+        this.setNumberOfDownloadSlots(numberOfDownloadSlots);
         this.setEpisodeToTask(new HashMap<>());
+
     }
 
     @Override
@@ -134,6 +155,14 @@ class EpisodeDownloaderImpl implements EpisodeDownloader {
     }
     private void setDownloadingEpisodes(ObservableList<Episode> downloadingEpisodes) {
         this.downloadingEpisodes = downloadingEpisodes;
+    }
+
+    @Override
+    public IntegerProperty getNumberOfDownloadSlots() {
+        return this.numberOfDownloadSlots;
+    }
+    private void setNumberOfDownloadSlots(IntegerProperty numberOfDownloadSlots) {
+        this.numberOfDownloadSlots = numberOfDownloadSlots;
     }
 
 }

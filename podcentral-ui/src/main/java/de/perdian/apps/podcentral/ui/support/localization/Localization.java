@@ -156,6 +156,10 @@ public interface Localization {
         return "No image";
     }
 
+    default String numberOfParallelDownloads() {
+        return "Number of parallel downloads";
+    }
+
     default String owner() {
         return "Owner";
     }
@@ -194,6 +198,10 @@ public interface Localization {
 
     default String schedulingEpisodeDownloads() {
         return "Scheduling episode downloads";
+    }
+
+    default String settings() {
+        return "Settings";
     }
 
     default String title() {

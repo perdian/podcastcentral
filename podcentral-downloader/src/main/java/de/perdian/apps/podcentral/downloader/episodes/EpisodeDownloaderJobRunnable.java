@@ -1,5 +1,8 @@
 package de.perdian.apps.podcentral.downloader.episodes;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.taskexecutor.TaskProgress;
 import de.perdian.apps.podcentral.taskexecutor.TaskRunnable;
@@ -11,6 +14,11 @@ class EpisodeDownloaderJobRunnable implements TaskRunnable {
 
     EpisodeDownloaderJobRunnable(Episode episode) {
         this.setEpisode(episode);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
     @Override

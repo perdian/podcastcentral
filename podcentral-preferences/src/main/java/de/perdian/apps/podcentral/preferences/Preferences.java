@@ -16,9 +16,16 @@
 package de.perdian.apps.podcentral.preferences;
 
 import java.io.File;
+import java.util.Optional;
+
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
 
 public interface Preferences {
 
     File getApplicationDirectory();
+    Optional<String> getString(String key);
+    StringProperty getStringProperty(String key, String defaultValue);
+    IntegerProperty getIntegerProperty(String key, int defaultValue);
 
 }

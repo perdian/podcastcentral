@@ -86,8 +86,9 @@ public class PreferencesFactory {
         try {
             Properties properties = new Properties();
             values.entrySet().stream().filter(entry -> entry.getKey() != null && entry.getValue() != null).forEach(entry -> properties.setProperty(entry.getKey(), entry.getValue()));
-            if (!valuesFile.exists()) {
-                log.debug("Creating preferences value file at: {}", valuesFile);
+            if (!valuesFile.getParentFile().exists()) {
+                log.debug("Creating preferences directory at: {}", valuesFile.getParentFile());
+                valuesFile.getParentFile().mkdirs();
             }
             log.trace("Storing preferences into file: {}", valuesFile.getAbsolutePath());
             try (OutputStream preferencesStream = new BufferedOutputStream(new FileOutputStream(valuesFile))) {

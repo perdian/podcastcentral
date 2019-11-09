@@ -18,9 +18,26 @@ package de.perdian.apps.podcentral.storage;
 import java.io.File;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.perdian.apps.podcentral.preferences.Preferences;
+
 public class Storage {
 
+    private static final Logger log = LoggerFactory.getLogger(Storage.class);
+
     private File rootDirectory = null;
+
+    public static Storage createInstance(Preferences preferences) {
+        File downloadsDirectory = new File(preferences.getApplicationDirectory(), "downloads");
+        log.info("Resolved storage location to directory: {}", downloadsDirectory);
+        if (!downloadsDirectory.exists()) {
+            log.info("Creating storage location at directory: {}", downloadsDirectory.getAbsolutePath());
+            downloadsDirectory.mkdirs();
+        }
+        return new Storage(downloadsDirectory);
+    }
 
     Storage(File rootDirectory) {
         this.setRootDirectory(rootDirectory);

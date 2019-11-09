@@ -27,7 +27,6 @@ import de.perdian.apps.podcentral.model.LibraryListener;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.storage.Storage;
-import de.perdian.apps.podcentral.storage.StorageFactory;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 
@@ -51,7 +50,7 @@ public class Central {
         this.setBackgroundTaskExecutor(BackgroundTaskExecutor.createInstance(preferences));
 
         log.info("Creating storage");
-        Storage storage = StorageFactory.createStorage(preferences);
+        Storage storage = Storage.createInstance(preferences);
         this.setStorage(storage);
 
         log.info("Loading library");
@@ -60,7 +59,7 @@ public class Central {
         this.setLibrary(library);
 
         log.info("Creating episode content downloader");
-        EpisodeDownloader episodeDownloader = EpisodeDownloader.createInstance();
+        EpisodeDownloader episodeDownloader = EpisodeDownloader.createInstance(preferences);
         this.setEpisodeContentDownloader(episodeDownloader);
         library.addListener(new LibraryListener() {
             @Override public void onFeedDeleted(Feed feed) {
