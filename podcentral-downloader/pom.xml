@@ -16,7 +16,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>podcentral-jobscheduler</artifactId>
+            <artifactId>podcentral-taskexecutor</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
