@@ -51,6 +51,7 @@ class DatabaseBackedEpisode implements Episode {
     private ObjectProperty<File> contentFile = null;
     private ObjectProperty<EpisodeDownloadState> downloadState = null;
     private ObjectProperty<Double> downloadProgress = null;
+    private ObjectProperty<Long> downloadedBytes = null;
     private StringProperty contentFileLocation = null;
 
     public DatabaseBackedEpisode(DatabaseBackedFeed feed, EpisodeEntity episodeEntity, SessionFactory sessionFactory, File file) {
@@ -72,6 +73,7 @@ class DatabaseBackedEpisode implements Episode {
         this.setWebsiteUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setContentFile(new SimpleObjectProperty<>(file));
         this.setDownloadProgress(new SimpleObjectProperty<>());
+        this.setDownloadedBytes(new SimpleObjectProperty<>());
         this.setDownloadState(new SimpleObjectProperty<>(EpisodeDownloadState.NEW));
         this.computeDataFromContentFile(file);
         this.getContentFile().addListener((o, oldValue, newValue) -> this.computeDataFromContentFile(newValue));
@@ -118,7 +120,8 @@ class DatabaseBackedEpisode implements Episode {
         return toStringBuilder.toString();
     }
 
-    DatabaseBackedFeed getFeed() {
+    @Override
+    public DatabaseBackedFeed getFeed() {
         return this.feed;
     }
     private void setFeed(DatabaseBackedFeed feed) {
@@ -250,6 +253,14 @@ class DatabaseBackedEpisode implements Episode {
     }
     private void setDownloadProgress(ObjectProperty<Double> downloadProgress) {
         this.downloadProgress = downloadProgress;
+    }
+
+    @Override
+    public ObjectProperty<Long> getDownloadedBytes() {
+        return this.downloadedBytes;
+    }
+    private void setDownloadedBytes(ObjectProperty<Long> downloadedBytes) {
+        this.downloadedBytes = downloadedBytes;
     }
 
     private StringProperty getContentFileLocation() {

@@ -17,7 +17,7 @@ package de.perdian.apps.podcentral.ui;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.podcentral.ui.modules.downloader.EpisodeContentDownloaderPane;
+import de.perdian.apps.podcentral.ui.modules.downloader.EpisodeDownloaderPane;
 import de.perdian.apps.podcentral.ui.modules.library.LibraryPane;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.geometry.Insets;
@@ -36,9 +36,9 @@ class CentralMainPane extends GridPane {
         libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
         libraryTab.setClosable(false);
 
-        EpisodeContentDownloaderPane episodeContentDownloaderPane = new EpisodeContentDownloaderPane(central.getBackgroundTaskExecutor(), central.getEpisodeContentDownloader(), localization);
-        episodeContentDownloaderPane.setPadding(new Insets(8, 8, 8, 8));
-        Tab schedulerTab = new Tab(localization.downloads(), episodeContentDownloaderPane);
+        EpisodeDownloaderPane episodeDownloaderPane = new EpisodeDownloaderPane(central.getBackgroundTaskExecutor(), central.getEpisodeContentDownloader(), localization);
+        episodeDownloaderPane.setPadding(new Insets(8, 8, 8, 8));
+        Tab schedulerTab = new Tab(localization.downloads(), episodeDownloaderPane);
         schedulerTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
         schedulerTab.setClosable(false);
 

@@ -28,10 +28,10 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 
-class EpisodeContentDownloaderToolbar extends BorderPane {
+class EpisodeDownloaderToolbar extends BorderPane {
 
     @SuppressWarnings("unchecked")
-    public EpisodeContentDownloaderToolbar(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Localization localization) {
+    public EpisodeDownloaderToolbar(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Localization localization) {
 
         Button cancelAllDownloadsButton = new Button(localization.cancelAllDownloads(), new FontAwesomeIconView(FontAwesomeIcon.STOP));
         cancelAllDownloadsButton.setOnAction(new CancelDownloadEpisodesActionEventHandler(() -> FXCollections.concat(episodeDownloader.getScheduledEpisodes(), episodeDownloader.getDownloadingEpisodes()), backgroundTaskExecutor, episodeDownloader, localization));

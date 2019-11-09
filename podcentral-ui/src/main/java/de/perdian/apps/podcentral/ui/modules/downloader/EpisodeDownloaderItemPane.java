@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.model;
+package de.perdian.apps.podcentral.ui.modules.downloader;
 
-import javafx.collections.ObservableList;
+import de.perdian.apps.podcentral.model.Episode;
 
-public interface Library {
+interface EpisodeDownloaderItemPane {
 
-    ObservableList<Feed> getFeeds();
-
-    Feed addFeed(FeedInput feedInput, Feed.RefreshOption... refreshOptions);
-
-    boolean addListener(LibraryListener listener);
-    boolean removeListener(LibraryListener listener);
+    default void updateProgress(Double progress, Episode episode) {
+    }
 
 }

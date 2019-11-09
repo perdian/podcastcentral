@@ -99,10 +99,10 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     }
 
     @Override
-    public Feed addFeed(FeedInput feedInput) {
+    public Feed addFeed(FeedInput feedInput, Feed.RefreshOption... refreshOptions) {
         DatabaseBackedFeed feedImpl = this.getFeedsByFeedUrl().get(feedInput.getData().getUrl());
         if (feedImpl != null) {
-            feedImpl.refresh(feedInput);
+            feedImpl.refresh(feedInput, refreshOptions);
         } else {
             try (Session session = this.getSessionFactory().openSession()) {
                 Transaction transaction = session.beginTransaction();

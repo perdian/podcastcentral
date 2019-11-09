@@ -10,6 +10,7 @@ public interface EpisodeDownloader {
     }
 
     void scheduleDownload(Episode episode);
+    void forceDownload(Episode episode);
     void cancelDownload(Episode episode);
 
     ObservableList<Episode> getScheduledEpisodes();

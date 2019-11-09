@@ -25,6 +25,7 @@ import javafx.beans.property.StringProperty;
 
 public interface Episode {
 
+    Feed getFeed();
     StringProperty getGuid();
     StringProperty getTitle();
     StringProperty getSubtitle();
@@ -40,6 +41,7 @@ public interface Episode {
     ObjectProperty<File> getContentFile();
     ObjectProperty<EpisodeDownloadState> getDownloadState();
     ObjectProperty<Double> getDownloadProgress();
+    ObjectProperty<Long> getDownloadedBytes();
 
     public static class PublishedDateComparator implements Comparator<Episode> {
 

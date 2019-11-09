@@ -15,10 +15,12 @@ class EpisodeDownloaderJobRunnable implements TaskRunnable {
 
     @Override
     public void run(TaskProgress progress) throws Exception {
-        int maxValue = 200;
-        for (int i=0; i < maxValue && TaskStatus.ACTIVE.equals(progress.getStatus()); i++) {
+        long bytesTotal = 1024 * 1024 * 50; // 50 MB
+        long bytesPerStep = (long)(1024 * 1024 * 0.5); // 0.5 MB
+        for (long bytesTransfered=0; bytesTransfered <= bytesTotal && TaskStatus.ACTIVE.equals(progress.getStatus()); bytesTransfered+=bytesPerStep) {
             Thread.sleep(75);
-            progress.updateProgress((double)i / (double)maxValue, null);
+            this.getEpisode().getDownloadedBytes().setValue(bytesTransfered);
+            progress.updateProgress((double)bytesTransfered / (double)bytesTotal, null);
         }
     }
 

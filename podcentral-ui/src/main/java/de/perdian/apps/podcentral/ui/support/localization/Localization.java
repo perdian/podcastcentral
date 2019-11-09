@@ -15,6 +15,9 @@
  */
 package de.perdian.apps.podcentral.ui.support.localization;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public interface Localization {
 
     default String activeDownloads() {
@@ -23,6 +26,10 @@ public interface Localization {
 
     default String addFeed() {
         return "Add feed";
+    }
+
+    default String cancel() {
+        return "Cancel";
     }
 
     default String cancelAllDownloads() {
@@ -117,6 +124,10 @@ public interface Localization {
         return "Load feed";
     }
 
+    default String loading() {
+        return "Loading...";
+    }
+
     default String loadingApplicationData() {
         return "Loading application data...";
     }
@@ -139,6 +150,10 @@ public interface Localization {
 
     default String noFeedLoadedYet() {
         return "No feed loaded yet";
+    }
+
+    default String noImage() {
+        return "No image";
     }
 
     default String owner() {
@@ -183,6 +198,15 @@ public interface Localization {
 
     default String title() {
         return "Title";
+    }
+
+    default String bytesOfBytesTransfered(long bytesWritten, long bytesTotal) {
+        NumberFormat fileSizeFormat = new DecimalFormat("#,##0");
+        StringBuilder progressMessage = new StringBuilder();
+        progressMessage.append(fileSizeFormat.format((double)bytesWritten / 1024)).append(" KiB");
+        progressMessage.append(" / ").append(fileSizeFormat.format((double)bytesTotal / 1024)).append(" KiB");
+        progressMessage.append(" transfered");
+        return progressMessage.toString();
     }
 
 }

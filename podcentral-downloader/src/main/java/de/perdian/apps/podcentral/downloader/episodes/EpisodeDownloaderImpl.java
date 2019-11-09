@@ -53,6 +53,16 @@ class EpisodeDownloaderImpl implements EpisodeDownloader {
         }
     }
 
+    @Override
+    public void forceDownload(Episode episode) {
+        synchronized (this.getLock()) {
+            Task task = this.getEpisodeToTask().get(episode);
+            if (task != null) {
+                task.forceStart();
+            }
+        }
+    }
+
     class TaskListenerImpl implements TaskListener {
         @Override public void onTaskScheduled(Task task) {
             synchronized (EpisodeDownloaderImpl.this.getLock()) {
