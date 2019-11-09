@@ -18,7 +18,7 @@ package de.perdian.apps.podcentral.ui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
+import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
@@ -38,7 +38,7 @@ public class Central {
     private Preferences preferences = null;
     private Library library = null;
     private BackgroundTaskExecutor backgroundTaskExecutor = null;
-    private EpisodeContentDownloader episodeContentDownloader = null;
+    private EpisodeDownloader episodeDownloader = null;
     private Storage storage = null;
 
     public Central(Localization localization) {
@@ -60,14 +60,14 @@ public class Central {
         this.setLibrary(library);
 
         log.info("Creating episode content downloader");
-        EpisodeContentDownloader episodeContentDownloader = EpisodeContentDownloader.createInstance();
-        this.setEpisodeContentDownloader(episodeContentDownloader);
+        EpisodeDownloader episodeDownloader = EpisodeDownloader.createInstance();
+        this.setEpisodeContentDownloader(episodeDownloader);
         library.addListener(new LibraryListener() {
             @Override public void onFeedDeleted(Feed feed) {
-                feed.getEpisodes().forEach(episode -> episodeContentDownloader.cancelDownload(episode));
+                feed.getEpisodes().forEach(episode -> episodeDownloader.cancelDownload(episode));
             }
             @Override public void onEpisodeDeleted(Feed feed, Episode episode) {
-                episodeContentDownloader.cancelDownload(episode);
+                episodeDownloader.cancelDownload(episode);
             }
         });
 
@@ -94,11 +94,11 @@ public class Central {
         this.backgroundTaskExecutor = backgroundTaskExecutor;
     }
 
-    public EpisodeContentDownloader getEpisodeContentDownloader() {
-        return this.episodeContentDownloader;
+    public EpisodeDownloader getEpisodeContentDownloader() {
+        return this.episodeDownloader;
     }
-    private void setEpisodeContentDownloader(EpisodeContentDownloader episodeContentDownloader) {
-        this.episodeContentDownloader = episodeContentDownloader;
+    private void setEpisodeContentDownloader(EpisodeDownloader episodeDownloader) {
+        this.episodeDownloader = episodeDownloader;
     }
 
     public Storage getStorage() {

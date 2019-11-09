@@ -19,7 +19,7 @@ import org.controlsfx.control.StatusBar;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
+import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.application.Platform;
@@ -29,7 +29,7 @@ import javafx.scene.control.Label;
 
 class CentralStatusBar extends StatusBar {
 
-    CentralStatusBar(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeContentDownloader episodeContentDowloader, Localization localization) {
+    CentralStatusBar(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeContentDowloader, Localization localization) {
 
         Label episodeContentDownloaderLabel = new Label(localization.noDownloadsActive());
         episodeContentDownloaderLabel.setPadding(new Insets(0, 4, 0, 16));

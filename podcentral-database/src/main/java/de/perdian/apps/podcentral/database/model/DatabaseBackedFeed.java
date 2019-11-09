@@ -37,8 +37,8 @@ import org.hibernate.Transaction;
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
 import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
 import de.perdian.apps.podcentral.model.EpisodeData;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedData;
 import de.perdian.apps.podcentral.model.FeedInput;
@@ -130,7 +130,7 @@ class DatabaseBackedFeed implements Feed {
                     File episodeFile = this.getStorage().resolveFileRelative(feedInput.getData().getTitle(), episodeData.getTitle() + episodeData.computeFileNameExtension());
                     if (episodeEntityFromDatabase != null && refreshOptionsSet.contains(RefreshOption.RESTORE_DELETED_EPISODES)) {
                         episodeEntityFromDatabase.setDeleted(Boolean.FALSE);
-                        episodeEntityFromDatabase.setStorageState(EpisodeContentDownloadState.NEW);
+                        episodeEntityFromDatabase.setDownloadState(EpisodeDownloadState.NEW);
                         session.update(episodeEntityFromDatabase);
                         newEpisodes.add(new DatabaseBackedEpisode(this, episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));
                     } else if (episodeEntityFromDatabase == null) {

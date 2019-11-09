@@ -5,11 +5,11 @@ import de.perdian.apps.podcentral.taskexecutor.TaskProgress;
 import de.perdian.apps.podcentral.taskexecutor.TaskRunnable;
 import de.perdian.apps.podcentral.taskexecutor.TaskStatus;
 
-class EpisodeContentDownloaderJobRunnable implements TaskRunnable {
+class EpisodeDownloaderJobRunnable implements TaskRunnable {
 
     private Episode episode = null;
 
-    EpisodeContentDownloaderJobRunnable(Episode episode) {
+    EpisodeDownloaderJobRunnable(Episode episode) {
         this.setEpisode(episode);
     }
 

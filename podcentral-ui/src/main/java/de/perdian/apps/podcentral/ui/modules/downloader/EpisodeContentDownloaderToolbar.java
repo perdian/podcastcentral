@@ -17,7 +17,7 @@ package de.perdian.apps.podcentral.ui.modules.downloader;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
+import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.ui.modules.episodes.CancelDownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
@@ -31,11 +31,11 @@ import javafx.scene.layout.BorderPane;
 class EpisodeContentDownloaderToolbar extends BorderPane {
 
     @SuppressWarnings("unchecked")
-    public EpisodeContentDownloaderToolbar(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeContentDownloader episodeContentDownloader, Localization localization) {
+    public EpisodeContentDownloaderToolbar(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Localization localization) {
 
         Button cancelAllDownloadsButton = new Button(localization.cancelAllDownloads(), new FontAwesomeIconView(FontAwesomeIcon.STOP));
-        cancelAllDownloadsButton.setOnAction(new CancelDownloadEpisodesActionEventHandler(() -> FXCollections.concat(episodeContentDownloader.getScheduledEpisodes(), episodeContentDownloader.getDownloadingEpisodes()), backgroundTaskExecutor, episodeContentDownloader, localization));
-        cancelAllDownloadsButton.disableProperty().bind(Bindings.isEmpty(episodeContentDownloader.getDownloadingEpisodes()));
+        cancelAllDownloadsButton.setOnAction(new CancelDownloadEpisodesActionEventHandler(() -> FXCollections.concat(episodeDownloader.getScheduledEpisodes(), episodeDownloader.getDownloadingEpisodes()), backgroundTaskExecutor, episodeDownloader, localization));
+        cancelAllDownloadsButton.disableProperty().bind(Bindings.isEmpty(episodeDownloader.getDownloadingEpisodes()));
         ButtonBar.setButtonData(cancelAllDownloadsButton, ButtonData.LEFT);
 
         ButtonBar buttonBar = new ButtonBar();

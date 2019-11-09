@@ -19,8 +19,8 @@ import java.util.List;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
-import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
+import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
@@ -37,7 +37,7 @@ import javafx.scene.layout.BorderPane;
 
 public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
-    public LibraryTreeTableView(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeContentDownloader episodeContentDownloader, Library library, Localization localization) {
+    public LibraryTreeTableView(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
 
         TreeTableColumn<LibraryTreeTableValue, String> titleColumn = new TreeTableColumn<>(localization.title());
         titleColumn.setCellValueFactory(cell -> cell.getValue().getValue().getTitle());
@@ -66,33 +66,33 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         publicationDateColumn.setSortable(false);
         publicationDateColumn.setReorderable(false);
 
-        TreeTableColumn<LibraryTreeTableValue, EpisodeContentDownloadState> contentDownloadStateColumn = new TreeTableColumn<>(localization.download());
-        contentDownloadStateColumn.setCellValueFactory(cell -> cell.getValue().getValue().getContentDownloadState());
-        contentDownloadStateColumn.setCellFactory(cell -> new InternalEpisodeStorageStateTreeTableCell(localization));
-        contentDownloadStateColumn.setMinWidth(105);
-        contentDownloadStateColumn.setMaxWidth(105);
-        contentDownloadStateColumn.setEditable(false);
-        contentDownloadStateColumn.setSortable(false);
-        contentDownloadStateColumn.setReorderable(false);
+        TreeTableColumn<LibraryTreeTableValue, EpisodeDownloadState> downloadStateColumn = new TreeTableColumn<>(localization.download());
+        downloadStateColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDownloadState());
+        downloadStateColumn.setCellFactory(cell -> new InternalEpisodeStorageStateTreeTableCell(localization));
+        downloadStateColumn.setMinWidth(105);
+        downloadStateColumn.setMaxWidth(105);
+        downloadStateColumn.setEditable(false);
+        downloadStateColumn.setSortable(false);
+        downloadStateColumn.setReorderable(false);
 
-        TreeTableColumn<LibraryTreeTableValue, Double> contentDownloadProgressColumn = new TreeTableColumn<>(localization.progress());
-        contentDownloadProgressColumn.setCellValueFactory(cell -> cell.getValue().getValue().getContentDownloadProgress());
-        contentDownloadProgressColumn.setCellFactory(cell -> new InternalProgressBarTreeTableCell());
-        contentDownloadProgressColumn.setMinWidth(80);
-        contentDownloadProgressColumn.setMaxWidth(80);
-        contentDownloadProgressColumn.setEditable(false);
-        contentDownloadProgressColumn.setSortable(false);
-        contentDownloadProgressColumn.setReorderable(false);
+        TreeTableColumn<LibraryTreeTableValue, Double> downloadProgressColumn = new TreeTableColumn<>(localization.progress());
+        downloadProgressColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDownloadProgress());
+        downloadProgressColumn.setCellFactory(cell -> new InternalProgressBarTreeTableCell());
+        downloadProgressColumn.setMinWidth(80);
+        downloadProgressColumn.setMaxWidth(80);
+        downloadProgressColumn.setEditable(false);
+        downloadProgressColumn.setSortable(false);
+        downloadProgressColumn.setReorderable(false);
 
-        TreeTableColumn<LibraryTreeTableValue, String> contentDownloadProgressValueColumn = new TreeTableColumn<>();
-        contentDownloadProgressValueColumn.setCellValueFactory(cell -> cell.getValue().getValue().getContentDownloadProgressLabel());
-        contentDownloadProgressValueColumn.setCellFactory(cell -> new InternalTextFieldCell());
-        contentDownloadProgressValueColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
-        contentDownloadProgressValueColumn.setMinWidth(50);
-        contentDownloadProgressValueColumn.setMaxWidth(50);
-        contentDownloadProgressValueColumn.setEditable(false);
-        contentDownloadProgressValueColumn.setSortable(false);
-        contentDownloadProgressValueColumn.setReorderable(false);
+        TreeTableColumn<LibraryTreeTableValue, String> downloadProgressValueColumn = new TreeTableColumn<>();
+        downloadProgressValueColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDownloadProgressLabel());
+        downloadProgressValueColumn.setCellFactory(cell -> new InternalTextFieldCell());
+        downloadProgressValueColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        downloadProgressValueColumn.setMinWidth(50);
+        downloadProgressValueColumn.setMaxWidth(50);
+        downloadProgressValueColumn.setEditable(false);
+        downloadProgressValueColumn.setSortable(false);
+        downloadProgressValueColumn.setReorderable(false);
 
         TreeTableColumn<LibraryTreeTableValue, String> descriptionColumn = new TreeTableColumn<>(localization.description());
         descriptionColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDescription());
@@ -105,26 +105,27 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
         this.setShowRoot(false);
         this.setRoot(new LibraryTreeRootItem(library));
-        this.setContextMenu(new LibraryTreeTableContextMenu(this, backgroundTaskExecutor, episodeContentDownloader, library, localization));
+        this.setContextMenu(new LibraryTreeTableContextMenu(this, backgroundTaskExecutor, episodeDownloader, library, localization));
         this.setEditable(true);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
-        this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, contentDownloadStateColumn, contentDownloadProgressColumn, contentDownloadProgressValueColumn, descriptionColumn));
+        this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, downloadStateColumn, downloadProgressColumn, downloadProgressValueColumn, descriptionColumn));
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-//        treeTableView.setRowFactory(tv -> {
-//            TreeTableRow<LibraryTreeTableValue> tableRow = new TreeTableRow<>();
-//            tableRow.setOnDragDetected(event -> {
-//                System.err.println("DRAG!!!");
-//                Dragboard db = tableRow.startDragAndDrop(TransferMode.COPY);
-//
-//                ClipboardContent content = new ClipboardContent();
-//                content.putFiles(List.of(new File("/Users/perdian/Downloads/w13xttx2.rss")));
-//                db.setContent(content);
-//                event.consume();
-//            });
-//            return tableRow;
-//        });
+        // treeTableView.setRowFactory(tv -> {
+        // TreeTableRow<LibraryTreeTableValue> tableRow = new TreeTableRow<>();
+        // tableRow.setOnDragDetected(event -> {
+        // System.err.println("DRAG!!!");
+        // Dragboard db = tableRow.startDragAndDrop(TransferMode.COPY);
+        //
+        // ClipboardContent content = new ClipboardContent();
+        // content.putFiles(List.of(new
+        // File("/Users/perdian/Downloads/w13xttx2.rss")));
+        // db.setContent(content);
+        // event.consume();
+        // });
+        // return tableRow;
+        // });
 
     }
 
@@ -144,7 +145,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
     }
 
-    static class InternalEpisodeStorageStateTreeTableCell extends TreeTableCell<LibraryTreeTableValue, EpisodeContentDownloadState> {
+    static class InternalEpisodeStorageStateTreeTableCell extends TreeTableCell<LibraryTreeTableValue, EpisodeDownloadState> {
 
         private Localization localization = null;
 
@@ -153,7 +154,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         }
 
         @Override
-        public void updateItem(EpisodeContentDownloadState item, boolean empty) {
+        public void updateItem(EpisodeDownloadState item, boolean empty) {
             super.updateItem(item, empty);
             if (item == null || empty) {
                 this.setGraphic(null);

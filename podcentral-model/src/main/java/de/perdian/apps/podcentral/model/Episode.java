@@ -38,8 +38,8 @@ public interface Episode {
     StringProperty getWebsiteUrl();
     StringProperty getImageUrl();
     ObjectProperty<File> getContentFile();
-    ObjectProperty<EpisodeContentDownloadState> getContentDownloadState();
-    ObjectProperty<Double> getContentDownloadProgress();
+    ObjectProperty<EpisodeDownloadState> getDownloadState();
+    ObjectProperty<Double> getDownloadProgress();
 
     public static class PublishedDateComparator implements Comparator<Episode> {
 

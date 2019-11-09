@@ -3,10 +3,10 @@ package de.perdian.apps.podcentral.downloader.episodes;
 import de.perdian.apps.podcentral.model.Episode;
 import javafx.collections.ObservableList;
 
-public interface EpisodeContentDownloader {
+public interface EpisodeDownloader {
 
-    static EpisodeContentDownloader createInstance() {
-        return new EpisodeContentDownloaderImpl();
+    static EpisodeDownloader createInstance() {
+        return new EpisodeDownloaderImpl();
     }
 
     void scheduleDownload(Episode episode);

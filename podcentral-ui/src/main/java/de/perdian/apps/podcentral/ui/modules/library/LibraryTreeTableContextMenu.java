@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
+import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.modules.episodes.CancelDownloadEpisodesActionEventHandler;
@@ -42,7 +42,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
     private LibraryTreeTableView libraryTreeTableView = null;
     private LibrarySelection librarySelection = null;
 
-    public LibraryTreeTableContextMenu(LibraryTreeTableView libraryTreeTableView, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeContentDownloader episodeContentDownloader, Library library, Localization localization) {
+    public LibraryTreeTableContextMenu(LibraryTreeTableView libraryTreeTableView, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
 
         LibrarySelection librarySelection = new LibrarySelection();
         libraryTreeTableView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<LibraryTreeTableValue>> change) -> librarySelection.update(change.getList().stream().map(TreeItem::getValue).collect(Collectors.toList())));
@@ -50,19 +50,19 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
         MenuItem startDownloadSelectedEpisodesMenuItem = new MenuItem(localization.downloadSelectedEpisodes());
         startDownloadSelectedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getDownloadableEpisodes()));
-        startDownloadSelectedEpisodesMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getDownloadableEpisodes, backgroundTaskExecutor, episodeContentDownloader, localization));
+        startDownloadSelectedEpisodesMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getDownloadableEpisodes, backgroundTaskExecutor, episodeDownloader, localization));
         this.getItems().add(startDownloadSelectedEpisodesMenuItem);
 
         MenuItem startDownloadAllEpisodesFromFeedMenuItem = new MenuItem(localization.downloadAllEpisodesFromFeed());
         startDownloadAllEpisodesFromFeedMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getDownloadableFeedEpisodes()));
-        startDownloadAllEpisodesFromFeedMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getDownloadableFeedEpisodes, backgroundTaskExecutor, episodeContentDownloader, localization));
+        startDownloadAllEpisodesFromFeedMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getDownloadableFeedEpisodes, backgroundTaskExecutor, episodeDownloader, localization));
         this.getItems().add(startDownloadAllEpisodesFromFeedMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());
 
         MenuItem cancelDownloadSelectedEpisodesMenuItem = new MenuItem(localization.cancelDownloads());
         cancelDownloadSelectedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getCancelableEpisodes()));
-        cancelDownloadSelectedEpisodesMenuItem.setOnAction(new CancelDownloadEpisodesActionEventHandler(librarySelection::getCancelableEpisodes, backgroundTaskExecutor, episodeContentDownloader, localization));
+        cancelDownloadSelectedEpisodesMenuItem.setOnAction(new CancelDownloadEpisodesActionEventHandler(librarySelection::getCancelableEpisodes, backgroundTaskExecutor, episodeDownloader, localization));
         this.getItems().add(cancelDownloadSelectedEpisodesMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());

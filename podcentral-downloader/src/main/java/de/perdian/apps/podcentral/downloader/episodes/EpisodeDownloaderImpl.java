@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.taskexecutor.Task;
 import de.perdian.apps.podcentral.taskexecutor.TaskExecutor;
 import de.perdian.apps.podcentral.taskexecutor.TaskListener;
@@ -13,7 +13,7 @@ import de.perdian.apps.podcentral.taskexecutor.TaskStatus;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-class EpisodeContentDownloaderImpl implements EpisodeContentDownloader {
+class EpisodeDownloaderImpl implements EpisodeDownloader {
 
     private Object lock = null;
     private TaskExecutor taskExecutor = null;
@@ -21,7 +21,7 @@ class EpisodeContentDownloaderImpl implements EpisodeContentDownloader {
     private ObservableList<Episode> downloadingEpisodes = null;
     private Map<Episode, Task> episodeToTask = null;
 
-    public EpisodeContentDownloaderImpl() {
+    public EpisodeDownloaderImpl() {
         TaskExecutor taskExecutor = new TaskExecutor(5);
         taskExecutor.addTaskListener(new TaskListenerImpl());
         this.setLock(new Object());
@@ -35,9 +35,9 @@ class EpisodeContentDownloaderImpl implements EpisodeContentDownloader {
     public void scheduleDownload(Episode episode) {
         synchronized (this.getLock()) {
             if (!this.getEpisodeToTask().containsKey(episode)) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = new EpisodeContentDownloaderJobRunnable(episode);
+                EpisodeDownloaderJobRunnable jobRunnable = new EpisodeDownloaderJobRunnable(episode);
                 TaskRequest taskRequest = new TaskRequest(episode.getTitle().getValue(), jobRunnable);
-                taskRequest.addProgressListener((progress, text) -> episode.getContentDownloadProgress().setValue(progress));
+                taskRequest.addProgressListener((progress, text) -> episode.getDownloadProgress().setValue(progress));
                 this.getTaskExecutor().submitTask(taskRequest);
             }
         }
@@ -55,36 +55,36 @@ class EpisodeContentDownloaderImpl implements EpisodeContentDownloader {
 
     class TaskListenerImpl implements TaskListener {
         @Override public void onTaskScheduled(Task task) {
-            synchronized (EpisodeContentDownloaderImpl.this.getLock()) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)task.getRequest().getRunnable();
-                EpisodeContentDownloaderImpl.this.getScheduledEpisodes().add(jobRunnable.getEpisode());
-                EpisodeContentDownloaderImpl.this.getEpisodeToTask().put(jobRunnable.getEpisode(), task);
-                jobRunnable.getEpisode().getContentDownloadState().setValue(EpisodeContentDownloadState.SCHEDULED);
+            synchronized (EpisodeDownloaderImpl.this.getLock()) {
+                EpisodeDownloaderJobRunnable jobRunnable = (EpisodeDownloaderJobRunnable)task.getRequest().getRunnable();
+                EpisodeDownloaderImpl.this.getScheduledEpisodes().add(jobRunnable.getEpisode());
+                EpisodeDownloaderImpl.this.getEpisodeToTask().put(jobRunnable.getEpisode(), task);
+                jobRunnable.getEpisode().getDownloadState().setValue(EpisodeDownloadState.SCHEDULED);
             }
         }
         @Override public void onTaskCancelled(Task task) {
-            synchronized (EpisodeContentDownloaderImpl.this.getLock()) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)task.getRequest().getRunnable();
-                EpisodeContentDownloaderImpl.this.getScheduledEpisodes().remove(jobRunnable.getEpisode());
-                EpisodeContentDownloaderImpl.this.getEpisodeToTask().remove(jobRunnable.getEpisode());
-                jobRunnable.getEpisode().getContentDownloadState().setValue(EpisodeContentDownloadState.CANCELLED);
+            synchronized (EpisodeDownloaderImpl.this.getLock()) {
+                EpisodeDownloaderJobRunnable jobRunnable = (EpisodeDownloaderJobRunnable)task.getRequest().getRunnable();
+                EpisodeDownloaderImpl.this.getScheduledEpisodes().remove(jobRunnable.getEpisode());
+                EpisodeDownloaderImpl.this.getEpisodeToTask().remove(jobRunnable.getEpisode());
+                jobRunnable.getEpisode().getDownloadState().setValue(EpisodeDownloadState.CANCELLED);
             }
         }
         @Override public void onTaskStarted(Task task) {
-            synchronized (EpisodeContentDownloaderImpl.this.getLock()) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)task.getRequest().getRunnable();
-                EpisodeContentDownloaderImpl.this.getScheduledEpisodes().remove(jobRunnable.getEpisode());
-                EpisodeContentDownloaderImpl.this.getDownloadingEpisodes().add(jobRunnable.getEpisode());
-                EpisodeContentDownloaderImpl.this.getEpisodeToTask().put(jobRunnable.getEpisode(), task);
-                jobRunnable.getEpisode().getContentDownloadState().setValue(EpisodeContentDownloadState.DOWNLOADING);
+            synchronized (EpisodeDownloaderImpl.this.getLock()) {
+                EpisodeDownloaderJobRunnable jobRunnable = (EpisodeDownloaderJobRunnable)task.getRequest().getRunnable();
+                EpisodeDownloaderImpl.this.getScheduledEpisodes().remove(jobRunnable.getEpisode());
+                EpisodeDownloaderImpl.this.getDownloadingEpisodes().add(jobRunnable.getEpisode());
+                EpisodeDownloaderImpl.this.getEpisodeToTask().put(jobRunnable.getEpisode(), task);
+                jobRunnable.getEpisode().getDownloadState().setValue(EpisodeDownloadState.DOWNLOADING);
             }
         }
         @Override public void onTaskCompleted(Task task) {
-            synchronized (EpisodeContentDownloaderImpl.this.getLock()) {
-                EpisodeContentDownloaderJobRunnable jobRunnable = (EpisodeContentDownloaderJobRunnable)task.getRequest().getRunnable();
-                EpisodeContentDownloaderImpl.this.getDownloadingEpisodes().remove(jobRunnable.getEpisode());
-                EpisodeContentDownloaderImpl.this.getEpisodeToTask().remove(jobRunnable.getEpisode());
-                jobRunnable.getEpisode().getContentDownloadState().setValue(TaskStatus.CANCELLED.equals(task.getStatus()) ? EpisodeContentDownloadState.CANCELLED : EpisodeContentDownloadState.COMPLETED);
+            synchronized (EpisodeDownloaderImpl.this.getLock()) {
+                EpisodeDownloaderJobRunnable jobRunnable = (EpisodeDownloaderJobRunnable)task.getRequest().getRunnable();
+                EpisodeDownloaderImpl.this.getDownloadingEpisodes().remove(jobRunnable.getEpisode());
+                EpisodeDownloaderImpl.this.getEpisodeToTask().remove(jobRunnable.getEpisode());
+                jobRunnable.getEpisode().getDownloadState().setValue(TaskStatus.CANCELLED.equals(task.getStatus()) ? EpisodeDownloadState.CANCELLED : EpisodeDownloadState.COMPLETED);
             }
         }
     }

@@ -18,7 +18,7 @@ package de.perdian.apps.podcentral.ui.modules.episodes;
 import java.util.List;
 import java.util.function.Supplier;
 
-import de.perdian.apps.podcentral.downloader.episodes.EpisodeContentDownloader;
+import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
@@ -29,13 +29,13 @@ public class StartDownloadEpisodesActionEventHandler implements EventHandler<Act
 
     private Supplier<List<Episode>> episodesSupplier = null;
     private BackgroundTaskExecutor backgroundTaskExecutor = null;
-    private EpisodeContentDownloader episodeContentDownloader = null;
+    private EpisodeDownloader episodeDownloader = null;
     private Localization localization = null;
 
-    public StartDownloadEpisodesActionEventHandler(Supplier<List<Episode>> episodesSupplier, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeContentDownloader episodeContentDownloader, Localization localization) {
+    public StartDownloadEpisodesActionEventHandler(Supplier<List<Episode>> episodesSupplier, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Localization localization) {
         this.setEpisodesSupplier(episodesSupplier);
         this.setBackgroundTaskExecutor(backgroundTaskExecutor);
-        this.setEpisodeContentDownloader(episodeContentDownloader);
+        this.setEpisodeContentDownloader(episodeDownloader);
         this.setLocalization(localization);
     }
 
@@ -66,11 +66,11 @@ public class StartDownloadEpisodesActionEventHandler implements EventHandler<Act
         this.backgroundTaskExecutor = backgroundTaskExecutor;
     }
 
-    private EpisodeContentDownloader getEpisodeContentDownloader() {
-        return this.episodeContentDownloader;
+    private EpisodeDownloader getEpisodeContentDownloader() {
+        return this.episodeDownloader;
     }
-    private void setEpisodeContentDownloader(EpisodeContentDownloader episodeContentDownloader) {
-        this.episodeContentDownloader = episodeContentDownloader;
+    private void setEpisodeContentDownloader(EpisodeDownloader episodeDownloader) {
+        this.episodeDownloader = episodeDownloader;
     }
 
     private Localization getLocalization() {

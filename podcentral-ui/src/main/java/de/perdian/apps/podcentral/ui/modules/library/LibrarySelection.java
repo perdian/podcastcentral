@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.model.Feed;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -76,7 +76,7 @@ class LibrarySelection {
             values.stream()
                 .filter(item -> item instanceof LibraryTreeTableValue.FeedTreeValue)
                 .flatMap(item -> ((LibraryTreeTableValue.FeedTreeValue)item).getFeed().getEpisodes().stream())
-                .filter(episode -> !EpisodeContentDownloadState.COMPLETED.equals(episode.getContentDownloadState().getValue()))
+                .filter(episode -> !EpisodeDownloadState.COMPLETED.equals(episode.getDownloadState().getValue()))
                 .collect(Collectors.toList())
         );
     }
@@ -86,7 +86,7 @@ class LibrarySelection {
             values.stream()
                 .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
                 .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
-                .filter(episode -> !EpisodeContentDownloadState.COMPLETED.equals(episode.getContentDownloadState().getValue()))
+                .filter(episode -> !EpisodeDownloadState.COMPLETED.equals(episode.getDownloadState().getValue()))
                 .collect(Collectors.toList())
         );
     }
@@ -96,7 +96,7 @@ class LibrarySelection {
             values.stream()
                 .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
                 .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
-                .filter(episode -> List.of(EpisodeContentDownloadState.SCHEDULED, EpisodeContentDownloadState.DOWNLOADING).contains(episode.getContentDownloadState().getValue()))
+                .filter(episode -> List.of(EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.DOWNLOADING).contains(episode.getDownloadState().getValue()))
                 .collect(Collectors.toList())
         );
     }

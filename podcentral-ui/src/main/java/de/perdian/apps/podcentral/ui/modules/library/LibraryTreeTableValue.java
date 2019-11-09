@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.support.properties.PropertiesHelper;
@@ -115,21 +115,21 @@ interface LibraryTreeTableValue {
         }
 
         @Override
-        public ObservableValue<Double> getContentDownloadProgress() {
-            return this.getEpisode().getContentDownloadProgress();
+        public ObservableValue<Double> getDownloadProgress() {
+            return this.getEpisode().getDownloadProgress();
         }
 
         @Override
-        public ObservableValue<String> getContentDownloadProgressLabel() {
+        public ObservableValue<String> getDownloadProgressLabel() {
             NumberFormat numberFormat = new DecimalFormat("0");
-            StringProperty progressLabelProperty = new SimpleStringProperty(numberFormat.format(this.getEpisode().getContentDownloadProgress().getValue() * 100d) + " %");
-            this.getEpisode().getContentDownloadProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(numberFormat.format(newValue * 100d) + " %"));
+            StringProperty progressLabelProperty = new SimpleStringProperty(numberFormat.format(this.getEpisode().getDownloadProgress().getValue() * 100d) + " %");
+            this.getEpisode().getDownloadProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(numberFormat.format(newValue * 100d) + " %"));
             return progressLabelProperty;
         }
 
         @Override
-        public ObservableValue<EpisodeContentDownloadState> getContentDownloadState() {
-            return this.getEpisode().getContentDownloadState();
+        public ObservableValue<EpisodeDownloadState> getDownloadState() {
+            return this.getEpisode().getDownloadState();
         }
 
         Feed getFeed() {
@@ -160,13 +160,13 @@ interface LibraryTreeTableValue {
         return new ReadOnlyStringWrapper();
     }
 
-    default ObservableValue<Double> getContentDownloadProgress() {
+    default ObservableValue<Double> getDownloadProgress() {
         return new ReadOnlyObjectWrapper<>(null);
     }
-    default ObservableValue<String> getContentDownloadProgressLabel() {
+    default ObservableValue<String> getDownloadProgressLabel() {
         return new ReadOnlyStringWrapper();
     }
-    default ObservableValue<EpisodeContentDownloadState> getContentDownloadState() {
+    default ObservableValue<EpisodeDownloadState> getDownloadState() {
         return new ReadOnlyObjectWrapper<>(null);
     }
 

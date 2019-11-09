@@ -25,8 +25,8 @@ import org.hibernate.SessionFactory;
 
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
 import de.perdian.apps.podcentral.model.EpisodeData;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -49,8 +49,8 @@ class DatabaseBackedEpisode implements Episode {
     private StringProperty websiteUrl = null;
     private StringProperty imageUrl = null;
     private ObjectProperty<File> contentFile = null;
-    private ObjectProperty<EpisodeContentDownloadState> contentDownloadState = null;
-    private ObjectProperty<Double> contentDownloadProgress = null;
+    private ObjectProperty<EpisodeDownloadState> downloadState = null;
+    private ObjectProperty<Double> downloadProgress = null;
     private StringProperty contentFileLocation = null;
 
     public DatabaseBackedEpisode(DatabaseBackedFeed feed, EpisodeEntity episodeEntity, SessionFactory sessionFactory, File file) {
@@ -61,6 +61,7 @@ class DatabaseBackedEpisode implements Episode {
         this.setContentUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getContentUrl(), (e, v) -> e.getData().setContentUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setCreationDate(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getCreationDate(), (e, v) -> e.getData().setCreationDate(v), SimpleObjectProperty::new, sessionFactory));
         this.setDescription(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v), SimpleStringProperty::new, sessionFactory));
+        this.setDownloadState(DatabaseHelper.createProperty(episodeEntity, e -> e.getDownloadState(), (e, v) -> e.setDownloadState(v), SimpleObjectProperty::new, sessionFactory));
         this.setDuration(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getDuration(), (e, v) -> e.getData().setDuration(v), SimpleObjectProperty::new, sessionFactory));
         this.setGuid(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getGuid(), (e, v) -> e.getData().setGuid(v), SimpleStringProperty::new, sessionFactory));
         this.setImageUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v), SimpleStringProperty::new, sessionFactory));
@@ -70,8 +71,8 @@ class DatabaseBackedEpisode implements Episode {
         this.setTitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setContentFile(new SimpleObjectProperty<>(file));
-        this.setContentDownloadProgress(new SimpleObjectProperty<>());
-        this.setContentDownloadState(new SimpleObjectProperty<>(EpisodeContentDownloadState.NEW));
+        this.setDownloadProgress(new SimpleObjectProperty<>());
+        this.setDownloadState(new SimpleObjectProperty<>(EpisodeDownloadState.NEW));
         this.computeDataFromContentFile(file);
         this.getContentFile().addListener((o, oldValue, newValue) -> this.computeDataFromContentFile(newValue));
     }
@@ -96,15 +97,15 @@ class DatabaseBackedEpisode implements Episode {
             long storageFileSize = storageFile.length();
             long contentSize = this.getContentSize().getValue().longValue();
             if (storageFileSize == contentSize) {
-                this.getContentDownloadProgress().setValue(1d);
-                this.getContentDownloadState().setValue(EpisodeContentDownloadState.COMPLETED);
+                this.getDownloadProgress().setValue(1d);
+                this.getDownloadState().setValue(EpisodeDownloadState.COMPLETED);
             } else {
-                this.getContentDownloadProgress().setValue((double)storageFileSize / (double)contentSize);
-                this.getContentDownloadState().setValue(EpisodeContentDownloadState.CANCELLED);
+                this.getDownloadProgress().setValue((double)storageFileSize / (double)contentSize);
+                this.getDownloadState().setValue(EpisodeDownloadState.CANCELLED);
             }
         } else {
-            this.getContentDownloadProgress().setValue(0d);
-            this.getContentDownloadState().setValue(EpisodeContentDownloadState.NEW);
+            this.getDownloadProgress().setValue(0d);
+            this.getDownloadState().setValue(EpisodeDownloadState.NEW);
         }
         this.getContentFileLocation().setValue(storageFile.getAbsolutePath());
     }
@@ -236,19 +237,19 @@ class DatabaseBackedEpisode implements Episode {
     }
 
     @Override
-    public ObjectProperty<EpisodeContentDownloadState> getContentDownloadState() {
-        return this.contentDownloadState;
+    public ObjectProperty<EpisodeDownloadState> getDownloadState() {
+        return this.downloadState;
     }
-    private void setContentDownloadState(ObjectProperty<EpisodeContentDownloadState> contentDownloadState) {
-        this.contentDownloadState = contentDownloadState;
+    private void setDownloadState(ObjectProperty<EpisodeDownloadState> downloadState) {
+        this.downloadState = downloadState;
     }
 
     @Override
-    public ObjectProperty<Double> getContentDownloadProgress() {
-        return this.contentDownloadProgress;
+    public ObjectProperty<Double> getDownloadProgress() {
+        return this.downloadProgress;
     }
-    private void setContentDownloadProgress(ObjectProperty<Double> contentDownloadProgress) {
-        this.contentDownloadProgress = contentDownloadProgress;
+    private void setDownloadProgress(ObjectProperty<Double> downloadProgress) {
+        this.downloadProgress = downloadProgress;
     }
 
     private StringProperty getContentFileLocation() {

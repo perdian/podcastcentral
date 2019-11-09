@@ -15,7 +15,7 @@
  */
 package de.perdian.apps.podcentral.model;
 
-public enum EpisodeContentDownloadState {
+public enum EpisodeDownloadState {
 
     NEW,
     SCHEDULED,

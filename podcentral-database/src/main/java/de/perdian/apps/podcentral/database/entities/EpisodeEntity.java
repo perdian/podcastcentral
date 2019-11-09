@@ -27,8 +27,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import de.perdian.apps.podcentral.model.EpisodeContentDownloadState;
 import de.perdian.apps.podcentral.model.EpisodeData;
+import de.perdian.apps.podcentral.model.EpisodeDownloadState;
 
 @Entity
 @Table(name = "episode")
@@ -39,7 +39,7 @@ public class EpisodeEntity implements Serializable {
     private Long id = null;
     private FeedEntity feed = null;
     private EpisodeData data = null;
-    private EpisodeContentDownloadState episodeContentDownloadState = EpisodeContentDownloadState.NEW;
+    private EpisodeDownloadState downloadState = EpisodeDownloadState.NEW;
     private String contentFileLocation = null;
     private Boolean deleted = Boolean.FALSE;
 
@@ -91,11 +91,11 @@ public class EpisodeEntity implements Serializable {
         this.data = data;
     }
 
-    public EpisodeContentDownloadState getStorageState() {
-        return this.episodeContentDownloadState;
+    public EpisodeDownloadState getDownloadState() {
+        return this.downloadState;
     }
-    public void setStorageState(EpisodeContentDownloadState episodeContentDownloadState) {
-        this.episodeContentDownloadState = episodeContentDownloadState;
+    public void setDownloadState(EpisodeDownloadState downloadState) {
+        this.downloadState = downloadState;
     }
 
     @Column(length = 1000)
