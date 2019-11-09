@@ -168,6 +168,10 @@ public interface Localization {
         return "Number of parallel downloads";
     }
 
+    default String openEpisode() {
+        return "Open episode";
+    }
+
     default String owner() {
         return "Owner";
     }

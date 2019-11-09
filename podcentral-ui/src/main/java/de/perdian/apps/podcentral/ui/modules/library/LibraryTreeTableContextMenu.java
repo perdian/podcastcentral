@@ -23,6 +23,7 @@ import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.modules.episodes.CancelDownloadEpisodesActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.episodes.OpenEpisodeActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.episodes.StartDownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.feeds.DeleteFeedsActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.feeds.RefreshFeedsActionEventHandler;
@@ -40,6 +41,13 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
     public LibraryTreeTableContextMenu(LibrarySelection librarySelection, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
         this.setLibrarySelection(librarySelection);
+
+        MenuItem openEpisodeMenuItem = new MenuItem(localization.openEpisode());
+        openEpisodeMenuItem.disableProperty().bind(Bindings.size(librarySelection.getSelectedEpisodesAsList()).isNotEqualTo(1));
+        openEpisodeMenuItem.setOnAction(new OpenEpisodeActionEventHandler(librarySelection::getSelectedEpisodesAsList));
+        this.getItems().add(openEpisodeMenuItem);
+
+        this.getItems().add(new SeparatorMenuItem());
 
         MenuItem startDownloadSelectedEpisodesMenuItem = new MenuItem(localization.downloadSelectedEpisodes());
         startDownloadSelectedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getDownloadableEpisodes()));

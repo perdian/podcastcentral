@@ -115,6 +115,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, downloadStateColumn, downloadProgressColumn, downloadProgressValueColumn, descriptionColumn));
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.setOnKeyPressed(new LibraryTreeTableKeyListener(librarySelection, backgroundTaskExecutor, episodeDownloader, library, localization));
+        this.setOnMouseClicked(new LibraryTreeTableMouseClickedEventListener(librarySelection, backgroundTaskExecutor, episodeDownloader, localization));
         this.setRowFactory(tv -> {
             TreeTableRow<LibraryTreeTableValue> tableRow = new TreeTableRow<>();
             tableRow.setOnDragDetected(new LibraryTreeTableMouseEventHandler(librarySelection));
