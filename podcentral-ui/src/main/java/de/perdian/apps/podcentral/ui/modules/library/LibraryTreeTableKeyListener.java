@@ -60,7 +60,7 @@ class LibraryTreeTableKeyListener implements EventHandler<KeyEvent> {
                 this.getLibrarySelection().clear();
             }
             event.consume();
-        } else if (event.getCode() == KeyCode.ENTER) {
+        } else if (event.getCode() == KeyCode.SPACE) {
             List<Episode> downloadableEpisodes = new ArrayList<>(this.getLibrarySelection().update().getDownloadableEpisodes());
             if (!downloadableEpisodes.isEmpty()) {
                 StartDownloadEpisodesActionEventHandler downloadActionEventHandler = new StartDownloadEpisodesActionEventHandler(() -> downloadableEpisodes, this.getBackgroundTaskExecutor(), this.getEpisodeDownloader(), this.getLocalization());
