@@ -41,6 +41,7 @@ public interface Episode {
     ObjectProperty<File> getContentFile();
     ObjectProperty<EpisodeDownloadState> getDownloadState();
     ObjectProperty<Double> getDownloadProgress();
+    ObjectProperty<Exception> getDownloadError();
     ObjectProperty<Long> getDownloadedBytes();
 
     public static class PublishedDateComparator implements Comparator<Episode> {

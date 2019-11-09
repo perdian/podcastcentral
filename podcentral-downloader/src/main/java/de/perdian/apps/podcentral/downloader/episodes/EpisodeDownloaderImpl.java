@@ -11,7 +11,6 @@ import de.perdian.apps.podcentral.taskexecutor.Task;
 import de.perdian.apps.podcentral.taskexecutor.TaskExecutor;
 import de.perdian.apps.podcentral.taskexecutor.TaskListener;
 import de.perdian.apps.podcentral.taskexecutor.TaskRequest;
-import de.perdian.apps.podcentral.taskexecutor.TaskStatus;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -115,7 +114,6 @@ class EpisodeDownloaderImpl implements EpisodeDownloader {
                 EpisodeDownloaderJobRunnable jobRunnable = (EpisodeDownloaderJobRunnable)task.getRequest().getRunnable();
                 EpisodeDownloaderImpl.this.getDownloadingEpisodes().remove(jobRunnable.getEpisode());
                 EpisodeDownloaderImpl.this.getEpisodeToTask().remove(jobRunnable.getEpisode());
-                jobRunnable.getEpisode().getDownloadState().setValue(TaskStatus.CANCELLED.equals(task.getStatus()) ? EpisodeDownloadState.CANCELLED : EpisodeDownloadState.COMPLETED);
             }
         }
     }

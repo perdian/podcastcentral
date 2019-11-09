@@ -80,6 +80,10 @@ public interface Localization {
         return "Download selected episodes";
     }
 
+    default String downloadSelectedEpisodesRedownloadExistingEpisodes() {
+        return "Download selected episodes (redownload existing episodes)";
+    }
+
     default String downloadAllEpisodesFromFeed() {
         return "Download all episodes from feed";
     }

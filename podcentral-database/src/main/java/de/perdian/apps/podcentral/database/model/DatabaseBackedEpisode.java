@@ -18,6 +18,7 @@ package de.perdian.apps.podcentral.database.model;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -51,6 +52,7 @@ class DatabaseBackedEpisode implements Episode {
     private ObjectProperty<File> contentFile = null;
     private ObjectProperty<EpisodeDownloadState> downloadState = null;
     private ObjectProperty<Double> downloadProgress = null;
+    private ObjectProperty<Exception> downloadError = null;
     private ObjectProperty<Long> downloadedBytes = null;
     private StringProperty contentFileLocation = null;
 
@@ -72,9 +74,9 @@ class DatabaseBackedEpisode implements Episode {
         this.setTitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setContentFile(new SimpleObjectProperty<>(file));
+        this.setDownloadError(new SimpleObjectProperty<>());
         this.setDownloadProgress(new SimpleObjectProperty<>());
         this.setDownloadedBytes(new SimpleObjectProperty<>());
-        this.setDownloadState(new SimpleObjectProperty<>(EpisodeDownloadState.NEW));
         this.computeDataFromContentFile(file);
         this.getContentFile().addListener((o, oldValue, newValue) -> this.computeDataFromContentFile(newValue));
     }
@@ -96,18 +98,21 @@ class DatabaseBackedEpisode implements Episode {
 
     void computeDataFromContentFile(File storageFile) {
         if (storageFile.exists()) {
-            long storageFileSize = storageFile.length();
-            long contentSize = this.getContentSize().getValue().longValue();
-            if (storageFileSize == contentSize) {
+            if (EpisodeDownloadState.COMPLETED.equals(this.getDownloadState().getValue())) {
                 this.getDownloadProgress().setValue(1d);
-                this.getDownloadState().setValue(EpisodeDownloadState.COMPLETED);
+            } else if (List.of(EpisodeDownloadState.DOWNLOADING, EpisodeDownloadState.SCHEDULED).contains(this.getDownloadState().getValue())) {
+                this.getDownloadState().setValue(EpisodeDownloadState.NEW);
+                this.getDownloadProgress().setValue(0d);
             } else {
-                this.getDownloadProgress().setValue((double)storageFileSize / (double)contentSize);
-                this.getDownloadState().setValue(EpisodeDownloadState.CANCELLED);
+                this.getDownloadProgress().setValue(0d);
             }
         } else {
             this.getDownloadProgress().setValue(0d);
-            this.getDownloadState().setValue(EpisodeDownloadState.NEW);
+            if (List.of(EpisodeDownloadState.ERRORED, EpisodeDownloadState.COMPLETED).contains(this.getDownloadState().getValue())) {
+                this.getDownloadState().setValue(EpisodeDownloadState.ERRORED);
+            } else {
+                this.getDownloadState().setValue(EpisodeDownloadState.NEW);
+            }
         }
         this.getContentFileLocation().setValue(storageFile.getAbsolutePath());
     }
@@ -253,6 +258,14 @@ class DatabaseBackedEpisode implements Episode {
     }
     private void setDownloadProgress(ObjectProperty<Double> downloadProgress) {
         this.downloadProgress = downloadProgress;
+    }
+
+    @Override
+    public ObjectProperty<Exception> getDownloadError() {
+        return this.downloadError;
+    }
+    private void setDownloadError(ObjectProperty<Exception> downloadError) {
+        this.downloadError = downloadError;
     }
 
     @Override

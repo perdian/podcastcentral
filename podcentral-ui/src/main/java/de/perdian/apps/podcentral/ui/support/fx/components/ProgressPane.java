@@ -68,7 +68,7 @@ public class ProgressPane extends GridPane {
         if (progress != null) {
             Platform.runLater(() -> this.getProgressBar().setProgress(progress));
         } else {
-            this.getProgressBar().setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+            Platform.runLater(() -> this.getProgressBar().setProgress(ProgressBar.INDETERMINATE_PROGRESS));
         }
         if (!StringUtils.isEmpty(message)) {
             Platform.runLater(() -> this.getMessageLabel().setText(message));

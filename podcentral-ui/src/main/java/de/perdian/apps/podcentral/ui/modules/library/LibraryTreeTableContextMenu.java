@@ -46,6 +46,11 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         startDownloadSelectedEpisodesMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getDownloadableEpisodes, backgroundTaskExecutor, episodeDownloader, localization));
         this.getItems().add(startDownloadSelectedEpisodesMenuItem);
 
+        MenuItem startDownloadSelectedEpisodesRedownloadExistingMenuItem = new MenuItem(localization.downloadSelectedEpisodesRedownloadExistingEpisodes());
+        startDownloadSelectedEpisodesRedownloadExistingMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedEpisodes()));
+        startDownloadSelectedEpisodesRedownloadExistingMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getSelectedEpisodesAsList, backgroundTaskExecutor, episodeDownloader, localization));
+        this.getItems().add(startDownloadSelectedEpisodesRedownloadExistingMenuItem);
+
         MenuItem startDownloadAllEpisodesFromFeedMenuItem = new MenuItem(localization.downloadAllEpisodesFromFeed());
         startDownloadAllEpisodesFromFeedMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getDownloadableFeedEpisodes()));
         startDownloadAllEpisodesFromFeedMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getDownloadableFeedEpisodes, backgroundTaskExecutor, episodeDownloader, localization));

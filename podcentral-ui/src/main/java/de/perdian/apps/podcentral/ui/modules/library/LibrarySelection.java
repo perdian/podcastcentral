@@ -37,6 +37,7 @@ class LibrarySelection {
     private ObservableList<Episode> downloadableFeedEpisodes = null;
     private ObservableList<Episode> cancelableEpisodes = null;
     private ObservableMap<Feed, List<Episode>> selectedEpisodes = null;
+    private ObservableList<Episode> selectedEpisodesAsList = null;
     private ObservableList<Feed> selectedFeeds = null;
     private TreeTableViewSelectionModel<LibraryTreeTableValue> selectionModel = null;
 
@@ -46,6 +47,7 @@ class LibrarySelection {
         this.setDownloadableEpisodes(FXCollections.observableArrayList());
         this.setDownloadableFeedEpisodes(FXCollections.observableArrayList());
         this.setSelectedEpisodes(FXCollections.observableHashMap());
+        this.setSelectedEpisodesAsList(FXCollections.observableArrayList());
         this.setSelectedFeeds(FXCollections.observableArrayList());
         this.update();
         selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<LibraryTreeTableValue>> change) -> this.update(change.getList().stream().map(TreeItem::getValue).collect(Collectors.toList())));
@@ -79,11 +81,13 @@ class LibrarySelection {
     }
 
     private void collectSelectedEpisodes(List<LibraryTreeTableValue> values) {
-        Map<Feed, List<Episode>> episodes = new HashMap<>();
-        values.stream()
+        List<Episode> selectedEpisodes = values.stream()
             .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
-            .map(item -> (LibraryTreeTableValue.EpisodeTreeValue)item)
-            .forEach(item -> episodes.compute(item.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(item.getEpisode()));
+            .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
+            .collect(Collectors.toList());
+        this.getSelectedEpisodesAsList().setAll(selectedEpisodes);
+        Map<Feed, List<Episode>> episodes = new HashMap<>();
+        selectedEpisodes.forEach(episode -> episodes.compute(episode.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episode));
         this.getSelectedEpisodes().clear();
         this.getSelectedEpisodes().putAll(episodes);
     }
@@ -137,6 +141,13 @@ class LibrarySelection {
     }
     private void setSelectedEpisodes(ObservableMap<Feed, List<Episode>> selectedEpisodes) {
         this.selectedEpisodes = selectedEpisodes;
+    }
+
+    ObservableList<Episode> getSelectedEpisodesAsList() {
+        return this.selectedEpisodesAsList;
+    }
+    private void setSelectedEpisodesAsList(ObservableList<Episode> selectedEpisodesAsList) {
+        this.selectedEpisodesAsList = selectedEpisodesAsList;
     }
 
     ObservableList<Episode> getCancelableEpisodes() {
