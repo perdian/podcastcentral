@@ -17,16 +17,13 @@ package de.perdian.apps.podcentral.ui.modules.library;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.modules.episodes.StartDownloadEpisodesActionEventHandler;
-import de.perdian.apps.podcentral.ui.modules.feeds.DeleteFeedsActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.feeds.DeleteActionEventHandler;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
@@ -53,9 +50,9 @@ class LibraryTreeTableKeyListener implements EventHandler<KeyEvent> {
     @Override
     public void handle(KeyEvent event) {
         if (event.getCode() == KeyCode.DELETE) {
-            Map<Feed, List<Episode>> selectedEpisodes = new HashMap<>(this.getLibrarySelection().update().getSelectedEpisodes());
+            List<Episode> selectedEpisodes = new ArrayList<>(this.getLibrarySelection().update().getSelectedEpisodesAsList());
             if (!selectedEpisodes.isEmpty()) {
-                DeleteFeedsActionEventHandler deleteActionEventHandler = new DeleteFeedsActionEventHandler(Collections::emptyList, () -> selectedEpisodes, this.getBackgroundTaskExecutor(), this.getLibrary(), this.getLocalization());
+                DeleteActionEventHandler deleteActionEventHandler = new DeleteActionEventHandler(Collections::emptyList, () -> selectedEpisodes, this.getBackgroundTaskExecutor(), this.getLibrary(), this.getLocalization());
                 deleteActionEventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
                 this.getLibrarySelection().clear();
             }

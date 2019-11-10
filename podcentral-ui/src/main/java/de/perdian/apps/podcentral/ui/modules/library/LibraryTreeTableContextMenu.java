@@ -25,7 +25,7 @@ import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.modules.episodes.CancelDownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.episodes.OpenEpisodeActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.episodes.StartDownloadEpisodesActionEventHandler;
-import de.perdian.apps.podcentral.ui.modules.feeds.DeleteFeedsActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.feeds.DeleteActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.feeds.RefreshFeedsActionEventHandler;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
@@ -87,7 +87,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
         MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.REMOVE));
         deleteMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()).and(Bindings.isEmpty(librarySelection.getSelectedEpisodes())));
-        deleteMenuItem.setOnAction(new DeleteFeedsActionEventHandler(librarySelection::getSelectedFeeds, librarySelection::getSelectedEpisodes, backgroundTaskExecutor, library, localization));
+        deleteMenuItem.setOnAction(new DeleteActionEventHandler(librarySelection::getSelectedFeeds, librarySelection::getSelectedEpisodesAsList, backgroundTaskExecutor, library, localization));
         this.getItems().add(deleteMenuItem);
 
     }

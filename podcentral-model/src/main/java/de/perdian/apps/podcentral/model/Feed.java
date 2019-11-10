@@ -15,10 +15,11 @@
  */
 package de.perdian.apps.podcentral.model;
 
+import java.util.Collection;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
 
 public interface Feed {
@@ -36,10 +37,9 @@ public interface Feed {
     BooleanProperty getExpanded();
     ObjectProperty<FeedInputState> getInputState();
     ObservableList<Episode> getEpisodes();
-    ObservableList<Object> getProcessors();
-    ObservableBooleanValue getBusy();
 
     void refresh(FeedInput feedInput, RefreshOption... refreshOptions);
+    void deleteEpisodes(Collection<Episode> episodes);
 
     public enum RefreshOption {
         RESTORE_DELETED_EPISODES,

@@ -15,6 +15,8 @@
  */
 package de.perdian.apps.podcentral.model;
 
+import java.util.Collection;
+
 import javafx.collections.ObservableList;
 
 public interface Library {
@@ -22,8 +24,6 @@ public interface Library {
     ObservableList<Feed> getFeeds();
 
     Feed addFeed(FeedInput feedInput, Feed.RefreshOption... refreshOptions);
-
-    boolean addListener(LibraryListener listener);
-    boolean removeListener(LibraryListener listener);
+    void deleteFeeds(Collection<Feed> feeds);
 
 }

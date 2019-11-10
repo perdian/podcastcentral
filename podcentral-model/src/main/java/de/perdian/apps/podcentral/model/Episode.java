@@ -18,7 +18,12 @@ package de.perdian.apps.podcentral.model;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
@@ -61,6 +66,12 @@ public interface Episode {
             }
         }
 
+    }
+
+    static Map<Feed, List<Episode>> mapByFeed(Collection<Episode> episodes) {
+        Map<Feed, List<Episode>> resultMap = new HashMap<>();
+        episodes.forEach(episode -> resultMap.compute(episode.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episode));
+        return resultMap;
     }
 
 }

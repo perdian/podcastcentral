@@ -19,6 +19,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -90,7 +91,7 @@ interface LibraryTreeTableValue {
 
         @Override
         public void delete() {
-            this.getFeed().getEpisodes().remove(this.getEpisode());
+            this.getFeed().deleteEpisodes(List.of(this.getEpisode()));
         }
 
         @Override

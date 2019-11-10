@@ -16,12 +16,14 @@
 package de.perdian.apps.podcentral.database.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.persistence.criteria.CriteriaDelete;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -33,15 +35,12 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
-import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeData;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.Library;
-import de.perdian.apps.podcentral.model.LibraryListener;
 import de.perdian.apps.podcentral.storage.Storage;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 class DatabaseBackedLibrary implements Library, AutoCloseable {
@@ -52,15 +51,12 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     private Storage storage = null;
     private Map<String, DatabaseBackedFeed> feedsByFeedUrl = null;
     private ObservableList<Feed> feeds = null;
-    private List<LibraryListener> listeners = null;
 
     DatabaseBackedLibrary(SessionFactory sessionFactory, Storage storage) {
         this.setSessionFactory(sessionFactory);
         this.setStorage(storage);
         this.setFeedsByFeedUrl(new HashMap<>());
         this.setFeeds(FXCollections.observableArrayList());
-        this.getFeeds().addListener(this::onFeedListChange);
-        this.setListeners(new CopyOnWriteArrayList<>());
         this.loadInitialFeeds();
     }
 
@@ -127,37 +123,27 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
         return feedImpl;
     }
 
-    private void onFeedListChange(ListChangeListener.Change<? extends Feed> change) {
-        while (change.next()) {
-            change.getAddedSubList().forEach(feed -> feed.getEpisodes().addListener(this::onFeedEpisodesListChange));
-            change.getAddedSubList().forEach(feed -> this.getListeners().forEach(listener -> listener.onFeedAdded(feed)));
-            change.getRemoved().forEach(feed -> this.onFeedDelete((DatabaseBackedFeed)feed));
-            change.getRemoved().forEach(feed -> this.getListeners().forEach(listener -> listener.onFeedDeleted(feed)));
-        }
-    }
+    @Override
+    public synchronized void deleteFeeds(Collection<Feed> feeds) {
+        if (!feeds.isEmpty()) {
+            try (Session session = this.getSessionFactory().openSession()) {
+                Transaction transaction = session.beginTransaction();
+                for (Feed feed : feeds) {
+                    if (this.getFeeds().remove(feed)) {
 
-    private void onFeedEpisodesListChange(ListChangeListener.Change<? extends Episode> change) {
-        while (change.next()) {
-            change.getAddedSubList().forEach(episode -> this.getListeners().forEach(listener -> listener.onEpisodeAdded(((DatabaseBackedEpisode)episode).getFeed(), episode)));
-            change.getRemoved().forEach(episode -> this.onFeedEpisodeDelete((DatabaseBackedEpisode)episode));
-            change.getRemoved().forEach(episode -> this.getListeners().forEach(listener -> listener.onEpisodeDeleted(((DatabaseBackedEpisode)episode).getFeed(), episode)));
-        }
-    }
+                        DatabaseBackedFeed feedImpl = (DatabaseBackedFeed)feed;
+                        feedImpl.getEpisodes().forEach(episode -> ((DatabaseBackedEpisode)episode).deleteContentFile());
 
-    private void onFeedDelete(DatabaseBackedFeed feed) {
-        this.getFeedsByFeedUrl().remove(feed.getUrl().getValue());
-        feed.deleteFromDatabase();
-        log.error("Feed Delete not implemented yet!");
-    }
+                        CriteriaDelete<EpisodeEntity> episodeEntityDelete = session.getCriteriaBuilder().createCriteriaDelete(EpisodeEntity.class);
+                        episodeEntityDelete.where(session.getCriteriaBuilder().equal(episodeEntityDelete.from(EpisodeEntity.class).get("feed"), feedImpl));
+                        session.createQuery(episodeEntityDelete).executeUpdate();
+                        session.delete(feedImpl.getEntity());
 
-    private void onFeedEpisodeDelete(DatabaseBackedEpisode episode) {
-        try (Session session = this.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            episode.getEntity().setDeleted(Boolean.TRUE);
-            session.update(episode.getEntity());
-            transaction.commit();
+                    }
+                }
+                transaction.commit();
+            }
         }
-        log.error("Episode Delete not implemented completely yet! (Connect to Storage)");
     }
 
     private SessionFactory getSessionFactory() {
@@ -187,21 +173,6 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     }
     private void setFeeds(ObservableList<Feed> feeds) {
         this.feeds = feeds;
-    }
-
-    @Override
-    public boolean addListener(LibraryListener listener) {
-        return this.getListeners().add(listener);
-    }
-    @Override
-    public boolean removeListener(LibraryListener listener) {
-        return this.getListeners().remove(listener);
-    }
-    private List<LibraryListener> getListeners() {
-        return this.listeners;
-    }
-    private void setListeners(List<LibraryListener> listeners) {
-        this.listeners = listeners;
     }
 
 }

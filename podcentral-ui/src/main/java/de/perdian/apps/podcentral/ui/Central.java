@@ -23,12 +23,12 @@ import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.model.LibraryBuilder;
-import de.perdian.apps.podcentral.model.LibraryListener;
 import de.perdian.apps.podcentral.preferences.Preferences;
 import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.storage.Storage;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
+import javafx.collections.ListChangeListener;
 
 public class Central {
 
@@ -53,20 +53,29 @@ public class Central {
         Storage storage = Storage.createInstance(preferences);
         this.setStorage(storage);
 
+        log.info("Creating episode content downloader");
+        EpisodeDownloader episodeDownloader = EpisodeDownloader.createInstance(preferences);
+        this.setEpisodeContentDownloader(episodeDownloader);
+
         log.info("Loading library");
         LibraryBuilder libraryBuilder = LibraryBuilder.createInstance();
         Library library = libraryBuilder.buildLibrary(storage, preferences);
         this.setLibrary(library);
 
-        log.info("Creating episode content downloader");
-        EpisodeDownloader episodeDownloader = EpisodeDownloader.createInstance(preferences);
-        this.setEpisodeContentDownloader(episodeDownloader);
-        library.addListener(new LibraryListener() {
-            @Override public void onFeedDeleted(Feed feed) {
-                feed.getEpisodes().forEach(episode -> episodeDownloader.cancelDownload(episode));
-            }
-            @Override public void onEpisodeDeleted(Feed feed, Episode episode) {
-                episodeDownloader.cancelDownload(episode);
+        library.getFeeds().addListener((ListChangeListener.Change<? extends Feed> feedChange) -> {
+            while (feedChange.next()) {
+                feedChange.getAddedSubList().forEach(newFeed -> {
+                    newFeed.getEpisodes().addListener((ListChangeListener.Change<? extends Episode> episodeChange) -> {
+                        while (episodeChange.next()) {
+                            episodeChange.getRemoved().forEach(removedEpisode -> {
+                                episodeDownloader.cancelDownload(removedEpisode);
+                            });
+                        }
+                    });
+                });
+                feedChange.getRemoved().forEach(removedFeed -> {
+                    removedFeed.getEpisodes().forEach(removedEpisode -> episodeDownloader.cancelDownload(removedEpisode));
+                });
             }
         });
 

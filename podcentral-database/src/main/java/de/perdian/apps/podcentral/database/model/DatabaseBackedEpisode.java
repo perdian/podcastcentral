@@ -23,6 +23,8 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.model.Episode;
@@ -34,6 +36,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 class DatabaseBackedEpisode implements Episode {
+
+    private static final Logger log = LoggerFactory.getLogger(DatabaseBackedEpisode.class);
 
     private DatabaseBackedFeed feed = null;
     private EpisodeEntity entity = null;
@@ -118,6 +122,17 @@ class DatabaseBackedEpisode implements Episode {
             }
         }
         this.getContentFileLocation().setValue(storageFile.getAbsolutePath());
+    }
+
+    void deleteContentFile() {
+        File contentFile = this.getContentFile().getValue();
+        if (contentFile.exists()) {
+            try {
+                contentFile.delete();
+            } catch (Exception e) {
+                log.debug("Cannot delete episode content file at: {}", contentFile.getAbsolutePath(), e);
+            }
+        }
     }
 
     @Override

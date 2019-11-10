@@ -17,6 +17,7 @@ package de.perdian.apps.podcentral.database.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,14 +44,12 @@ import de.perdian.apps.podcentral.model.FeedData;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.FeedInputState;
 import de.perdian.apps.podcentral.storage.Storage;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -72,8 +70,6 @@ class DatabaseBackedFeed implements Feed {
     private BooleanProperty expanded = null;
     private ObjectProperty<FeedInputState> inputState = null;
     private ObservableList<Episode> episodes = null;
-    private ObservableList<Object> processors = null;
-    private ObservableBooleanValue busy = null;
     private Storage storage = null;
 
     DatabaseBackedFeed(FeedEntity feedEntity, List<EpisodeEntity> episodeEntities, SessionFactory sessionFactory, Storage storage) {
@@ -92,8 +88,6 @@ class DatabaseBackedFeed implements Feed {
         this.setUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(this, episodeEntity, sessionFactory, StringUtils.isNotEmpty(episodeEntity.getContentFileLocation()) ? storage.resolveFileAbsolute(episodeEntity.getContentFileLocation()) : storage.resolveFileRelative(feedEntity.getData().getTitle(), episodeEntity.getData().getTitle() + episodeEntity.getData().computeFileNameExtension()))).collect(Collectors.toList())));
-        this.setProcessors(FXCollections.observableArrayList());
-        this.setBusy(Bindings.isNotEmpty(this.getProcessors()));
         this.setStorage(storage);
     }
 
@@ -162,14 +156,23 @@ class DatabaseBackedFeed implements Feed {
         }
     }
 
-    void deleteFromDatabase() {
-        try (Session session = this.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            CriteriaDelete<EpisodeEntity> episodeEntityDelete = session.getCriteriaBuilder().createCriteriaDelete(EpisodeEntity.class);
-            episodeEntityDelete.where(session.getCriteriaBuilder().equal(episodeEntityDelete.from(EpisodeEntity.class).get("feed"), this.getEntity()));
-            session.createQuery(episodeEntityDelete).executeUpdate();
-            session.delete(this.getEntity());
-            transaction.commit();
+    @Override
+    public synchronized void deleteEpisodes(Collection<Episode> episodes) {
+        if (!episodes.isEmpty()) {
+            try (Session session = this.getSessionFactory().openSession()) {
+                Transaction transaction = session.beginTransaction();
+                for (Episode episode : episodes) {
+                    DatabaseBackedEpisode episodeImpl = (DatabaseBackedEpisode)episode;
+                    try {
+                        episodeImpl.getEntity().setDeleted(Boolean.TRUE);
+                        session.update(episodeImpl.getEntity());
+                    } finally {
+                        episodeImpl.deleteContentFile();
+                    }
+                }
+                transaction.commit();
+            }
+            this.getEpisodes().removeAll(episodes);
         }
     }
 
@@ -297,22 +300,6 @@ class DatabaseBackedFeed implements Feed {
     }
     private void setEpisodes(ObservableList<Episode> episodes) {
         this.episodes = episodes;
-    }
-
-    @Override
-    public ObservableList<Object> getProcessors() {
-        return this.processors;
-    }
-    public void setProcessors(ObservableList<Object> processors) {
-        this.processors = processors;
-    }
-
-    @Override
-    public ObservableBooleanValue getBusy() {
-        return this.busy;
-    }
-    private void setBusy(ObservableBooleanValue busy) {
-        this.busy = busy;
     }
 
     private Storage getStorage() {
