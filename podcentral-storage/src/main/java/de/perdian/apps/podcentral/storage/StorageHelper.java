@@ -42,7 +42,7 @@ class StorageHelper {
     static boolean isValidFileNameCharacter(char c) {
         if (Character.isLetterOrDigit(c)) {
             return true;
-        } else if ("!§$[](){}_-–.,+=\"".indexOf(c) > -1) {
+        } else if ("!§$[](){}»«_-–.,+=\"'".indexOf(c) > -1) {
             return true;
         } else {
             return false;
