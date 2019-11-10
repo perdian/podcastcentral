@@ -22,6 +22,7 @@ import java.util.List;
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Library;
+import de.perdian.apps.podcentral.ui.modules.episodes.OpenEpisodeActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.episodes.StartDownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.feeds.DeleteActionEventHandler;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
@@ -62,6 +63,11 @@ class LibraryTreeTableKeyListener implements EventHandler<KeyEvent> {
                 StartDownloadEpisodesActionEventHandler downloadActionEventHandler = new StartDownloadEpisodesActionEventHandler(() -> downloadableEpisodes, this.getBackgroundTaskExecutor(), this.getEpisodeDownloader(), this.getLocalization());
                 downloadActionEventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
             }
+            event.consume();
+        } else if (event.getCode() == KeyCode.O) {
+            List<Episode> openableEpisodes = new ArrayList<>(this.getLibrarySelection().update().getSelectedEpisodesForOpen());
+            OpenEpisodeActionEventHandler openEpisodeEventHandler = new OpenEpisodeActionEventHandler(() -> openableEpisodes);
+            openEpisodeEventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         }
     }
