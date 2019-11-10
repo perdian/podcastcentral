@@ -43,51 +43,51 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         this.setLibrarySelection(librarySelection);
 
         MenuItem openEpisodeMenuItem = new MenuItem(localization.openEpisode());
-        openEpisodeMenuItem.disableProperty().bind(Bindings.size(librarySelection.getSelectedEpisodesAsList()).isNotEqualTo(1));
-        openEpisodeMenuItem.setOnAction(new OpenEpisodeActionEventHandler(librarySelection::getSelectedEpisodesAsList));
+        openEpisodeMenuItem.disableProperty().bind(Bindings.size(librarySelection.getSelectedEpisodesForOpen()).isNotEqualTo(1));
+        openEpisodeMenuItem.setOnAction(new OpenEpisodeActionEventHandler(librarySelection::getSelectedEpisodesForOpen));
         this.getItems().add(openEpisodeMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());
 
         MenuItem startDownloadSelectedEpisodesMenuItem = new MenuItem(localization.downloadSelectedEpisodes());
-        startDownloadSelectedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getDownloadableEpisodes()));
-        startDownloadSelectedEpisodesMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getDownloadableEpisodes, backgroundTaskExecutor, episodeDownloader, localization));
+        startDownloadSelectedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedEpisodesForDownload()));
+        startDownloadSelectedEpisodesMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getSelectedEpisodesForDownload, backgroundTaskExecutor, episodeDownloader, localization));
         this.getItems().add(startDownloadSelectedEpisodesMenuItem);
 
         MenuItem startDownloadSelectedEpisodesRedownloadExistingMenuItem = new MenuItem(localization.downloadSelectedEpisodesRedownloadExistingEpisodes());
         startDownloadSelectedEpisodesRedownloadExistingMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedEpisodes()));
-        startDownloadSelectedEpisodesRedownloadExistingMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getSelectedEpisodesAsList, backgroundTaskExecutor, episodeDownloader, localization));
+        startDownloadSelectedEpisodesRedownloadExistingMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getSelectedEpisodes, backgroundTaskExecutor, episodeDownloader, localization));
         this.getItems().add(startDownloadSelectedEpisodesRedownloadExistingMenuItem);
 
         MenuItem startDownloadAllEpisodesFromFeedMenuItem = new MenuItem(localization.downloadAllEpisodesFromFeed());
-        startDownloadAllEpisodesFromFeedMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getDownloadableFeedEpisodes()));
-        startDownloadAllEpisodesFromFeedMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getDownloadableFeedEpisodes, backgroundTaskExecutor, episodeDownloader, localization));
+        startDownloadAllEpisodesFromFeedMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedEpisodesFromFeedsForDownload()));
+        startDownloadAllEpisodesFromFeedMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getSelectedEpisodesFromFeedsForDownload, backgroundTaskExecutor, episodeDownloader, localization));
         this.getItems().add(startDownloadAllEpisodesFromFeedMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());
 
         MenuItem cancelDownloadSelectedEpisodesMenuItem = new MenuItem(localization.cancelDownloads());
-        cancelDownloadSelectedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getCancelableEpisodes()));
-        cancelDownloadSelectedEpisodesMenuItem.setOnAction(new CancelDownloadEpisodesActionEventHandler(librarySelection::getCancelableEpisodes, backgroundTaskExecutor, episodeDownloader, localization));
+        cancelDownloadSelectedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedEpisodesForCancel()));
+        cancelDownloadSelectedEpisodesMenuItem.setOnAction(new CancelDownloadEpisodesActionEventHandler(librarySelection::getSelectedEpisodesForCancel, backgroundTaskExecutor, episodeDownloader, localization));
         this.getItems().add(cancelDownloadSelectedEpisodesMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());
 
         MenuItem refreshMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()));
-        refreshMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(), () -> librarySelection.getSelectionModel().clearSelection(), backgroundTaskExecutor, localization));
+        refreshMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(), backgroundTaskExecutor, localization));
         this.getItems().add(refreshMenuItem);
 
         MenuItem refreshRestoreEpisodesMenuItem = new MenuItem(localization.refreshRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshRestoreEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()));
-        refreshRestoreEpisodesMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), () -> librarySelection.getSelectionModel().clearSelection(), backgroundTaskExecutor, localization));
+        refreshRestoreEpisodesMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), backgroundTaskExecutor, localization));
         this.getItems().add(refreshRestoreEpisodesMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());
 
         MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.REMOVE));
-        deleteMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()).and(Bindings.isEmpty(librarySelection.getSelectedEpisodes())));
-        deleteMenuItem.setOnAction(new DeleteActionEventHandler(librarySelection::getSelectedFeeds, librarySelection::getSelectedEpisodesAsList, backgroundTaskExecutor, library, localization));
+        deleteMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeedsForDelete()).and(Bindings.isEmpty(librarySelection.getSelectedEpisodesForDelete())));
+        deleteMenuItem.setOnAction(new DeleteActionEventHandler(librarySelection::getSelectedFeedsForDelete, librarySelection::getSelectedEpisodesForDelete, backgroundTaskExecutor, library, localization));
         this.getItems().add(deleteMenuItem);
 
     }

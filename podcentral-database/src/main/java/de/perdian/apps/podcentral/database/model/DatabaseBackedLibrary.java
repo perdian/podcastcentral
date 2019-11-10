@@ -85,7 +85,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
             for (FeedEntity feedEntity : feedEntities) {
                 log.debug("Loading initial feed from database: {}", ToStringBuilder.reflectionToString(feedEntity, ToStringStyle.NO_CLASS_NAME_STYLE));
                 List<EpisodeEntity> episodeEntitiesForFeed = episodeEntitiesByFeed.get(feedEntity);
-                DatabaseBackedFeed feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntitiesForFeed, this.getSessionFactory(), this.getStorage());
+                DatabaseBackedFeed feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntitiesForFeed, this.getSessionFactory(), this.getStorage().resolveDirectory(feedEntity.getData().getTitle()));
                 this.getFeeds().add(feedImpl);
                 this.getFeedsByFeedUrl().put(feedImpl.getUrl().getValue(), feedImpl);
             }
@@ -114,7 +114,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
                     episodeEntities.add(episodeEntity);
                 }
                 transaction.commit();
-                feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntities, this.getSessionFactory(), this.getStorage());
+                feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntities, this.getSessionFactory(), this.getStorage().resolveDirectory(feedEntity.getData().getTitle()));
                 this.getFeedsByFeedUrl().put(feedInput.getData().getUrl(), feedImpl);
                 this.getFeeds().add(feedImpl);
                 FXCollections.sort(this.getFeeds(), Comparator.comparing(feed -> feed.getTitle().getValue()));
@@ -127,21 +127,21 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
     public synchronized void deleteFeeds(Collection<Feed> feeds) {
         if (!feeds.isEmpty()) {
             try (Session session = this.getSessionFactory().openSession()) {
-                Transaction transaction = session.beginTransaction();
                 for (Feed feed : feeds) {
+                    DatabaseBackedFeed feedImpl = (DatabaseBackedFeed)feed;
                     if (this.getFeeds().remove(feed)) {
 
-                        DatabaseBackedFeed feedImpl = (DatabaseBackedFeed)feed;
-                        feedImpl.getEpisodes().forEach(episode -> ((DatabaseBackedEpisode)episode).deleteContentFile());
+                        feedImpl.getStorageDirectory().delete();
 
+                        Transaction transaction = session.beginTransaction();
                         CriteriaDelete<EpisodeEntity> episodeEntityDelete = session.getCriteriaBuilder().createCriteriaDelete(EpisodeEntity.class);
-                        episodeEntityDelete.where(session.getCriteriaBuilder().equal(episodeEntityDelete.from(EpisodeEntity.class).get("feed"), feedImpl));
+                        episodeEntityDelete.where(session.getCriteriaBuilder().equal(episodeEntityDelete.from(EpisodeEntity.class).get("feed"), feedImpl.getEntity()));
                         session.createQuery(episodeEntityDelete).executeUpdate();
                         session.delete(feedImpl.getEntity());
+                        transaction.commit();
 
                     }
                 }
-                transaction.commit();
             }
         }
     }

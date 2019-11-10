@@ -64,6 +64,7 @@ class EpisodeDownloaderJobRunnable implements TaskRunnable {
                 byte[] downloadBuffer = new byte[1024 * 32];
                 try (InputStream downloadStream = new BufferedInputStream(downloadResponse.body().byteStream())) {
                     File targetFile = this.getEpisode().getContentFile().getValue();
+                    log.debug("Starting download into target file '{}' for episode '{}'", targetFile, this.getEpisode());
                     if (!targetFile.getParentFile().exists()) {
                         log.debug("Creating download target directory: {}", targetFile.getParentFile().getAbsolutePath());
                         targetFile.getParentFile().mkdirs();
@@ -73,8 +74,10 @@ class EpisodeDownloaderJobRunnable implements TaskRunnable {
                         for (int bytesRead = downloadStream.read(downloadBuffer); bytesRead > -1; bytesRead = downloadStream.read(downloadBuffer)) {
                             targetStream.write(downloadBuffer, 0, bytesRead);
                             totalBytesRead += bytesRead;
+                            double downloadProgress = (double)totalBytesRead / (double)actualLength;
                             this.getEpisode().getDownloadedBytes().setValue(totalBytesRead);
-                            progress.updateProgress((double)totalBytesRead / (double)actualLength, null);
+                            this.getEpisode().getDownloadProgress().setValue(downloadProgress);
+                            progress.updateProgress(downloadProgress, null);
                         }
                     }
                 }

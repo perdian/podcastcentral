@@ -33,15 +33,13 @@ import javafx.event.EventHandler;
 public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent> {
 
     private Supplier<List<Feed>> feedListSupplier = null;
-    private Runnable clearSelectionCallback = null;
     private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Localization localization = null;
     private Set<Feed.RefreshOption> feedRefreshOptions = Collections.emptySet();
 
-    public RefreshFeedsActionEventHandler(Supplier<List<Feed>> feedListSupplier, Set<Feed.RefreshOption> feedRefreshOptions, Runnable clearSelectionCallback, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    public RefreshFeedsActionEventHandler(Supplier<List<Feed>> feedListSupplier, Set<Feed.RefreshOption> feedRefreshOptions, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setFeedListSupplier(feedListSupplier);
         this.setFeedRefreshOptions(feedRefreshOptions);
-        this.setClearSelectionCallback(clearSelectionCallback);
         this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setLocalization(localization);
     }
@@ -56,7 +54,6 @@ public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent>
                     progress.updateProgress((double)(i+1) / (double)feedList.size(), null);
                     this.handleRefreshFeed(feedList.get(i));
                 }
-                this.getClearSelectionCallback().run();
             });
         }
     }
@@ -77,13 +74,6 @@ public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent>
     }
     private void setFeedListSupplier(Supplier<List<Feed>> feedListSupplier) {
         this.feedListSupplier = feedListSupplier;
-    }
-
-    private Runnable getClearSelectionCallback() {
-        return this.clearSelectionCallback;
-    }
-    private void setClearSelectionCallback(Runnable clearSelectionCallback) {
-        this.clearSelectionCallback = clearSelectionCallback;
     }
 
     private BackgroundTaskExecutor getBackgroundTaskExecutor() {

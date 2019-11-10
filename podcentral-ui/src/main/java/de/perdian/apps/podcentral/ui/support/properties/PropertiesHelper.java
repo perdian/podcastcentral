@@ -21,18 +21,17 @@ import java.util.function.Function;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.WeakChangeListener;
 
 public class PropertiesHelper {
 
     public static <S, T> ObjectProperty<T> map(Property<S> sourceProperty, Function<S, T> toConverter, Function<T, S> fromConverter) {
         ObjectProperty<T> targetProperty = new SimpleObjectProperty<>(toConverter.apply(sourceProperty.getValue()));
-        sourceProperty.addListener(new WeakChangeListener<>((o, oldValue, newValue) -> {
+        sourceProperty.addListener((o, oldValue, newValue) -> {
             T newValueConverted = toConverter.apply(newValue);
             if (!Objects.equals(newValueConverted, targetProperty.getValue())) {
                 targetProperty.setValue(newValueConverted);
             }
-        }));
+        });
         targetProperty.addListener((o, oldValue, newValue) -> {
             if (fromConverter == null) {
                 throw new IllegalArgumentException("No converter registered!");

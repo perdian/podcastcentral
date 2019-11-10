@@ -16,7 +16,6 @@
 package de.perdian.apps.podcentral.storage;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,24 +42,13 @@ public class Storage {
         this.setRootDirectory(rootDirectory);
     }
 
-    public File resolveFileRelative(String... locations) {
-        File file = this.getRootDirectory();
-        for (String location : locations) {
-            file = new File(file, StorageHelper.cleanupFileName(location));
+    public StorageDirectory resolveDirectory(String directoryName) {
+        File directory = new File(this.getRootDirectory(), StorageHelper.cleanupFileName(directoryName));
+        if (!directory.exists()) {
+            log.debug("Creating storage directory at: {}", directory.getAbsolutePath());
+            directory.mkdirs();
         }
-        try {
-            return file.getCanonicalFile();
-        } catch (IOException e) {
-            return file;
-        }
-    }
-
-    public File resolveFileAbsolute(String location) {
-        try {
-            return new File(location).getCanonicalFile();
-        } catch (IOException e) {
-            return new File(location);
-        }
+        return new StorageDirectory(directory);
     }
 
     File getRootDirectory() {

@@ -15,10 +15,7 @@
  */
 package de.perdian.apps.podcentral.ui.modules.library;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.perdian.apps.podcentral.model.Episode;
@@ -27,35 +24,41 @@ import de.perdian.apps.podcentral.model.Feed;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView.TreeTableViewSelectionModel;
 
 class LibrarySelection {
 
-    private ObservableList<Episode> downloadableEpisodes = null;
-    private ObservableList<Episode> downloadableFeedEpisodes = null;
-    private ObservableList<Episode> cancelableEpisodes = null;
-    private ObservableMap<Feed, List<Episode>> selectedEpisodes = null;
-    private ObservableList<Episode> selectedEpisodesAsList = null;
-    private ObservableList<Feed> selectedFeeds = null;
     private TreeTableViewSelectionModel<LibraryTreeTableValue> selectionModel = null;
+    private ObservableList<Feed> selectedFeeds = null;
+    private ObservableList<Feed> selectedFeedsForDelete = null;
+    private ObservableList<Episode> selectedEpisodes = null;
+    private ObservableList<Episode> selectedEpisodesFromFeeds = null;
+    private ObservableList<Episode> selectedEpisodesFromFeedsForDownload = null;
+    private ObservableList<Episode> selectedEpisodesForOpen = null;
+    private ObservableList<Episode> selectedEpisodesForDownload = null;
+    private ObservableList<Episode> selectedEpisodesForDelete = null;
+    private ObservableList<Episode> selectedEpisodesForCancel = null;
 
     LibrarySelection(TreeTableViewSelectionModel<LibraryTreeTableValue> selectionModel) {
+
+        ObservableList<Feed> selectedFeeds = FXCollections.observableArrayList();
+        ObservableList<Episode> selectedEpisodes = FXCollections.observableArrayList();
+        ObservableList<Episode> selectedEpisodesFromFeeds = FXCollections.observableArrayList();
+
+        this.setSelectedFeeds(selectedFeeds);
+        this.setSelectedFeedsForDelete(selectedFeeds.filtered(feed -> feed.getEpisodes().stream().filter(episode -> List.of(EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.CANCELLED).contains(episode.getDownloadState().getValue())).findAny().isEmpty()));
+        this.setSelectedEpisodes(selectedEpisodes);
+        this.setSelectedEpisodesForDelete(selectedEpisodes.filtered(episode -> !List.of(EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.DOWNLOADING).contains(episode.getDownloadState().getValue())));
+        this.setSelectedEpisodesForDownload(selectedEpisodes.filtered(episode -> !List.of(EpisodeDownloadState.COMPLETED, EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.DOWNLOADING).contains(episode.getDownloadState().getValue())));
+        this.setSelectedEpisodesForOpen(selectedEpisodes.filtered(episode -> List.of(EpisodeDownloadState.COMPLETED).contains(episode.getDownloadState().getValue())));
+        this.setSelectedEpisodesForCancel(selectedEpisodes.filtered(episode -> List.of(EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.CANCELLED).contains(episode.getDownloadState().getValue())));
+        this.setSelectedEpisodesFromFeeds(selectedEpisodesFromFeeds);
+        this.setSelectedEpisodesFromFeedsForDownload(selectedEpisodesFromFeeds.filtered(episode -> !List.of(EpisodeDownloadState.COMPLETED, EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.DOWNLOADING).contains(episode.getDownloadState().getValue())));
         this.setSelectionModel(selectionModel);
-        this.setCancelableEpisodes(FXCollections.observableArrayList());
-        this.setDownloadableEpisodes(FXCollections.observableArrayList());
-        this.setDownloadableFeedEpisodes(FXCollections.observableArrayList());
-        this.setSelectedEpisodes(FXCollections.observableHashMap());
-        this.setSelectedEpisodesAsList(FXCollections.observableArrayList());
-        this.setSelectedFeeds(FXCollections.observableArrayList());
         this.update();
         selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<LibraryTreeTableValue>> change) -> this.update(change.getList().stream().map(TreeItem::getValue).collect(Collectors.toList())));
-    }
 
-    public LibrarySelection clear() {
-        this.getSelectionModel().clearSelection();
-        return this.update();
     }
 
     public LibrarySelection update() {
@@ -65,9 +68,7 @@ class LibrarySelection {
     private LibrarySelection update(List<LibraryTreeTableValue> values) {
         this.collectSelectedFeeds(values);
         this.collectSelectedEpisodes(values);
-        this.collectDownloadableFeedEpisodes(values);
-        this.collectDownloadableEpisodes(values);
-        this.collectCancelableEpisodes(values);
+        this.collectSelectedEpisodesFromFeeds();
         return this;
     }
 
@@ -81,43 +82,18 @@ class LibrarySelection {
     }
 
     private void collectSelectedEpisodes(List<LibraryTreeTableValue> values) {
-        List<Episode> selectedEpisodes = values.stream()
-            .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
-            .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
-            .collect(Collectors.toList());
-        this.getSelectedEpisodesAsList().setAll(selectedEpisodes);
-        Map<Feed, List<Episode>> episodes = new HashMap<>();
-        selectedEpisodes.forEach(episode -> episodes.compute(episode.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episode));
-        this.getSelectedEpisodes().clear();
-        this.getSelectedEpisodes().putAll(episodes);
-    }
-
-    private void collectDownloadableFeedEpisodes(List<LibraryTreeTableValue> values) {
-        this.getDownloadableFeedEpisodes().setAll(
+        this.getSelectedEpisodes().setAll(
             values.stream()
-                .filter(item -> item instanceof LibraryTreeTableValue.FeedTreeValue)
-                .flatMap(item -> ((LibraryTreeTableValue.FeedTreeValue)item).getFeed().getEpisodes().stream())
-                .filter(episode -> !List.of(EpisodeDownloadState.DOWNLOADING, EpisodeDownloadState.COMPLETED).contains(episode.getDownloadState().getValue()))
+                .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
+                .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
                 .collect(Collectors.toList())
         );
     }
 
-    private void collectDownloadableEpisodes(List<LibraryTreeTableValue> values) {
-        this.getDownloadableEpisodes().setAll(
-            values.stream()
-                .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
-                .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
-                .filter(episode -> !List.of(EpisodeDownloadState.DOWNLOADING, EpisodeDownloadState.COMPLETED).contains(episode.getDownloadState().getValue()))
-                .collect(Collectors.toList())
-        );
-    }
-
-    private void collectCancelableEpisodes(List<LibraryTreeTableValue> values) {
-        this.getCancelableEpisodes().setAll(
-            values.stream()
-                .filter(item -> item instanceof LibraryTreeTableValue.EpisodeTreeValue)
-                .map(item -> ((LibraryTreeTableValue.EpisodeTreeValue)item).getEpisode())
-                .filter(episode -> List.of(EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.DOWNLOADING).contains(episode.getDownloadState().getValue()))
+    private void collectSelectedEpisodesFromFeeds() {
+        this.getSelectedEpisodesFromFeeds().setAll(
+            this.getSelectedFeeds().stream()
+                .flatMap(feed -> feed.getEpisodes().stream())
                 .collect(Collectors.toList())
         );
     }
@@ -136,39 +112,60 @@ class LibrarySelection {
         this.selectedFeeds = selectedFeeds;
     }
 
-    ObservableMap<Feed, List<Episode>> getSelectedEpisodes() {
+    ObservableList<Feed> getSelectedFeedsForDelete() {
+        return this.selectedFeedsForDelete;
+    }
+    private void setSelectedFeedsForDelete(ObservableList<Feed> selectedFeedsForDelete) {
+        this.selectedFeedsForDelete = selectedFeedsForDelete;
+    }
+
+    ObservableList<Episode> getSelectedEpisodes() {
         return this.selectedEpisodes;
     }
-    private void setSelectedEpisodes(ObservableMap<Feed, List<Episode>> selectedEpisodes) {
+    private void setSelectedEpisodes(ObservableList<Episode> selectedEpisodes) {
         this.selectedEpisodes = selectedEpisodes;
     }
 
-    ObservableList<Episode> getSelectedEpisodesAsList() {
-        return this.selectedEpisodesAsList;
+    ObservableList<Episode> getSelectedEpisodesFromFeeds() {
+        return this.selectedEpisodesFromFeeds;
     }
-    private void setSelectedEpisodesAsList(ObservableList<Episode> selectedEpisodesAsList) {
-        this.selectedEpisodesAsList = selectedEpisodesAsList;
-    }
-
-    ObservableList<Episode> getCancelableEpisodes() {
-        return this.cancelableEpisodes;
-    }
-    private void setCancelableEpisodes(ObservableList<Episode> cancelableEpisodes) {
-        this.cancelableEpisodes = cancelableEpisodes;
+    private void setSelectedEpisodesFromFeeds(ObservableList<Episode> selectedEpisodesFromFeeds) {
+        this.selectedEpisodesFromFeeds = selectedEpisodesFromFeeds;
     }
 
-    ObservableList<Episode> getDownloadableFeedEpisodes() {
-        return this.downloadableFeedEpisodes;
+    ObservableList<Episode> getSelectedEpisodesFromFeedsForDownload() {
+        return this.selectedEpisodesFromFeedsForDownload;
     }
-    private void setDownloadableFeedEpisodes(ObservableList<Episode> downloadableFeedEpisodes) {
-        this.downloadableFeedEpisodes = downloadableFeedEpisodes;
+    private void setSelectedEpisodesFromFeedsForDownload(ObservableList<Episode> selectedEpisodesFromFeedsForDownload) {
+        this.selectedEpisodesFromFeedsForDownload = selectedEpisodesFromFeedsForDownload;
     }
 
-    ObservableList<Episode> getDownloadableEpisodes() {
-        return this.downloadableEpisodes;
+    ObservableList<Episode> getSelectedEpisodesForOpen() {
+        return this.selectedEpisodesForOpen;
     }
-    private void setDownloadableEpisodes(ObservableList<Episode> downloadableEpisodes) {
-        this.downloadableEpisodes = downloadableEpisodes;
+    private void setSelectedEpisodesForOpen(ObservableList<Episode> selectedEpisodesForOpen) {
+        this.selectedEpisodesForOpen = selectedEpisodesForOpen;
+    }
+
+    ObservableList<Episode> getSelectedEpisodesForDownload() {
+        return this.selectedEpisodesForDownload;
+    }
+    private void setSelectedEpisodesForDownload(ObservableList<Episode> selectedEpisodesForDownload) {
+        this.selectedEpisodesForDownload = selectedEpisodesForDownload;
+    }
+
+    ObservableList<Episode> getSelectedEpisodesForDelete() {
+        return this.selectedEpisodesForDelete;
+    }
+    private void setSelectedEpisodesForDelete(ObservableList<Episode> selectedEpisodesForDelete) {
+        this.selectedEpisodesForDelete = selectedEpisodesForDelete;
+    }
+
+    ObservableList<Episode> getSelectedEpisodesForCancel() {
+        return this.selectedEpisodesForCancel;
+    }
+    private void setSelectedEpisodesForCancel(ObservableList<Episode> selectedEpisodesForCancel) {
+        this.selectedEpisodesForCancel = selectedEpisodesForCancel;
     }
 
 }

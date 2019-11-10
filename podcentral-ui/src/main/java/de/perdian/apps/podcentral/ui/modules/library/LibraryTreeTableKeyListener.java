@@ -50,15 +50,14 @@ class LibraryTreeTableKeyListener implements EventHandler<KeyEvent> {
     @Override
     public void handle(KeyEvent event) {
         if (event.getCode() == KeyCode.DELETE) {
-            List<Episode> selectedEpisodes = new ArrayList<>(this.getLibrarySelection().update().getSelectedEpisodesAsList());
+            List<Episode> selectedEpisodes = new ArrayList<>(this.getLibrarySelection().update().getSelectedEpisodes());
             if (!selectedEpisodes.isEmpty()) {
                 DeleteActionEventHandler deleteActionEventHandler = new DeleteActionEventHandler(Collections::emptyList, () -> selectedEpisodes, this.getBackgroundTaskExecutor(), this.getLibrary(), this.getLocalization());
                 deleteActionEventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
-                this.getLibrarySelection().clear();
             }
             event.consume();
         } else if (event.getCode() == KeyCode.D) {
-            List<Episode> downloadableEpisodes = new ArrayList<>(this.getLibrarySelection().update().getDownloadableEpisodes());
+            List<Episode> downloadableEpisodes = new ArrayList<>(this.getLibrarySelection().update().getSelectedEpisodesForDownload());
             if (!downloadableEpisodes.isEmpty()) {
                 StartDownloadEpisodesActionEventHandler downloadActionEventHandler = new StartDownloadEpisodesActionEventHandler(() -> downloadableEpisodes, this.getBackgroundTaskExecutor(), this.getEpisodeDownloader(), this.getLocalization());
                 downloadActionEventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));

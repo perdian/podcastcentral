@@ -38,7 +38,7 @@ class LibraryTreeTableMouseEventHandler implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent event) {
 
-        List<File> completedFiles = this.getLibrarySelection().getSelectedEpisodesAsList().stream()
+        List<File> completedFiles = this.getLibrarySelection().getSelectedEpisodes().stream()
             .filter(episode -> EpisodeDownloadState.COMPLETED.equals(episode.getDownloadState().getValue()))
             .map(episode -> episode.getContentFile().getValue())
             .filter(file -> file != null && file.exists())

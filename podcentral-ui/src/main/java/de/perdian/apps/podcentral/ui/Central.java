@@ -19,8 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
-import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.model.LibraryBuilder;
 import de.perdian.apps.podcentral.preferences.Preferences;
@@ -28,7 +26,6 @@ import de.perdian.apps.podcentral.preferences.PreferencesFactory;
 import de.perdian.apps.podcentral.storage.Storage;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
-import javafx.collections.ListChangeListener;
 
 public class Central {
 
@@ -61,23 +58,6 @@ public class Central {
         LibraryBuilder libraryBuilder = LibraryBuilder.createInstance();
         Library library = libraryBuilder.buildLibrary(storage, preferences);
         this.setLibrary(library);
-
-        library.getFeeds().addListener((ListChangeListener.Change<? extends Feed> feedChange) -> {
-            while (feedChange.next()) {
-                feedChange.getAddedSubList().forEach(newFeed -> {
-                    newFeed.getEpisodes().addListener((ListChangeListener.Change<? extends Episode> episodeChange) -> {
-                        while (episodeChange.next()) {
-                            episodeChange.getRemoved().forEach(removedEpisode -> {
-                                episodeDownloader.cancelDownload(removedEpisode);
-                            });
-                        }
-                    });
-                });
-                feedChange.getRemoved().forEach(removedFeed -> {
-                    removedFeed.getEpisodes().forEach(removedEpisode -> episodeDownloader.cancelDownload(removedEpisode));
-                });
-            }
-        });
 
     }
 

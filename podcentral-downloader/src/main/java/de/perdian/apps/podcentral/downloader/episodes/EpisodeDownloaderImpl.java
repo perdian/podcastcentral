@@ -57,7 +57,6 @@ class EpisodeDownloaderImpl implements EpisodeDownloader {
             if (!this.getEpisodeToTask().containsKey(episode)) {
                 EpisodeDownloaderJobRunnable jobRunnable = new EpisodeDownloaderJobRunnable(episode);
                 TaskRequest taskRequest = new TaskRequest(episode.getTitle().getValue(), jobRunnable);
-                taskRequest.addProgressListener((progress, text) -> episode.getDownloadProgress().setValue(progress));
                 this.getTaskExecutor().submitTask(taskRequest);
             }
         }

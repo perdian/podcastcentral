@@ -47,7 +47,7 @@ class LibraryTreeTableMouseClickedEventListener implements EventHandler<MouseEve
     @Override
     public void handle(MouseEvent event) {
         if (event.getClickCount() >= 2 && MouseButton.PRIMARY.equals(event.getButton())) {
-            List<Episode> selectedEpisodes = this.getLibrarySelection().getSelectedEpisodesAsList();
+            List<Episode> selectedEpisodes = this.getLibrarySelection().getSelectedEpisodes();
             if (selectedEpisodes.size() == 1) {
                 Episode selectedEpisode = selectedEpisodes.get(0);
                 File selectedFile = selectedEpisode.getContentFile().getValue();

@@ -58,9 +58,8 @@ class DatabaseBackedEpisode implements Episode {
     private ObjectProperty<Double> downloadProgress = null;
     private ObjectProperty<Exception> downloadError = null;
     private ObjectProperty<Long> downloadedBytes = null;
-    private StringProperty contentFileLocation = null;
 
-    public DatabaseBackedEpisode(DatabaseBackedFeed feed, EpisodeEntity episodeEntity, SessionFactory sessionFactory, File file) {
+    public DatabaseBackedEpisode(DatabaseBackedFeed feed, EpisodeEntity episodeEntity, SessionFactory sessionFactory, File contentFile) {
         this.setFeed(feed);
         this.setEntity(episodeEntity);
         this.setContentSize(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getSize(), (e, v) -> e.getData().setSize(v), SimpleObjectProperty::new, sessionFactory));
@@ -74,14 +73,13 @@ class DatabaseBackedEpisode implements Episode {
         this.setImageUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setPublicationDate(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getPublicationDate(), (e, v) -> e.getData().setPublicationDate(v), SimpleObjectProperty::new, sessionFactory));
         this.setSubtitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v), SimpleStringProperty::new, sessionFactory));
-        this.setContentFileLocation(DatabaseHelper.createProperty(episodeEntity, e -> e.getContentFileLocation(), (e, v) -> e.setContentFileLocation(v), SimpleStringProperty::new, sessionFactory));
         this.setTitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
-        this.setContentFile(new SimpleObjectProperty<>(file));
+        this.setContentFile(new SimpleObjectProperty<>(contentFile));
         this.setDownloadError(new SimpleObjectProperty<>());
         this.setDownloadProgress(new SimpleObjectProperty<>());
         this.setDownloadedBytes(new SimpleObjectProperty<>());
-        this.computeDataFromContentFile(file);
+        this.computeDataFromContentFile(contentFile);
         this.getContentFile().addListener((o, oldValue, newValue) -> this.computeDataFromContentFile(newValue));
     }
 
@@ -121,7 +119,6 @@ class DatabaseBackedEpisode implements Episode {
                 this.getDownloadState().setValue(EpisodeDownloadState.NEW);
             }
         }
-        this.getContentFileLocation().setValue(storageFile.getAbsolutePath());
     }
 
     void deleteContentFile() {
@@ -292,13 +289,6 @@ class DatabaseBackedEpisode implements Episode {
     }
     private void setDownloadedBytes(ObjectProperty<Long> downloadedBytes) {
         this.downloadedBytes = downloadedBytes;
-    }
-
-    private StringProperty getContentFileLocation() {
-        return this.contentFileLocation;
-    }
-    private void setContentFileLocation(StringProperty contentFileLocation) {
-        this.contentFileLocation = contentFileLocation;
     }
 
 }

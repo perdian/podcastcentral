@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaQuery;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Session;
@@ -43,7 +42,7 @@ import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedData;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.FeedInputState;
-import de.perdian.apps.podcentral.storage.Storage;
+import de.perdian.apps.podcentral.storage.StorageDirectory;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -70,9 +69,9 @@ class DatabaseBackedFeed implements Feed {
     private BooleanProperty expanded = null;
     private ObjectProperty<FeedInputState> inputState = null;
     private ObservableList<Episode> episodes = null;
-    private Storage storage = null;
+    private StorageDirectory storageDirectory = null;
 
-    DatabaseBackedFeed(FeedEntity feedEntity, List<EpisodeEntity> episodeEntities, SessionFactory sessionFactory, Storage storage) {
+    DatabaseBackedFeed(FeedEntity feedEntity, List<EpisodeEntity> episodeEntities, SessionFactory sessionFactory, StorageDirectory storageDirectory) {
         this.setEntity(feedEntity);
         this.setSessionFactory(sessionFactory);
         this.setCategory(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getCategory(), (e, v) -> e.getData().setCategory(v), SimpleStringProperty::new, sessionFactory));
@@ -87,8 +86,8 @@ class DatabaseBackedFeed implements Feed {
         this.setTitle(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
-        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(this, episodeEntity, sessionFactory, StringUtils.isNotEmpty(episodeEntity.getContentFileLocation()) ? storage.resolveFileAbsolute(episodeEntity.getContentFileLocation()) : storage.resolveFileRelative(feedEntity.getData().getTitle(), episodeEntity.getData().getTitle() + episodeEntity.getData().computeFileNameExtension()))).collect(Collectors.toList())));
-        this.setStorage(storage);
+        this.setEpisodes(FXCollections.observableArrayList(episodeEntities.stream().map(episodeEntity -> new DatabaseBackedEpisode(this, episodeEntity, sessionFactory, storageDirectory.resolveFile(episodeEntity.getData().getTitle() + ".mp3"))).collect(Collectors.toList())));
+        this.setStorageDirectory(storageDirectory);
     }
 
     void updateData(FeedData feedData) {
@@ -126,7 +125,7 @@ class DatabaseBackedFeed implements Feed {
                     episode.updateData(episodeData);
                 } else if (episode == null) {
                     Transaction transaction = session.beginTransaction();
-                    File episodeFile = this.getStorage().resolveFileRelative(feedInput.getData().getTitle(), episodeData.getTitle() + episodeData.computeFileNameExtension());
+                    File episodeFile = this.getStorageDirectory().resolveFile(episodeData.getTitle() + episodeData.computeFileNameExtension());
                     if (episodeEntityFromDatabase != null && refreshOptionsSet.contains(RefreshOption.RESTORE_DELETED_EPISODES)) {
                         episodeEntityFromDatabase.setDeleted(Boolean.FALSE);
                         episodeEntityFromDatabase.setDownloadState(EpisodeDownloadState.NEW);
@@ -302,11 +301,11 @@ class DatabaseBackedFeed implements Feed {
         this.episodes = episodes;
     }
 
-    private Storage getStorage() {
-        return this.storage;
+    StorageDirectory getStorageDirectory() {
+        return this.storageDirectory;
     }
-    private void setStorage(Storage storage) {
-        this.storage = storage;
+    private void setStorageDirectory(StorageDirectory storageDirectory) {
+        this.storageDirectory = storageDirectory;
     }
 
 }
