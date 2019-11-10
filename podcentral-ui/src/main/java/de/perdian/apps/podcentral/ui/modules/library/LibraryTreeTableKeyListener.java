@@ -49,7 +49,7 @@ class LibraryTreeTableKeyListener implements EventHandler<KeyEvent> {
 
     @Override
     public void handle(KeyEvent event) {
-        if (event.getCode() == KeyCode.DELETE) {
+        if (event.getCode() == KeyCode.DELETE || event.getCode() == KeyCode.X || (event.getCode() == KeyCode.BACK_SPACE && event.isMetaDown())) {
             List<Episode> selectedEpisodes = new ArrayList<>(this.getLibrarySelection().update().getSelectedEpisodes());
             if (!selectedEpisodes.isEmpty()) {
                 DeleteActionEventHandler deleteActionEventHandler = new DeleteActionEventHandler(Collections::emptyList, () -> selectedEpisodes, this.getBackgroundTaskExecutor(), this.getLibrary(), this.getLocalization());
