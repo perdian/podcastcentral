@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.perdian.apps.podcentral.model.Episode;
@@ -64,8 +65,9 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeTableValue> {
         Map<Episode, TreeItem<LibraryTreeTableValue>> episodeTreeItemsByEpisode = new HashMap<>();
         for (Episode episode : feed.getEpisodes()) {
             TreeItem<LibraryTreeTableValue> episodeTreeItem = LibraryTreeRootItem.createTreeItemForEpisode(feed, episode);
-            feedTreeItem.setExpanded(true);
+            feedTreeItem.setExpanded(Optional.ofNullable(feed.getExpanded().getValue()).orElse(Boolean.TRUE));
             feedTreeItem.getChildren().add(episodeTreeItem);
+            feed.getExpanded().bind(feedTreeItem.expandedProperty());
             episodeTreeItemsByEpisode.put(episode, episodeTreeItem);
         }
         feed.getEpisodes().addListener((ListChangeListener.Change<? extends Episode> change) -> {

@@ -45,7 +45,9 @@ import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.FeedInputState;
 import de.perdian.apps.podcentral.storage.Storage;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -67,6 +69,7 @@ class DatabaseBackedFeed implements Feed {
     private StringProperty languageCode = null;
     private StringProperty imageUrl = null;
     private StringProperty category = null;
+    private BooleanProperty expanded = null;
     private ObjectProperty<FeedInputState> inputState = null;
     private ObservableList<Episode> episodes = null;
     private ObservableList<Object> processors = null;
@@ -78,6 +81,7 @@ class DatabaseBackedFeed implements Feed {
         this.setSessionFactory(sessionFactory);
         this.setCategory(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getCategory(), (e, v) -> e.getData().setCategory(v), SimpleStringProperty::new, sessionFactory));
         this.setDescription(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v), SimpleStringProperty::new, sessionFactory));
+        this.setExpanded(DatabaseHelper.createProperty(feedEntity, e -> e.getExpanded(), (e, v) -> e.setExpanded(v), SimpleBooleanProperty::new, sessionFactory));
         this.setImageUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setInputState(DatabaseHelper.createProperty(feedEntity, e -> e.getInputState(), (e, v) -> e.setInputState(v), SimpleObjectProperty::new, sessionFactory));
         this.setLanguageCode(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getLanguageCode(), (e, v) -> e.getData().setLanguageCode(v), SimpleStringProperty::new, sessionFactory));
@@ -269,6 +273,14 @@ class DatabaseBackedFeed implements Feed {
     }
     private void setCategory(StringProperty category) {
         this.category = category;
+    }
+
+    @Override
+    public BooleanProperty getExpanded() {
+        return this.expanded;
+    }
+    public void setExpanded(BooleanProperty expanded) {
+        this.expanded = expanded;
     }
 
     @Override

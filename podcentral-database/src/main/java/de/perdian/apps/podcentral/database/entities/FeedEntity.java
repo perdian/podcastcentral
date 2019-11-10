@@ -37,6 +37,7 @@ public class FeedEntity implements Serializable {
     private Long id = null;
     private FeedData data = null;
     private FeedInputState inputState = null;
+    private Boolean expanded = Boolean.TRUE;
 
     @Override
     public int hashCode() {
@@ -83,6 +84,13 @@ public class FeedEntity implements Serializable {
     }
     public void setInputState(FeedInputState inputState) {
         this.inputState = inputState;
+    }
+
+    public Boolean getExpanded() {
+        return this.expanded;
+    }
+    public void setExpanded(Boolean expanded) {
+        this.expanded = expanded;
     }
 
 }
