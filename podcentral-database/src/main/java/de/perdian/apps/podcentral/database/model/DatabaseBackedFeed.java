@@ -128,6 +128,7 @@ class DatabaseBackedFeed implements Feed {
                     File episodeFile = this.getStorageDirectory().resolveFile(episodeData.getTitle() + episodeData.computeFileNameExtension());
                     if (episodeEntityFromDatabase != null && refreshOptionsSet.contains(RefreshOption.RESTORE_DELETED_EPISODES)) {
                         episodeEntityFromDatabase.setDeleted(Boolean.FALSE);
+                        episodeEntityFromDatabase.setRead(Boolean.FALSE);
                         episodeEntityFromDatabase.setDownloadState(EpisodeDownloadState.NEW);
                         session.update(episodeEntityFromDatabase);
                         newEpisodes.add(new DatabaseBackedEpisode(this, episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));

@@ -144,6 +144,14 @@ public interface Localization {
         return "Loading library...";
     }
 
+    default String markAsRead() {
+        return "Mark as read";
+    }
+
+    default String markAsUnread() {
+        return "Mark as unread";
+    }
+
     default String missing() {
         return "Missing";
     }

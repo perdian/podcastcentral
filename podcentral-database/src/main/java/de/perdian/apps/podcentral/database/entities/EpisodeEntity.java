@@ -42,6 +42,7 @@ public class EpisodeEntity implements Serializable {
     private EpisodeDownloadState downloadState = EpisodeDownloadState.NEW;
     private String contentFileLocation = null;
     private Boolean deleted = Boolean.FALSE;
+    private Boolean read = Boolean.FALSE;
 
     @Override
     public int hashCode() {
@@ -111,6 +112,13 @@ public class EpisodeEntity implements Serializable {
     }
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Boolean getRead() {
+        return this.read;
+    }
+    public void setRead(Boolean read) {
+        this.read = read;
     }
 
 }

@@ -33,12 +33,14 @@ class LibrarySelection {
     private ObservableList<Feed> selectedFeeds = null;
     private ObservableList<Feed> selectedFeedsForDelete = null;
     private ObservableList<Episode> selectedEpisodes = null;
-    private ObservableList<Episode> selectedEpisodesFromFeeds = null;
-    private ObservableList<Episode> selectedEpisodesFromFeedsForDownload = null;
     private ObservableList<Episode> selectedEpisodesForOpen = null;
     private ObservableList<Episode> selectedEpisodesForDownload = null;
     private ObservableList<Episode> selectedEpisodesForDelete = null;
     private ObservableList<Episode> selectedEpisodesForCancel = null;
+    private ObservableList<Episode> selectedEpisodesForMarkRead = null;
+    private ObservableList<Episode> selectedEpisodesForMarkUnread = null;
+    private ObservableList<Episode> selectedEpisodesFromFeeds = null;
+    private ObservableList<Episode> selectedEpisodesFromFeedsForDownload = null;
 
     LibrarySelection(TreeTableViewSelectionModel<LibraryTreeTableValue> selectionModel) {
 
@@ -53,6 +55,8 @@ class LibrarySelection {
         this.setSelectedEpisodesForDownload(selectedEpisodes.filtered(episode -> !List.of(EpisodeDownloadState.COMPLETED, EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.DOWNLOADING).contains(episode.getDownloadState().getValue())));
         this.setSelectedEpisodesForOpen(selectedEpisodes.filtered(episode -> List.of(EpisodeDownloadState.COMPLETED).contains(episode.getDownloadState().getValue())));
         this.setSelectedEpisodesForCancel(selectedEpisodes.filtered(episode -> List.of(EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.CANCELLED).contains(episode.getDownloadState().getValue())));
+        this.setSelectedEpisodesForMarkRead(selectedEpisodes.filtered(episode -> !Boolean.TRUE.equals(episode.getRead().getValue())));
+        this.setSelectedEpisodesForMarkUnread(selectedEpisodes.filtered(episode -> Boolean.TRUE.equals(episode.getRead().getValue())));
         this.setSelectedEpisodesFromFeeds(selectedEpisodesFromFeeds);
         this.setSelectedEpisodesFromFeedsForDownload(selectedEpisodesFromFeeds.filtered(episode -> !List.of(EpisodeDownloadState.COMPLETED, EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.DOWNLOADING).contains(episode.getDownloadState().getValue())));
         this.setSelectionModel(selectionModel);
@@ -126,20 +130,6 @@ class LibrarySelection {
         this.selectedEpisodes = selectedEpisodes;
     }
 
-    ObservableList<Episode> getSelectedEpisodesFromFeeds() {
-        return this.selectedEpisodesFromFeeds;
-    }
-    private void setSelectedEpisodesFromFeeds(ObservableList<Episode> selectedEpisodesFromFeeds) {
-        this.selectedEpisodesFromFeeds = selectedEpisodesFromFeeds;
-    }
-
-    ObservableList<Episode> getSelectedEpisodesFromFeedsForDownload() {
-        return this.selectedEpisodesFromFeedsForDownload;
-    }
-    private void setSelectedEpisodesFromFeedsForDownload(ObservableList<Episode> selectedEpisodesFromFeedsForDownload) {
-        this.selectedEpisodesFromFeedsForDownload = selectedEpisodesFromFeedsForDownload;
-    }
-
     ObservableList<Episode> getSelectedEpisodesForOpen() {
         return this.selectedEpisodesForOpen;
     }
@@ -166,6 +156,34 @@ class LibrarySelection {
     }
     private void setSelectedEpisodesForCancel(ObservableList<Episode> selectedEpisodesForCancel) {
         this.selectedEpisodesForCancel = selectedEpisodesForCancel;
+    }
+
+    ObservableList<Episode> getSelectedEpisodesForMarkRead() {
+        return this.selectedEpisodesForMarkRead;
+    }
+    private void setSelectedEpisodesForMarkRead(ObservableList<Episode> selectedEpisodesForMarkRead) {
+        this.selectedEpisodesForMarkRead = selectedEpisodesForMarkRead;
+    }
+
+    ObservableList<Episode> getSelectedEpisodesForMarkUnread() {
+        return this.selectedEpisodesForMarkUnread;
+    }
+    private void setSelectedEpisodesForMarkUnread(ObservableList<Episode> selectedEpisodesForMarkUnread) {
+        this.selectedEpisodesForMarkUnread = selectedEpisodesForMarkUnread;
+    }
+
+    ObservableList<Episode> getSelectedEpisodesFromFeeds() {
+        return this.selectedEpisodesFromFeeds;
+    }
+    private void setSelectedEpisodesFromFeeds(ObservableList<Episode> selectedEpisodesFromFeeds) {
+        this.selectedEpisodesFromFeeds = selectedEpisodesFromFeeds;
+    }
+
+    ObservableList<Episode> getSelectedEpisodesFromFeedsForDownload() {
+        return this.selectedEpisodesFromFeedsForDownload;
+    }
+    private void setSelectedEpisodesFromFeedsForDownload(ObservableList<Episode> selectedEpisodesFromFeedsForDownload) {
+        this.selectedEpisodesFromFeedsForDownload = selectedEpisodesFromFeedsForDownload;
     }
 
 }

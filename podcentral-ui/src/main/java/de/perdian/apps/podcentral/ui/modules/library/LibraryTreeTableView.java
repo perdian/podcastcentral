@@ -30,7 +30,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeSortMode;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.ProgressBarTreeTableCell;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
@@ -116,11 +115,8 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.setOnKeyPressed(new LibraryTreeTableKeyListener(librarySelection, backgroundTaskExecutor, episodeDownloader, library, localization));
         this.setOnMouseClicked(new LibraryTreeTableMouseClickedEventListener(librarySelection, backgroundTaskExecutor, episodeDownloader, localization));
-        this.setRowFactory(tv -> {
-            TreeTableRow<LibraryTreeTableValue> tableRow = new TreeTableRow<>();
-            tableRow.setOnDragDetected(new LibraryTreeTableMouseEventHandler(librarySelection));
-            return tableRow;
-         });
+        this.setRowFactory(new LibraryTreeTableViewRowFactory(librarySelection));
+        this.getStyleClass().add("podcentral-library");
 
     }
 

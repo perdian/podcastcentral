@@ -58,6 +58,7 @@ class DatabaseBackedEpisode implements Episode {
     private ObjectProperty<Double> downloadProgress = null;
     private ObjectProperty<Exception> downloadError = null;
     private ObjectProperty<Long> downloadedBytes = null;
+    private ObjectProperty<Boolean> read = null;
 
     public DatabaseBackedEpisode(DatabaseBackedFeed feed, EpisodeEntity episodeEntity, SessionFactory sessionFactory, File contentFile) {
         this.setFeed(feed);
@@ -72,6 +73,7 @@ class DatabaseBackedEpisode implements Episode {
         this.setGuid(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getGuid(), (e, v) -> e.getData().setGuid(v), SimpleStringProperty::new, sessionFactory));
         this.setImageUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setPublicationDate(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getPublicationDate(), (e, v) -> e.getData().setPublicationDate(v), SimpleObjectProperty::new, sessionFactory));
+        this.setRead(DatabaseHelper.createProperty(episodeEntity, e -> e.getRead(), (e, v) -> e.setRead(v), SimpleObjectProperty::new, sessionFactory));
         this.setSubtitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v), SimpleStringProperty::new, sessionFactory));
         this.setTitle(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(episodeEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
@@ -289,6 +291,14 @@ class DatabaseBackedEpisode implements Episode {
     }
     private void setDownloadedBytes(ObjectProperty<Long> downloadedBytes) {
         this.downloadedBytes = downloadedBytes;
+    }
+
+    @Override
+    public ObjectProperty<Boolean> getRead() {
+        return this.read;
+    }
+    private void setRead(ObjectProperty<Boolean> read) {
+        this.read = read;
     }
 
 }

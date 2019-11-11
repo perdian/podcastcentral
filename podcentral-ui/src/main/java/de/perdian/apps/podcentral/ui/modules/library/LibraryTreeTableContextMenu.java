@@ -23,6 +23,7 @@ import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.modules.episodes.CancelDownloadEpisodesActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.episodes.MarkReadEpisodesActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.episodes.OpenEpisodeActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.episodes.StartDownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.feeds.DeleteActionEventHandler;
@@ -41,6 +42,18 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
     public LibraryTreeTableContextMenu(LibrarySelection librarySelection, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
         this.setLibrarySelection(librarySelection);
+
+        MenuItem markReadMenuItem = new MenuItem(localization.markAsRead());
+        markReadMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()).and(Bindings.isEmpty(librarySelection.getSelectedEpisodesForMarkRead())));
+        markReadMenuItem.setOnAction(new MarkReadEpisodesActionEventHandler(librarySelection::getSelectedFeeds, librarySelection::getSelectedEpisodesForMarkRead, Boolean.TRUE));
+        this.getItems().add(markReadMenuItem);
+
+        MenuItem markUnreadReadMenuItem = new MenuItem(localization.markAsUnread());
+        markUnreadReadMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()).and(Bindings.isEmpty(librarySelection.getSelectedEpisodesForMarkUnread())));
+        markUnreadReadMenuItem.setOnAction(new MarkReadEpisodesActionEventHandler(librarySelection::getSelectedFeeds, librarySelection::getSelectedEpisodesForMarkUnread, Boolean.FALSE));
+        this.getItems().add(markUnreadReadMenuItem);
+
+        this.getItems().add(new SeparatorMenuItem());
 
         MenuItem openEpisodeMenuItem = new MenuItem(localization.openEpisode());
         openEpisodeMenuItem.disableProperty().bind(Bindings.size(librarySelection.getSelectedEpisodesForOpen()).isNotEqualTo(1));
