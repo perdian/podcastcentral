@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.podcentral.model;
 
+import java.time.Instant;
 import java.util.Collection;
 
 import javafx.beans.property.BooleanProperty;
@@ -36,6 +37,7 @@ public interface Feed {
     StringProperty getCategory();
     BooleanProperty getExpanded();
     ObjectProperty<FeedInputState> getInputState();
+    ObjectProperty<Instant> getRefreshTime();
     ObservableList<Episode> getEpisodes();
 
     void refresh(FeedInput feedInput, RefreshOption... refreshOptions);

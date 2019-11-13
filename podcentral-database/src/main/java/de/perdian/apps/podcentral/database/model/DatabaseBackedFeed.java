@@ -16,6 +16,7 @@
 package de.perdian.apps.podcentral.database.model;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -68,6 +69,7 @@ class DatabaseBackedFeed implements Feed {
     private StringProperty category = null;
     private BooleanProperty expanded = null;
     private ObjectProperty<FeedInputState> inputState = null;
+    private ObjectProperty<Instant> refreshTime = null;
     private ObservableList<Episode> episodes = null;
     private StorageDirectory storageDirectory = null;
 
@@ -83,6 +85,7 @@ class DatabaseBackedFeed implements Feed {
         this.setOwner(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getOwner(), (e, v) -> e.getData().setOwner(v), SimpleStringProperty::new, sessionFactory));
         this.setOwnerUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getOwnerUrl(), (e, v) -> e.getData().setOwnerUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setSubtitle(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getSubtitle(), (e, v) -> e.getData().setSubtitle(v), SimpleStringProperty::new, sessionFactory));
+        this.setRefreshTime(DatabaseHelper.createProperty(feedEntity, e -> e.getRefreshTime(), (e, v) -> e.setRefreshTime(v), SimpleObjectProperty::new, sessionFactory));
         this.setTitle(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getTitle(), (e, v) -> e.getData().setTitle(v), SimpleStringProperty::new, sessionFactory));
         this.setUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getUrl(), (e, v) -> e.getData().setUrl(v), SimpleStringProperty::new, sessionFactory));
         this.setWebsiteUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getWebsiteUrl(), (e, v) -> e.getData().setWebsiteUrl(v), SimpleStringProperty::new, sessionFactory));
@@ -136,7 +139,7 @@ class DatabaseBackedFeed implements Feed {
                         episodeEntityFromDatabase = new EpisodeEntity();
                         episodeEntityFromDatabase.setFeed(this.getEntity());
                         episodeEntityFromDatabase.setData(episodeData);
-                        session.update(episodeEntityFromDatabase);
+                        session.save(episodeEntityFromDatabase);
                         newEpisodes.add(new DatabaseBackedEpisode(this, episodeEntityFromDatabase, this.getSessionFactory(), episodeFile));
                     }
                     transaction.commit();
@@ -152,6 +155,8 @@ class DatabaseBackedFeed implements Feed {
             episodeEntitiesByGuid.values().stream()
                 .filter(episodeEntity -> Boolean.TRUE.equals(episodeEntity.getDeleted()))
                 .forEach(episodeEntity -> session.delete(episodeEntity));
+
+            this.getRefreshTime().setValue(Instant.now());
 
         }
     }
@@ -292,6 +297,14 @@ class DatabaseBackedFeed implements Feed {
     }
     private void setInputState(ObjectProperty<FeedInputState> inputState) {
         this.inputState = inputState;
+    }
+
+    @Override
+    public ObjectProperty<Instant> getRefreshTime() {
+        return this.refreshTime;
+    }
+    private void setRefreshTime(ObjectProperty<Instant> refreshTime) {
+        this.refreshTime = refreshTime;
     }
 
     @Override

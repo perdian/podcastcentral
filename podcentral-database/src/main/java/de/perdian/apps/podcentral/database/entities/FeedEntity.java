@@ -16,6 +16,7 @@
 package de.perdian.apps.podcentral.database.entities;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -38,6 +39,7 @@ public class FeedEntity implements Serializable {
     private FeedData data = null;
     private FeedInputState inputState = null;
     private Boolean expanded = Boolean.TRUE;
+    private Instant refreshTime = null;
 
     @Override
     public int hashCode() {
@@ -91,6 +93,13 @@ public class FeedEntity implements Serializable {
     }
     public void setExpanded(Boolean expanded) {
         this.expanded = expanded;
+    }
+
+    public Instant getRefreshTime() {
+        return this.refreshTime;
+    }
+    public void setRefreshTime(Instant refreshTime) {
+        this.refreshTime = refreshTime;
     }
 
 }
