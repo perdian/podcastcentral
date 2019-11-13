@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.modules.feeds.components.data;
+package de.perdian.apps.podcentral.ui.modules.library.components.feeds;
 
 import de.perdian.apps.podcentral.model.FeedData;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;

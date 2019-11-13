@@ -5,7 +5,7 @@ import java.util.Set;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.model.Library;
-import de.perdian.apps.podcentral.ui.modules.feeds.components.add.AddFeedAction;
+import de.perdian.apps.podcentral.ui.modules.library.actions.AddFeedActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.library.actions.ExportLibraryAsOpmlActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.library.actions.ImportFeedCollectionIntoLibraryActionEventHandler;
 import de.perdian.apps.podcentral.ui.modules.library.actions.RefreshFeedsActionEventHandler;
@@ -23,7 +23,7 @@ public class LibraryToolbarPane extends BorderPane {
     public LibraryToolbarPane(Library library, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
         Button addFeedButton = new Button(localization.addFeed(), new FontAwesomeIconView(FontAwesomeIcon.PLUS));
-        addFeedButton.setOnAction(new AddFeedAction(library, localization));
+        addFeedButton.setOnAction(new AddFeedActionEventHandler(library, localization));
         ButtonBar.setButtonData(addFeedButton, ButtonData.LEFT);
 
         Button refreshFeedsButton = new Button(localization.refreshFeeds(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));

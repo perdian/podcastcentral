@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.modules.feeds.components.add;
+package de.perdian.apps.podcentral.ui.modules.library.components.feeds;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.sources.feeds.FeedInputLoader;
-import de.perdian.apps.podcentral.ui.modules.feeds.components.data.FeedDataPane;
 import de.perdian.apps.podcentral.ui.support.errors.ExceptionDialogBuilder;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.application.Platform;
@@ -52,17 +51,17 @@ public class AddFeedPane extends GridPane {
 
     private static final Logger log = LoggerFactory.getLogger(AddFeedPane.class);
 
+    private Consumer<FeedInput> feedInputConsumer = null;
+    private Localization localization = null;
     private BooleanProperty busyProperty = null;
     private StringProperty feedUrlProperty = null;
-    private Localization localization = null;
     private BorderPane detailsWrapperPane = null;
-    private Consumer<FeedInput> feedInputConsumer = null;
 
-    public AddFeedPane(Localization localization, Consumer<FeedInput> feedInputConsumer) {
+    public AddFeedPane(Consumer<FeedInput> feedInputConsumer, Localization localization) {
 
         this.setBusyProperty(new SimpleBooleanProperty(false));
-        this.setLocalization(localization);
         this.setFeedInputConsumer(feedInputConsumer);
+        this.setLocalization(localization);
 
         Label feedUrlLabel = new Label(localization.feedUrl());
         TextField feedUrlField = new TextField();
@@ -167,6 +166,20 @@ public class AddFeedPane extends GridPane {
 
     }
 
+
+    private Consumer<FeedInput> getFeedInputConsumer() {
+        return this.feedInputConsumer;
+    }
+    private void setFeedInputConsumer(Consumer<FeedInput> feedInputConsumer) {
+        this.feedInputConsumer = feedInputConsumer;
+    }
+
+    private Localization getLocalization() {
+        return this.localization;
+    }
+    private void setLocalization(Localization localization) {
+        this.localization = localization;
+    }
     public ObservableBooleanValue getBusy() {
         return this.getBusyProperty();
     }
@@ -185,20 +198,6 @@ public class AddFeedPane extends GridPane {
     }
     private void setFeedUrlProperty(StringProperty feedUrlProperty) {
         this.feedUrlProperty = feedUrlProperty;
-    }
-
-    private Localization getLocalization() {
-        return this.localization;
-    }
-    private void setLocalization(Localization localization) {
-        this.localization = localization;
-    }
-
-    private Consumer<FeedInput> getFeedInputConsumer() {
-        return this.feedInputConsumer;
-    }
-    private void setFeedInputConsumer(Consumer<FeedInput> feedInputConsumer) {
-        this.feedInputConsumer = feedInputConsumer;
     }
 
     BorderPane getDetailsWrapperPane() {

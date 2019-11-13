@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.modules.feeds.components.add;
+package de.perdian.apps.podcentral.ui.modules.library.actions;
 
 import java.util.function.Consumer;
 
@@ -21,6 +21,7 @@ import de.perdian.apps.podcentral.model.Feed;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.FeedInputState;
 import de.perdian.apps.podcentral.model.Library;
+import de.perdian.apps.podcentral.ui.modules.library.components.feeds.AddFeedPane;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,12 +30,12 @@ import javafx.scene.control.DialogPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class AddFeedAction implements EventHandler<ActionEvent> {
+public class AddFeedActionEventHandler implements EventHandler<ActionEvent> {
 
     private Library library = null;
     private Localization localization = null;
 
-    public AddFeedAction(Library library, Localization localization) {
+    public AddFeedActionEventHandler(Library library, Localization localization) {
         this.setLibrary(library);
         this.setLocalization(localization);
     }
@@ -57,7 +58,7 @@ public class AddFeedAction implements EventHandler<ActionEvent> {
         };
 
         DialogPane dialogPane = new DialogPane();
-        dialogPane.setContent(new AddFeedPane(this.getLocalization(), feedInputConsumer));
+        dialogPane.setContent(new AddFeedPane(feedInputConsumer, this.getLocalization()));
         dialogPane.setMinSize(640, 400);
 
         dialogStage.setScene(new Scene(dialogPane));

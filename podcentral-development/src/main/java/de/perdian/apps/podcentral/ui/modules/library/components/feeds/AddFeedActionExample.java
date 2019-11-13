@@ -1,7 +1,7 @@
-package de.perdian.apps.podcentral.ui.modules.feeds.add;
+package de.perdian.apps.podcentral.ui.modules.library.components.feeds;
 
 import de.perdian.apps.podcentral.ui.Central;
-import de.perdian.apps.podcentral.ui.modules.feeds.components.add.AddFeedAction;
+import de.perdian.apps.podcentral.ui.modules.library.actions.AddFeedActionEventHandler;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -14,8 +14,8 @@ public class AddFeedActionExample {
         @Override
         public void start(Stage primaryStage) throws Exception {
             Central central = new Central(new Localization() {});
-            AddFeedAction addFeedAction = new AddFeedAction(central.getLibrary(), new Localization() {});
-            addFeedAction.handle(new ActionEvent(primaryStage, null));
+            AddFeedActionEventHandler addFeedActionEventHandler = new AddFeedActionEventHandler(central.getLibrary(), new Localization() {});
+            addFeedActionEventHandler.handle(new ActionEvent(primaryStage, null));
         }
 
     }

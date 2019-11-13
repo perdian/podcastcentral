@@ -1,6 +1,5 @@
-package de.perdian.apps.podcentral.ui.modules.feeds.add;
+package de.perdian.apps.podcentral.ui.modules.library.components.feeds;
 
-import de.perdian.apps.podcentral.ui.modules.feeds.components.add.AddFeedPane;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -18,7 +17,7 @@ public class AddFeedPaneExample {
         @Override
         public void start(Stage primaryStage) throws Exception {
 
-            AddFeedPane pane = new AddFeedPane(new Localization() {}, feedInput -> {});
+            AddFeedPane pane = new AddFeedPane(feedInput -> {}, new Localization() {});
             pane.setPadding(new Insets(8, 8, 8, 8));
             pane.getFeedUrl().setValue("https://podcasts.files.bbci.co.uk/w13xttx2.rss");
 
