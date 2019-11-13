@@ -9,7 +9,7 @@
     <modules>
         <module>podcentral-database</module>
         <module>podcentral-development</module>
-        <module>podcentral-downloader</module>
+        <module>podcentral-importer</module>
         <module>podcentral-model</module>
         <module>podcentral-preferences</module>
         <module>podcentral-sources</module>

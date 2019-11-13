@@ -36,9 +36,9 @@ import javafx.scene.layout.Priority;
 
 public class EpisodeDownloaderPane extends GridPane {
 
-    public EpisodeDownloaderPane(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Localization localization) {
+    public EpisodeDownloaderPane(EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
-        EpisodeDownloaderToolbar toolbarPane = new EpisodeDownloaderToolbar(backgroundTaskExecutor, episodeDownloader, localization);
+        EpisodeDownloaderToolbar toolbarPane = new EpisodeDownloaderToolbar(episodeDownloader, backgroundTaskExecutor, localization);
         GridPane.setMargin(toolbarPane, new Insets(0, 0, 8, 0));
         GridPane.setHgrow(toolbarPane, Priority.ALWAYS);
 

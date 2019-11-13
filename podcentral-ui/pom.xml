@@ -16,7 +16,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>podcentral-downloader</artifactId>
+            <artifactId>podcentral-importer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

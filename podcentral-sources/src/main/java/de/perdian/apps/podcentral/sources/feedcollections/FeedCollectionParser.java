@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.sources.feeds;
+package de.perdian.apps.podcentral.sources.feedcollections;
 
 import java.io.IOException;
 
-import de.perdian.apps.podcentral.model.FeedInput;
-import okhttp3.Response;
+import de.perdian.apps.podcentral.model.FeedCollection;
 
-public interface FeedInputSource {
+public interface FeedCollectionParser {
 
-    FeedInput loadFeedInput(Response feedResponse) throws IOException;
+    FeedCollection parseFeedCollectionData(byte[] data, String mimeType) throws IOException;
 
 }

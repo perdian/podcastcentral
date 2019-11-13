@@ -112,8 +112,20 @@ public interface Localization {
         return "Errored";
     }
 
+    default String export() {
+        return "Export";
+    }
+
+    default String exportingLibraryAsXml() {
+        return "Exporting library as XML";
+    }
+
     default String feedUrl() {
         return "Feed URL";
+    }
+
+    default String import_() {
+        return "Import";
     }
 
     default String language() {
@@ -218,6 +230,10 @@ public interface Localization {
 
     default String schedulingEpisodeDownloads() {
         return "Scheduling episode downloads";
+    }
+
+    default String selectTargetFile() {
+        return "Select target file";
     }
 
     default String settings() {

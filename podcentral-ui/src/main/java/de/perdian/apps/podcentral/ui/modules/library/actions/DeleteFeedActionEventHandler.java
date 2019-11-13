@@ -13,43 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.modules.episodes;
+package de.perdian.apps.podcentral.ui.modules.library.actions;
 
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Episode;
+import de.perdian.apps.podcentral.model.Feed;
+import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-public class StartDownloadEpisodesActionEventHandler implements EventHandler<ActionEvent> {
+public class DeleteFeedActionEventHandler implements EventHandler<ActionEvent> {
 
+    private Supplier<List<Feed>> feedsSupplier = null;
     private Supplier<List<Episode>> episodesSupplier = null;
+    private Library library = null;
     private BackgroundTaskExecutor backgroundTaskExecutor = null;
-    private EpisodeDownloader episodeDownloader = null;
     private Localization localization = null;
 
-    public StartDownloadEpisodesActionEventHandler(Supplier<List<Episode>> episodesSupplier, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Localization localization) {
+    public DeleteFeedActionEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<List<Episode>> episodesSupplier, Library library, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+        this.setFeedsSupplier(feedsSupplier);
         this.setEpisodesSupplier(episodesSupplier);
+        this.setLibrary(library);
         this.setBackgroundTaskExecutor(backgroundTaskExecutor);
-        this.setEpisodeContentDownloader(episodeDownloader);
         this.setLocalization(localization);
     }
 
     @Override
     public void handle(ActionEvent event) {
-        List<Episode> episodes = this.getEpisodesSupplier().get();
-        if (!episodes.isEmpty()) {
-            this.getBackgroundTaskExecutor().execute(this.getLocalization().schedulingEpisodeDownloads(), progress -> {
-                for (int i=0; i < episodes.size(); i++) {
-                    progress.updateProgress((double)i / (double)episodes.size(), null);
-                    this.getEpisodeContentDownloader().scheduleDownload(episodes.get(i));
-                }
+        List<Feed> feeds = this.getFeedsSupplier().get();
+        List<Episode> episodes = this.getEpisodesSupplier().get().stream().filter(episode -> !feeds.contains(episode.getFeed())).collect(Collectors.toList());
+        if (!feeds.isEmpty() || !episodes.isEmpty()) {
+            this.getBackgroundTaskExecutor().execute(this.getLocalization().deletingEntries(), progress -> {
+                this.getLibrary().deleteFeeds(feeds);
+                Episode.mapByFeed(episodes).forEach((feed, feedEpisodes) -> feed.deleteEpisodes(feedEpisodes));
             });
         }
+    }
+
+    private Supplier<List<Feed>> getFeedsSupplier() {
+        return this.feedsSupplier;
+    }
+    private void setFeedsSupplier(Supplier<List<Feed>> feedsSupplier) {
+        this.feedsSupplier = feedsSupplier;
     }
 
     private Supplier<List<Episode>> getEpisodesSupplier() {
@@ -59,18 +69,18 @@ public class StartDownloadEpisodesActionEventHandler implements EventHandler<Act
         this.episodesSupplier = episodesSupplier;
     }
 
+    private Library getLibrary() {
+        return this.library;
+    }
+    private void setLibrary(Library library) {
+        this.library = library;
+    }
+
     private BackgroundTaskExecutor getBackgroundTaskExecutor() {
         return this.backgroundTaskExecutor;
     }
     private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
         this.backgroundTaskExecutor = backgroundTaskExecutor;
-    }
-
-    private EpisodeDownloader getEpisodeContentDownloader() {
-        return this.episodeDownloader;
-    }
-    private void setEpisodeContentDownloader(EpisodeDownloader episodeDownloader) {
-        this.episodeDownloader = episodeDownloader;
     }
 
     private Localization getLocalization() {

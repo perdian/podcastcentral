@@ -37,7 +37,7 @@ import javafx.scene.layout.BorderPane;
 
 public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
 
-    public LibraryTreeTableView(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
+    public LibraryTreeTableView(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
         TreeTableColumn<LibraryTreeTableValue, String> titleColumn = new TreeTableColumn<>(localization.title());
         titleColumn.setCellValueFactory(cell -> cell.getValue().getValue().getTitle());
@@ -113,8 +113,8 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         this.getColumns().addAll(List.of(titleColumn, durationColumn, publicationDateColumn, downloadStateColumn, downloadProgressColumn, downloadProgressValueColumn, descriptionColumn));
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        this.setOnKeyPressed(new LibraryTreeTableKeyListener(librarySelection, backgroundTaskExecutor, episodeDownloader, library, localization));
-        this.setOnMouseClicked(new LibraryTreeTableMouseClickedEventListener(librarySelection, backgroundTaskExecutor, episodeDownloader, localization));
+        this.setOnKeyPressed(new LibraryTreeTableKeyListener(librarySelection, library, episodeDownloader, backgroundTaskExecutor, localization));
+        this.setOnMouseClicked(new LibraryTreeTableMouseClickedEventListener(librarySelection, episodeDownloader, backgroundTaskExecutor, localization));
         this.setRowFactory(new LibraryTreeTableViewRowFactory(librarySelection));
         this.getStyleClass().add("podcentral-library");
 

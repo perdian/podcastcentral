@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.modules.episodes;
+package de.perdian.apps.podcentral.ui.modules.library.actions;
 
 import java.io.File;
 import java.util.List;

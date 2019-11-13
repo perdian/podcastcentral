@@ -13,53 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcentral.ui.modules.feeds;
+package de.perdian.apps.podcentral.ui.modules.library.actions;
 
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
+import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Episode;
-import de.perdian.apps.podcentral.model.Feed;
-import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-public class DeleteActionEventHandler implements EventHandler<ActionEvent> {
+public class StartDownloadEpisodesActionEventHandler implements EventHandler<ActionEvent> {
 
-    private Supplier<List<Feed>> feedsSupplier = null;
     private Supplier<List<Episode>> episodesSupplier = null;
+    private EpisodeDownloader episodeDownloader = null;
     private BackgroundTaskExecutor backgroundTaskExecutor = null;
-    private Library library = null;
     private Localization localization = null;
 
-    public DeleteActionEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<List<Episode>> episodesSupplier, BackgroundTaskExecutor backgroundTaskExecutor, Library library, Localization localization) {
-        this.setFeedsSupplier(feedsSupplier);
+    public StartDownloadEpisodesActionEventHandler(Supplier<List<Episode>> episodesSupplier, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setEpisodesSupplier(episodesSupplier);
-        this.setLibrary(library);
+        this.setEpisodeContentDownloader(episodeDownloader);
         this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setLocalization(localization);
     }
 
     @Override
     public void handle(ActionEvent event) {
-        List<Feed> feeds = this.getFeedsSupplier().get();
-        List<Episode> episodes = this.getEpisodesSupplier().get().stream().filter(episode -> !feeds.contains(episode.getFeed())).collect(Collectors.toList());
-        if (!feeds.isEmpty() || !episodes.isEmpty()) {
-            this.getBackgroundTaskExecutor().execute(this.getLocalization().deletingEntries(), progress -> {
-                this.getLibrary().deleteFeeds(feeds);
-                Episode.mapByFeed(episodes).forEach((feed, feedEpisodes) -> feed.deleteEpisodes(feedEpisodes));
+        List<Episode> episodes = this.getEpisodesSupplier().get();
+        if (!episodes.isEmpty()) {
+            this.getBackgroundTaskExecutor().execute(this.getLocalization().schedulingEpisodeDownloads(), progress -> {
+                for (int i=0; i < episodes.size(); i++) {
+                    progress.updateProgress((double)i / (double)episodes.size(), null);
+                    this.getEpisodeContentDownloader().scheduleDownload(episodes.get(i));
+                }
             });
         }
-    }
-
-    private Supplier<List<Feed>> getFeedsSupplier() {
-        return this.feedsSupplier;
-    }
-    private void setFeedsSupplier(Supplier<List<Feed>> feedsSupplier) {
-        this.feedsSupplier = feedsSupplier;
     }
 
     private Supplier<List<Episode>> getEpisodesSupplier() {
@@ -69,18 +59,18 @@ public class DeleteActionEventHandler implements EventHandler<ActionEvent> {
         this.episodesSupplier = episodesSupplier;
     }
 
+    private EpisodeDownloader getEpisodeContentDownloader() {
+        return this.episodeDownloader;
+    }
+    private void setEpisodeContentDownloader(EpisodeDownloader episodeDownloader) {
+        this.episodeDownloader = episodeDownloader;
+    }
+
     private BackgroundTaskExecutor getBackgroundTaskExecutor() {
         return this.backgroundTaskExecutor;
     }
     private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
         this.backgroundTaskExecutor = backgroundTaskExecutor;
-    }
-
-    private Library getLibrary() {
-        return this.library;
-    }
-    private void setLibrary(Library library) {
-        this.library = library;
     }
 
     private Localization getLocalization() {

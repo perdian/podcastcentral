@@ -37,7 +37,7 @@ public class FeedInputLoader {
 
     private static final OkHttpClient HTTP_CLIENT = new OkHttpClient.Builder().build();
 
-    public static FeedInput loadFeedInputFromUrl(String feedUrl) throws Exception {
+    public static FeedInput loadFeedInputFromUrl(String feedUrl) throws IOException {
         try {
             Request httpRequest = new Request.Builder().get().url(feedUrl).build();
             Instant startTime = Instant.now();

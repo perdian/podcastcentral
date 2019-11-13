@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaDelete;
 
@@ -37,6 +38,7 @@ import de.perdian.apps.podcentral.database.entities.EpisodeEntity;
 import de.perdian.apps.podcentral.database.entities.FeedEntity;
 import de.perdian.apps.podcentral.model.EpisodeData;
 import de.perdian.apps.podcentral.model.Feed;
+import de.perdian.apps.podcentral.model.FeedCollection;
 import de.perdian.apps.podcentral.model.FeedInput;
 import de.perdian.apps.podcentral.model.Library;
 import de.perdian.apps.podcentral.storage.Storage;
@@ -144,6 +146,11 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
                 }
             }
         }
+    }
+
+    @Override
+    public FeedCollection toFeedCollection() {
+        return new DatabaseBackedFeedCollection(this.getFeeds().stream().map(feed -> new DatabaseBackedFeedCollectionItem((DatabaseBackedFeed)feed)).collect(Collectors.toList()));
     }
 
     private SessionFactory getSessionFactory() {

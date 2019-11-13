@@ -22,9 +22,9 @@ import java.util.List;
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.Library;
-import de.perdian.apps.podcentral.ui.modules.episodes.OpenEpisodeActionEventHandler;
-import de.perdian.apps.podcentral.ui.modules.episodes.StartDownloadEpisodesActionEventHandler;
-import de.perdian.apps.podcentral.ui.modules.feeds.DeleteActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.library.actions.DeleteFeedActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.library.actions.OpenEpisodeActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.library.actions.StartDownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
@@ -35,16 +35,16 @@ import javafx.scene.input.KeyEvent;
 class LibraryTreeTableKeyListener implements EventHandler<KeyEvent> {
 
     private LibrarySelection librarySelection = null;
-    private BackgroundTaskExecutor backgroundTaskExecutor = null;
-    private EpisodeDownloader episodeDownloader = null;
     private Library library = null;
+    private EpisodeDownloader episodeDownloader = null;
+    private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Localization localization = null;
 
-    LibraryTreeTableKeyListener(LibrarySelection librarySelection, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
+    LibraryTreeTableKeyListener(LibrarySelection librarySelection, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setLibrarySelection(librarySelection);
-        this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setLibrary(library);
         this.setEpisodeDownloader(episodeDownloader);
+        this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setLocalization(localization);
     }
 
@@ -53,14 +53,14 @@ class LibraryTreeTableKeyListener implements EventHandler<KeyEvent> {
         if (event.getCode() == KeyCode.DELETE || event.getCode() == KeyCode.X || (event.getCode() == KeyCode.BACK_SPACE && event.isMetaDown())) {
             List<Episode> selectedEpisodes = new ArrayList<>(this.getLibrarySelection().update().getSelectedEpisodes());
             if (!selectedEpisodes.isEmpty()) {
-                DeleteActionEventHandler deleteActionEventHandler = new DeleteActionEventHandler(Collections::emptyList, () -> selectedEpisodes, this.getBackgroundTaskExecutor(), this.getLibrary(), this.getLocalization());
-                deleteActionEventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
+                DeleteFeedActionEventHandler deleteFeedActionEventHandler = new DeleteFeedActionEventHandler(Collections::emptyList, () -> selectedEpisodes, this.getLibrary(), this.getBackgroundTaskExecutor(), this.getLocalization());
+                deleteFeedActionEventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
             }
             event.consume();
         } else if (event.getCode() == KeyCode.D) {
             List<Episode> downloadableEpisodes = new ArrayList<>(this.getLibrarySelection().update().getSelectedEpisodesForDownload());
             if (!downloadableEpisodes.isEmpty()) {
-                StartDownloadEpisodesActionEventHandler downloadActionEventHandler = new StartDownloadEpisodesActionEventHandler(() -> downloadableEpisodes, this.getBackgroundTaskExecutor(), this.getEpisodeDownloader(), this.getLocalization());
+                StartDownloadEpisodesActionEventHandler downloadActionEventHandler = new StartDownloadEpisodesActionEventHandler(() -> downloadableEpisodes, this.getEpisodeDownloader(), this.getBackgroundTaskExecutor(), this.getLocalization());
                 downloadActionEventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
             }
             event.consume();
@@ -79,13 +79,6 @@ class LibraryTreeTableKeyListener implements EventHandler<KeyEvent> {
         this.librarySelection = librarySelection;
     }
 
-    private BackgroundTaskExecutor getBackgroundTaskExecutor() {
-        return this.backgroundTaskExecutor;
-    }
-    private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
-        this.backgroundTaskExecutor = backgroundTaskExecutor;
-    }
-
     private Library getLibrary() {
         return this.library;
     }
@@ -93,18 +86,25 @@ class LibraryTreeTableKeyListener implements EventHandler<KeyEvent> {
         this.library = library;
     }
 
-    private Localization getLocalization() {
-        return this.localization;
-    }
-    private void setLocalization(Localization localization) {
-        this.localization = localization;
-    }
-
     private EpisodeDownloader getEpisodeDownloader() {
         return this.episodeDownloader;
     }
     private void setEpisodeDownloader(EpisodeDownloader episodeDownloader) {
         this.episodeDownloader = episodeDownloader;
+    }
+
+    private BackgroundTaskExecutor getBackgroundTaskExecutor() {
+        return this.backgroundTaskExecutor;
+    }
+    private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
+        this.backgroundTaskExecutor = backgroundTaskExecutor;
+    }
+
+    private Localization getLocalization() {
+        return this.localization;
+    }
+    private void setLocalization(Localization localization) {
+        this.localization = localization;
     }
 
 }

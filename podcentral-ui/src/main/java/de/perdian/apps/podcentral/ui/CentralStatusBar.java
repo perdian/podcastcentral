@@ -29,7 +29,7 @@ import javafx.scene.control.Label;
 
 class CentralStatusBar extends StatusBar {
 
-    CentralStatusBar(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeContentDowloader, Localization localization) {
+    CentralStatusBar(EpisodeDownloader episodeContentDowloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
         Label episodeContentDownloaderLabel = new Label(localization.noDownloadsActive());
         episodeContentDownloaderLabel.setPadding(new Insets(0, 4, 0, 16));

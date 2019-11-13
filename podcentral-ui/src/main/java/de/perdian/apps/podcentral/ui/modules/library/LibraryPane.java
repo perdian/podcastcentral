@@ -25,13 +25,13 @@ import javafx.scene.layout.Priority;
 
 public class LibraryPane extends GridPane {
 
-    public LibraryPane(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
+    public LibraryPane(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
-        LibraryToolbarPane toolbarPane = new LibraryToolbarPane(backgroundTaskExecutor, library, localization);
+        LibraryToolbarPane toolbarPane = new LibraryToolbarPane(library, backgroundTaskExecutor, localization);
         GridPane.setMargin(toolbarPane, new Insets(0, 0, 8, 0));
         GridPane.setHgrow(toolbarPane, Priority.ALWAYS);
 
-        LibraryTreeTableView treeTableView = new LibraryTreeTableView(backgroundTaskExecutor, episodeDownloader, library, localization);
+        LibraryTreeTableView treeTableView = new LibraryTreeTableView(library, episodeDownloader, backgroundTaskExecutor, localization);
         GridPane.setHgrow(treeTableView, Priority.ALWAYS);
         GridPane.setVgrow(treeTableView, Priority.ALWAYS);
 

@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.podcentral.sources.feeds.impl;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class RssFeedInputSource implements FeedInputSource {
     }
 
     @Override
-    public FeedInput loadFeedInput(Response feedResponse) throws Exception {
+    public FeedInput loadFeedInput(Response feedResponse) throws IOException {
         if (this.getValidContentTypes().contains(feedResponse.body().contentType().type() + "/" + feedResponse.body().contentType().subtype())) {
             try {
                 SAXReader saxReader = new SAXReader();

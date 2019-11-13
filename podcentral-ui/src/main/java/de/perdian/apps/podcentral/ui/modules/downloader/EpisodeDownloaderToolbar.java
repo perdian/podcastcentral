@@ -18,7 +18,7 @@ package de.perdian.apps.podcentral.ui.modules.downloader;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
-import de.perdian.apps.podcentral.ui.modules.episodes.CancelDownloadEpisodesActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.library.actions.CancelDownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.beans.binding.Bindings;
@@ -31,7 +31,7 @@ import javafx.scene.layout.BorderPane;
 class EpisodeDownloaderToolbar extends BorderPane {
 
     @SuppressWarnings("unchecked")
-    public EpisodeDownloaderToolbar(BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Localization localization) {
+    public EpisodeDownloaderToolbar(EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
         Button cancelAllDownloadsButton = new Button(localization.cancelAllDownloads(), new FontAwesomeIconView(FontAwesomeIcon.STOP));
         cancelAllDownloadsButton.setOnAction(new CancelDownloadEpisodesActionEventHandler(() -> FXCollections.concat(episodeDownloader.getScheduledEpisodes(), episodeDownloader.getDownloadingEpisodes()), backgroundTaskExecutor, episodeDownloader, localization));

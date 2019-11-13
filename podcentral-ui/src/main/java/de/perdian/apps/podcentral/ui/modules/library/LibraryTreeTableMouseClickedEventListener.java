@@ -21,8 +21,8 @@ import java.util.List;
 import de.perdian.apps.podcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcentral.model.Episode;
 import de.perdian.apps.podcentral.model.EpisodeDownloadState;
-import de.perdian.apps.podcentral.ui.modules.episodes.OpenEpisodeActionEventHandler;
-import de.perdian.apps.podcentral.ui.modules.episodes.StartDownloadEpisodesActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.library.actions.OpenEpisodeActionEventHandler;
+import de.perdian.apps.podcentral.ui.modules.library.actions.StartDownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
@@ -33,14 +33,14 @@ import javafx.scene.input.MouseEvent;
 class LibraryTreeTableMouseClickedEventListener implements EventHandler<MouseEvent> {
 
     private LibrarySelection librarySelection = null;
-    private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private EpisodeDownloader episodeDownloader = null;
+    private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Localization localization = null;
 
-    LibraryTreeTableMouseClickedEventListener(LibrarySelection librarySelection, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Localization localization) {
+    LibraryTreeTableMouseClickedEventListener(LibrarySelection librarySelection, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setLibrarySelection(librarySelection);
-        this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setEpisodeDownloader(episodeDownloader);
+        this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setLocalization(localization);
     }
 
@@ -55,7 +55,7 @@ class LibraryTreeTableMouseClickedEventListener implements EventHandler<MouseEve
                     OpenEpisodeActionEventHandler eventHandler = new OpenEpisodeActionEventHandler(() -> List.of(selectedEpisode));
                     eventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
                 } else {
-                    StartDownloadEpisodesActionEventHandler eventHandler = new StartDownloadEpisodesActionEventHandler(() -> List.of(selectedEpisode), this.getBackgroundTaskExecutor(), this.getEpisodeDownloader(), this.getLocalization());
+                    StartDownloadEpisodesActionEventHandler eventHandler = new StartDownloadEpisodesActionEventHandler(() -> List.of(selectedEpisode), this.getEpisodeDownloader(), this.getBackgroundTaskExecutor(), this.getLocalization());
                     eventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
                 }
             }
@@ -69,18 +69,18 @@ class LibraryTreeTableMouseClickedEventListener implements EventHandler<MouseEve
         this.librarySelection = librarySelection;
     }
 
-    private BackgroundTaskExecutor getBackgroundTaskExecutor() {
-        return this.backgroundTaskExecutor;
-    }
-    private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
-        this.backgroundTaskExecutor = backgroundTaskExecutor;
-    }
-
     private EpisodeDownloader getEpisodeDownloader() {
         return this.episodeDownloader;
     }
     private void setEpisodeDownloader(EpisodeDownloader episodeDownloader) {
         this.episodeDownloader = episodeDownloader;
+    }
+
+    private BackgroundTaskExecutor getBackgroundTaskExecutor() {
+        return this.backgroundTaskExecutor;
+    }
+    private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
+        this.backgroundTaskExecutor = backgroundTaskExecutor;
     }
 
     private Localization getLocalization() {

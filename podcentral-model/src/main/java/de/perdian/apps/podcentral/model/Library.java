@@ -23,7 +23,9 @@ public interface Library {
 
     ObservableList<Feed> getFeeds();
 
-    Feed addFeed(FeedInput feedInput, Feed.RefreshOption... refreshOptions);
     void deleteFeeds(Collection<Feed> feeds);
+    Feed addFeed(FeedInput feedInput, Feed.RefreshOption... refreshOptions);
+
+    FeedCollection toFeedCollection();
 
 }
