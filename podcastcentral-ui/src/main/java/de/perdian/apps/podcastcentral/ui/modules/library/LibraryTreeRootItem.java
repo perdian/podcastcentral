@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.Feed;
 import de.perdian.apps.podcastcentral.model.Library;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeItem;
@@ -50,11 +51,15 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeTableValue> {
                 for (Feed addedFeed : change.getAddedSubList()) {
                     TreeItem<LibraryTreeTableValue> feedTreeItem = LibraryTreeRootItem.createTreeItemForFeed(library, addedFeed);
                     int feedTargetIndex = change.getList().indexOf(addedFeed);
-                    this.getChildren().add(feedTargetIndex, feedTreeItem);
+                    Platform.runLater(() -> {
+                        this.getChildren().add(feedTargetIndex, feedTreeItem);
+                    });
                     feedTreeItemsByFeed.put(addedFeed, feedTreeItem);
                 }
                 if (change.wasPermutated()) {
-                    FXCollections.sort(this.getChildren(), Comparator.comparing(item -> item.getValue().getTitle().getValue()));
+                    Platform.runLater(() -> {
+                        FXCollections.sort(this.getChildren(), Comparator.comparing(item -> item.getValue().getTitle().getValue()));
+                    });
                 }
             }
         });
@@ -75,7 +80,9 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeTableValue> {
                 for (Episode removedEpisode : change.getRemoved()) {
                     TreeItem<LibraryTreeTableValue> removedValue = episodeTreeItemsByEpisode.remove(removedEpisode);
                     if (removedValue != null) {
-                        feedTreeItem.getChildren().remove(removedValue);
+                        Platform.runLater(() -> {
+                            feedTreeItem.getChildren().remove(removedValue);
+                        });
                     }
                 }
                 for (Episode addedEpisode : change.getAddedSubList()) {
@@ -83,8 +90,10 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeTableValue> {
                 }
                 if (change.wasPermutated()) {
                     List<TreeItem<LibraryTreeTableValue>> episodeTreeItems = change.getList().stream().map(episode -> episodeTreeItemsByEpisode.get(episode)).filter(Objects::nonNull).collect(Collectors.toList());
-                    feedTreeItem.getChildren().clear();
-                    feedTreeItem.getChildren().setAll(episodeTreeItems);
+                    Platform.runLater(() -> {
+                        feedTreeItem.getChildren().clear();
+                        feedTreeItem.getChildren().setAll(episodeTreeItems);
+                    });
                 }
             }
         });

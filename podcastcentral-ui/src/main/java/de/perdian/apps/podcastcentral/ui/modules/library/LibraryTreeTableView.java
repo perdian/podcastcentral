@@ -40,7 +40,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
     public LibraryTreeTableView(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
         TreeTableColumn<LibraryTreeTableValue, String> titleColumn = new TreeTableColumn<>(localization.title());
-        titleColumn.setCellValueFactory(cell -> cell.getValue().getValue().getTitle());
+        titleColumn.setCellValueFactory(cell -> cell.getValue() == null ? null : cell.getValue().getValue().getTitle());
         titleColumn.setCellFactory(cell -> new InternalTextFieldCell());
         titleColumn.setMinWidth(350);
         titleColumn.setMaxWidth(600);
@@ -49,7 +49,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         titleColumn.setReorderable(false);
 
         TreeTableColumn<LibraryTreeTableValue, String> durationColumn = new TreeTableColumn<>(localization.duration());
-        durationColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDuration());
+        durationColumn.setCellValueFactory(cell -> cell.getValue() == null ? null : cell.getValue().getValue().getDuration());
         durationColumn.setCellFactory(cell -> new InternalTextFieldCell());
         durationColumn.setMinWidth(70);
         durationColumn.setMaxWidth(70);
@@ -58,7 +58,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         durationColumn.setReorderable(false);
 
         TreeTableColumn<LibraryTreeTableValue, String> publicationDateColumn = new TreeTableColumn<>(localization.date());
-        publicationDateColumn.setCellValueFactory(cell -> cell.getValue().getValue().getPublicationDate());
+        publicationDateColumn.setCellValueFactory(cell -> cell.getValue() == null ? null : cell.getValue().getValue().getPublicationDate());
         publicationDateColumn.setCellFactory(cell -> new InternalTextFieldCell());
         publicationDateColumn.setMinWidth(80);
         publicationDateColumn.setMaxWidth(80);
@@ -67,7 +67,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         publicationDateColumn.setReorderable(false);
 
         TreeTableColumn<LibraryTreeTableValue, EpisodeDownloadState> downloadStateColumn = new TreeTableColumn<>(localization.download());
-        downloadStateColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDownloadState());
+        downloadStateColumn.setCellValueFactory(cell -> cell.getValue() == null ? null : cell.getValue().getValue().getDownloadState());
         downloadStateColumn.setCellFactory(cell -> new InternalEpisodeStorageStateTreeTableCell(localization));
         downloadStateColumn.setMinWidth(105);
         downloadStateColumn.setMaxWidth(105);
@@ -76,7 +76,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         downloadStateColumn.setReorderable(false);
 
         TreeTableColumn<LibraryTreeTableValue, Double> downloadProgressColumn = new TreeTableColumn<>(localization.progress());
-        downloadProgressColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDownloadProgress());
+        downloadProgressColumn.setCellValueFactory(cell -> cell.getValue() == null ? null : cell.getValue().getValue().getDownloadProgress());
         downloadProgressColumn.setCellFactory(cell -> new InternalProgressBarTreeTableCell());
         downloadProgressColumn.setMinWidth(80);
         downloadProgressColumn.setMaxWidth(80);
@@ -85,7 +85,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         downloadProgressColumn.setReorderable(false);
 
         TreeTableColumn<LibraryTreeTableValue, String> downloadProgressValueColumn = new TreeTableColumn<>();
-        downloadProgressValueColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDownloadProgressLabel());
+        downloadProgressValueColumn.setCellValueFactory(cell -> cell.getValue() == null ? null : cell.getValue().getValue().getDownloadProgressLabel());
         downloadProgressValueColumn.setCellFactory(cell -> new InternalTextFieldCell());
         downloadProgressValueColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         downloadProgressValueColumn.setMinWidth(50);
@@ -95,7 +95,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         downloadProgressValueColumn.setReorderable(false);
 
         TreeTableColumn<LibraryTreeTableValue, String> descriptionColumn = new TreeTableColumn<>(localization.description());
-        descriptionColumn.setCellValueFactory(cell -> cell.getValue().getValue().getDescription());
+        descriptionColumn.setCellValueFactory(cell -> cell.getValue() == null ? null : cell.getValue().getValue().getDescription());
         descriptionColumn.setCellFactory(cell -> new InternalTextFieldCell());
         descriptionColumn.setMinWidth(300);
         descriptionColumn.setMaxWidth(Double.MAX_VALUE);
