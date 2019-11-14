@@ -128,6 +128,10 @@ public interface Localization {
         return "Import";
     }
 
+    default String importingFeedsFromOpmlFile() {
+        return "Importing feeds from OPML file";
+    }
+
     default String language() {
         return "Language";
     }

@@ -46,6 +46,7 @@
 
     <properties>
         <commons-lang3.version>3.9</commons-lang3.version>
+        <commons-io.version>2.6</commons-io.version>
         <controlsfx.version>11.0.0</controlsfx.version>
         <dom4j.version>2.1.1</dom4j.version>
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>

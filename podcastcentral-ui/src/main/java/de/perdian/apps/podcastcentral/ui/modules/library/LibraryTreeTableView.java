@@ -116,7 +116,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeTableValue> {
         this.setOnKeyPressed(new LibraryTreeTableKeyListener(librarySelection, library, episodeDownloader, backgroundTaskExecutor, localization));
         this.setOnMouseClicked(new LibraryTreeTableMouseClickedEventListener(librarySelection, episodeDownloader, backgroundTaskExecutor, localization));
         this.setRowFactory(new LibraryTreeTableViewRowFactory(librarySelection));
-        this.getStyleClass().add("podcastcemntral-library");
+        this.getStyleClass().add("podcastcentral-library");
 
     }
 

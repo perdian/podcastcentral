@@ -17,12 +17,20 @@ package de.perdian.apps.podcastcentral.ui.modules.library.actions;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
+
+import de.perdian.apps.podcastcentral.model.FeedCollection;
+import de.perdian.apps.podcastcentral.model.FeedCollectionItem;
+import de.perdian.apps.podcastcentral.model.FeedInput;
 import de.perdian.apps.podcastcentral.model.Library;
+import de.perdian.apps.podcastcentral.sources.feedcollections.FeedCollectionLoader;
+import de.perdian.apps.podcastcentral.sources.feeds.FeedInputLoader;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.stage.FileChooser;
 
 public class ImportFeedCollectionIntoLibraryActionEventHandler implements EventHandler<ActionEvent> {
 
@@ -41,7 +49,25 @@ public class ImportFeedCollectionIntoLibraryActionEventHandler implements EventH
 
     @Override
     public void handle(ActionEvent event) {
-        throw new UnsupportedOperationException();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(this.getInitialDirectory());
+        fileChooser.setTitle(this.getLocalization().selectTargetFile());
+        fileChooser.setInitialFileName("podcasts.opml");
+        File sourceFile = fileChooser.showOpenDialog(this.getParent().getScene().getWindow());
+        this.setInitialDirectory(sourceFile.getParentFile());
+        if (sourceFile.exists()) {
+            this.getBackgroundTaskExecutor().execute(this.getLocalization().importingFeedsFromOpmlFile(), progress -> {
+                FeedCollection feedCollection = FeedCollectionLoader.loadFeedCollection(FileUtils.readFileToByteArray(sourceFile), "text/x-opml");
+                if (feedCollection != null) {
+                    for (int i=0; i < feedCollection.getItems().size(); i++) {
+                        progress.updateProgress((double)i / feedCollection.getItems().size(), null);
+                        FeedCollectionItem feedCollectionItem = feedCollection.getItems().get(i);
+                        FeedInput feedInput = FeedInputLoader.loadFeedInputFromUrl(feedCollectionItem.getFeedUrl().getValue());
+                        this.getLibrary().addFeed(feedInput);
+                    }
+                }
+            });
+        }
     }
 
     private Node getParent() {
