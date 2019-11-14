@@ -1,1 +1,2 @@
 de.perdian.apps.podcastcentral.sources.feeds.impl.RssFeedInputSource
+de.perdian.apps.podcastcentral.sources.feeds.impl.HtmlFeedInputSource

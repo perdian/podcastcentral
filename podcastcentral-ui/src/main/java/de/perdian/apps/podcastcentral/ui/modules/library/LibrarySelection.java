@@ -65,7 +65,7 @@ class LibrarySelection {
 
     }
 
-    public LibrarySelection update() {
+    public synchronized LibrarySelection update() {
         return this.update(this.getSelectionModel().getSelectedItems().stream().map(TreeItem::getValue).collect(Collectors.toList()));
     }
 

@@ -18,12 +18,27 @@ package de.perdian.apps.podcastcentral.sources.feeds.support;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
 public class DateHelper {
 
+    private static final String[] DATE_PATTERNS = {
+        "EEE, dd MMM yyyy HH:mm:ss xx",
+        "EEE, d MMM yyyy HH:mm:ss xx",
+        "EEE, dd MMM yyyy HH:mm:ss z",
+        "EEE, d MMM yyyy HH:mm:ss z",
+    };
+
     public static Instant parseInstant(String inputValue) {
-        return ZonedDateTime.parse(inputValue, DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss xx").withLocale(Locale.ENGLISH)).toInstant();
+        for (String pattern : DATE_PATTERNS) {
+            try {
+                return ZonedDateTime.parse(inputValue, DateTimeFormatter.ofPattern(pattern).withLocale(Locale.ENGLISH)).toInstant();
+            } catch (DateTimeParseException e) {
+                // Ignore
+            }
+        }
+        throw new IllegalArgumentException("Cannot parse date input value: " + inputValue);
     }
 
 }

@@ -61,6 +61,7 @@
         <javax.persistence.version>2.2</javax.persistence.version>
         <jaxen.version>1.2.0</jaxen.version>
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
+        <jsoup.version>1.12.1</jsoup.version>
         <logback.version>1.2.3</logback.version>
         <mockito.version>3.1.0</mockito.version>
         <okhttp.version>4.2.2</okhttp.version>

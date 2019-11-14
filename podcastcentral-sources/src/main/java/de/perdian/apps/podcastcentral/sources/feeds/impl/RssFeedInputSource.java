@@ -39,7 +39,6 @@ import de.perdian.apps.podcastcentral.sources.feeds.FeedInputSource;
 import de.perdian.apps.podcastcentral.sources.feeds.support.DateHelper;
 import de.perdian.apps.podcastcentral.sources.feeds.support.RegexParsingHelper;
 import de.perdian.apps.podcastcentral.sources.feeds.support.XmlHelper;
-import okhttp3.Response;
 
 /**
  * Implementation of the {@code FeedInputLoader} interface that evaluates the incoming input using the RSS
@@ -56,7 +55,7 @@ public class RssFeedInputSource implements FeedInputSource {
         .add("(\\d+)\\:(\\d+)", matcher -> Duration.ofSeconds(Long.parseLong(matcher.group(1), 10) * 60 + Long.parseLong(matcher.group(2), 10)))
         .add("(\\d+)\\:(\\d+)\\:(\\d+)", matcher -> Duration.ofSeconds(Long.parseLong(matcher.group(1), 10) * (60 * 60) + Long.parseLong(matcher.group(2), 10) * 60 + Long.parseLong(matcher.group(3), 10)));
 
-    private List<String> validContentTypes = List.of("application/rss+xml", "application/xml");
+    private List<String> validContentTypes = List.of("application/rss+xml", "application/xml", "text/xml");
 
     @Override
     public String toString() {
@@ -64,18 +63,18 @@ public class RssFeedInputSource implements FeedInputSource {
     }
 
     @Override
-    public FeedInput loadFeedInput(Response feedResponse) throws IOException {
-        if (this.getValidContentTypes().contains(feedResponse.body().contentType().type() + "/" + feedResponse.body().contentType().subtype())) {
+    public FeedInput loadFeedInput(String data, String contentType, String sourceUrl) throws IOException {
+        if (this.getValidContentTypes().contains(contentType)) {
             try {
                 SAXReader saxReader = new SAXReader();
-                Document document = saxReader.read(new StringReader(feedResponse.body().string()));
-                return this.parseFeedInputFromDocument(document, feedResponse.request().url().toString());
+                Document document = saxReader.read(new StringReader(data));
+                return this.parseFeedInputFromDocument(document, sourceUrl);
             } catch (DocumentException e) {
                 log.debug("Cannot parser XML document", e);
                 throw new IllegalArgumentException("Invalid XML content found", e);
             }
         } else {
-            log.debug("Non-RSS content type found: '{}'. Parser will not try to load the document", feedResponse.body().contentType());
+            log.debug("Non-RSS content type found: '{}'. Parser will not try to load the document", contentType);
             return null;
         }
     }

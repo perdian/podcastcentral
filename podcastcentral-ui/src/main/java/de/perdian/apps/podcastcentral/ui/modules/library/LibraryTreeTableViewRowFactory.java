@@ -56,6 +56,8 @@ class LibraryTreeTableViewRowFactory implements Callback<TreeTableView<LibraryTr
                 tableRow.getStyleClass().removeAll("podcastcentral-feed", "podcastcentral-read", "podcastcentral-unread");
                 tableRow.getStyleClass().addAll("podcastcentral-episode", newReadClass);
                 ((LibraryTreeTableValue.EpisodeTreeValue)newTreeTableValue).getEpisode().getRead().addListener(readPropertyChangeListener);
+            } else {
+                tableRow.getStyleClass().removeAll("podcastcentral-episode", "podcastcentral-feed", "podcastcentral-read", "podcastcentral-unread");
             }
         });
         return tableRow;

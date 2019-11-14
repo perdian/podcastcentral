@@ -42,11 +42,17 @@ public class FeedInputLoader {
             Request httpRequest = new Request.Builder().get().url(feedUrl).build();
             Instant startTime = Instant.now();
             try (Response httpResponse = HTTP_CLIENT.newCall(httpRequest).execute()) {
+                String httpContentType = httpResponse.body().contentType().type() + "/" + httpResponse.body().contentType().subtype();
+                int indexOfSemicolon = httpContentType.indexOf(";");
+                if (indexOfSemicolon > -1) {
+                    httpContentType = httpContentType.substring(0, indexOfSemicolon);
+                }
+                String httpContent = httpResponse.body().string();
                 log.debug("Loaded content (took {}) from feed URL: {}", Duration.between(startTime, Instant.now()), feedUrl);
                 List<Provider<FeedInputSource>> feedInputSources = ServiceLoader.load(FeedInputSource.class).stream().collect(Collectors.toList());
                 log.debug("Processing {} feed input sources for feed from URL: {}", feedInputSources.size(), feedUrl);
                 for (Provider<FeedInputSource> feedInputSource : feedInputSources) {
-                    FeedInput feedInput = feedInputSource.get().loadFeedInput(httpResponse);
+                    FeedInput feedInput = feedInputSource.get().loadFeedInput(httpContent, httpContentType, feedUrl);
                     if (feedInput == null) {
                         log.debug("Cannot load feed input using source {} from feed URL: {}", feedInputSource.get(), feedUrl);
                     } else {
@@ -54,7 +60,7 @@ public class FeedInputLoader {
                         return feedInput;
                     }
                 }
-                throw new IllegalArgumentException("Cannot analyze response for content type '" + httpResponse.body().contentType() + "' from feed URL: " + feedUrl);
+                throw new IllegalArgumentException("Cannot analyze response for content type '" + httpContentType + "' from feed URL: " + feedUrl);
             }
         } catch (IOException e) {
             throw new IOException("Cannot load feed from feed URL: " + feedUrl, e);

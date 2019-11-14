@@ -15,6 +15,8 @@
  */
 package de.perdian.apps.podcastcentral.ui.modules.library.components.feeds;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.perdian.apps.podcastcentral.model.FeedData;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.geometry.Insets;
@@ -55,11 +57,11 @@ public class FeedDataPane extends GridPane {
         GridPane.setVgrow(descriptionArea, Priority.ALWAYS);
         GridPane.setMargin(descriptionArea, new Insets(2, 0, 0, 0));
 
-        Image image = new Image(feedData.getImageUrl(), 150, 150, true, true);
+        Image image = StringUtils.isEmpty(feedData.getImageUrl()) ? null : new Image(feedData.getImageUrl(), 150, 150, true, true);
         Label imageLabel = new Label();
         imageLabel.setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        imageLabel.setGraphic(image.getWidth() > 0 && image.getHeight() > 0 ? new ImageView(image) : null);
-        imageLabel.setText(image.getWidth() > 0 && image.getHeight() > 0 ? null : " ");
+        imageLabel.setGraphic(image == null ? null : image.getWidth() > 0 && image.getHeight() > 0 ? new ImageView(image) : null);
+        imageLabel.setText(image != null && image.getWidth() > 0 && image.getHeight() > 0 ? null : " ");
         GridPane.setMargin(imageLabel, new Insets(0, 0, 0, 12));
         GridPane.setValignment(imageLabel, VPos.TOP);
         GridPane.setVgrow(imageLabel, Priority.ALWAYS);

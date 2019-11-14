@@ -83,7 +83,8 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
                 episodeEntitiesByFeed.compute(episodeEntity.getFeed(), (k, v) -> v == null ? new ArrayList<>() : v).add(episodeEntity);
             }
 
-            List<FeedEntity> feedEntities = session.createQuery("from FeedEntity order by data.title asc").list();
+            List<FeedEntity> feedEntities = session.createQuery("from FeedEntity").list();
+            feedEntities.sort(new FeedEntity.TitleComparator());
             for (FeedEntity feedEntity : feedEntities) {
                 log.debug("Loading initial feed from database: {}", ToStringBuilder.reflectionToString(feedEntity, ToStringStyle.NO_CLASS_NAME_STYLE));
                 List<EpisodeEntity> episodeEntitiesForFeed = episodeEntitiesByFeed.get(feedEntity);
@@ -119,7 +120,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
                 feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntities, this.getSessionFactory(), this.getStorage().resolveDirectory(feedEntity.getData().getTitle()));
                 this.getFeedsByFeedUrl().put(feedInput.getData().getUrl(), feedImpl);
                 this.getFeeds().add(feedImpl);
-                FXCollections.sort(this.getFeeds(), Comparator.comparing(feed -> feed.getTitle().getValue()));
+                FXCollections.sort(this.getFeeds(), Comparator.comparing(feed -> feed.getTitle().getValue().toLowerCase()));
             }
         }
         return feedImpl;

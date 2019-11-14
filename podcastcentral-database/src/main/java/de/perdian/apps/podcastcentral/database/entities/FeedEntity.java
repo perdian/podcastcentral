@@ -17,6 +17,7 @@ package de.perdian.apps.podcastcentral.database.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Comparator;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -63,6 +64,15 @@ public class FeedEntity implements Serializable {
         toStringBuilder.append("id", this.getId());
         toStringBuilder.append("title", this.getData().getTitle());
         return toStringBuilder.toString();
+    }
+
+    public static class TitleComparator implements Comparator<FeedEntity> {
+
+        @Override
+        public int compare(FeedEntity o1, FeedEntity o2) {
+            return o1.getData().getTitle().compareToIgnoreCase(o2.getData().getTitle());
+        }
+
     }
 
     @Id @GeneratedValue

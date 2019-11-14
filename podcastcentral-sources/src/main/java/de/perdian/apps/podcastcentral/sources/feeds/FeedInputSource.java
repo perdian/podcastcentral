@@ -18,10 +18,9 @@ package de.perdian.apps.podcastcentral.sources.feeds;
 import java.io.IOException;
 
 import de.perdian.apps.podcastcentral.model.FeedInput;
-import okhttp3.Response;
 
 public interface FeedInputSource {
 
-    FeedInput loadFeedInput(Response feedResponse) throws IOException;
+    FeedInput loadFeedInput(String data, String contentType, String sourceUrl) throws IOException;
 
 }
