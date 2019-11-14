@@ -19,7 +19,8 @@ import javafx.collections.WeakMapChangeListener;
 
 class PreferencesImpl implements Preferences {
 
-    private File applicationDirectory = null;
+    private File downloadDirectory = null;
+    private File metadataDirectory = null;
     private ObservableMap<String, String> values = null;
     private Map<String, StringProperty> properties = new HashMap<>();
 
@@ -77,11 +78,19 @@ class PreferencesImpl implements Preferences {
     }
 
     @Override
-    public File getApplicationDirectory() {
-        return this.applicationDirectory;
+    public File getDownloadDirectory() {
+        return this.downloadDirectory;
     }
-    void setApplicationDirectory(File applicationDirectory) {
-        this.applicationDirectory = applicationDirectory;
+    void setDownloadDirectory(File downloadDirectory) {
+        this.downloadDirectory = downloadDirectory;
+    }
+
+    @Override
+    public File getMetadataDirectory() {
+        return this.metadataDirectory;
+    }
+    void setMetadataDirectory(File metadataDirectory) {
+        this.metadataDirectory = metadataDirectory;
     }
 
     ObservableMap<String, String> getValues() {

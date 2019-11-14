@@ -23,7 +23,9 @@ import javafx.beans.property.StringProperty;
 
 public interface Preferences {
 
-    File getApplicationDirectory();
+    File getDownloadDirectory();
+    File getMetadataDirectory();
+
     Optional<String> getString(String key);
     StringProperty getStringProperty(String key, String defaultValue);
     IntegerProperty getIntegerProperty(String key, int defaultValue);

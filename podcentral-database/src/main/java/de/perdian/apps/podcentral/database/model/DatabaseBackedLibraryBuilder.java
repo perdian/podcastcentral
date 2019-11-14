@@ -62,7 +62,7 @@ public class DatabaseBackedLibraryBuilder implements LibraryBuilder {
     }
 
     private String buildHibernateDatabaseUrl(Preferences preferences) {
-        File databaseDirectory = new File(preferences.getApplicationDirectory(), "database/");
+        File databaseDirectory = new File(preferences.getMetadataDirectory(), "database/");
         if (!databaseDirectory.exists()) {
             try {
                 log.info("Creating database directory at: {}", databaseDirectory.getAbsolutePath());

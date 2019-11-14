@@ -29,7 +29,7 @@ public class Storage {
     private File rootDirectory = null;
 
     public static Storage createInstance(Preferences preferences) {
-        File downloadsDirectory = new File(preferences.getApplicationDirectory(), "downloads");
+        File downloadsDirectory = preferences.getDownloadDirectory();
         log.info("Resolved storage location to directory: {}", downloadsDirectory);
         if (!downloadsDirectory.exists()) {
             log.info("Creating storage location at directory: {}", downloadsDirectory.getAbsolutePath());

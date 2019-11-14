@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,24 +36,36 @@ import javafx.collections.ObservableMap;
 
 public class PreferencesFactory {
 
+    public static final String DOWNLOAD_DIRECTORY_KEY = "PODCASTCENTRAL_DOWNLOAD_DIRECTORY";
+
     private static final Logger log = LoggerFactory.getLogger(PreferencesFactory.class);
 
     public static Preferences createPreferences() {
-        File applicationDirectory = PreferencesFactory.resolveApplicationDirectory();
+        File downloadDirectory = PreferencesFactory.resolveDownloadDirectory();
+        File metadataDirectory = PreferencesFactory.resolveMetadataDirectory(downloadDirectory);
         PreferencesImpl preferences = new PreferencesImpl();
-        preferences.setApplicationDirectory(applicationDirectory);
-        preferences.setValues(PreferencesFactory.resolveValues(applicationDirectory));
+        preferences.setDownloadDirectory(downloadDirectory);
+        preferences.setMetadataDirectory(metadataDirectory);
+        preferences.setValues(PreferencesFactory.resolveValues(metadataDirectory));
         return preferences;
     }
 
-    private static File resolveApplicationDirectory() {
-        File userDirectory = new File(System.getProperty("user.home"));
-        File applicationDirectory = new File(userDirectory, ".podcastcentral");
-        if (!applicationDirectory.exists()) {
-            log.info("Creating application directory at: {}", applicationDirectory.getAbsolutePath());
-            applicationDirectory.mkdirs();
+    private static File resolveDownloadDirectory() {
+        String downloadDirectoryValue = System.getProperty(DOWNLOAD_DIRECTORY_KEY, null);
+        File downloadDirectory = StringUtils.isEmpty(downloadDirectoryValue) ? null : new File(downloadDirectoryValue);
+        if (downloadDirectory == null) {
+            File userDirectory = new File(System.getProperty("user.home"));
+            downloadDirectory = new File(userDirectory, "Music/PodcastCentral");
         }
-        return applicationDirectory;
+        if (!downloadDirectory.exists()) {
+            log.info("Creating download directory at: {}", downloadDirectory.getAbsolutePath());
+            downloadDirectory.mkdirs();
+        }
+        return downloadDirectory;
+    }
+
+    private static File resolveMetadataDirectory(File downloadDirectory) {
+        return new File(downloadDirectory, ".metadata");
     }
 
     private static ObservableMap<String, String> resolveValues(File applicationDirectory) {
