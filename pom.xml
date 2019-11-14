@@ -1,31 +1,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.perdian.apps.podcentral</groupId>
-    <artifactId>podcentral-parent</artifactId>
+    <groupId>de.perdian.apps.podcastcentral</groupId>
+    <artifactId>podcastcentral-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>podcentral-database</module>
-        <module>podcentral-development</module>
-        <module>podcentral-importer</module>
-        <module>podcentral-model</module>
-        <module>podcentral-preferences</module>
-        <module>podcentral-sources</module>
-        <module>podcentral-storage</module>
-        <module>podcentral-taskexecutor</module>
-        <module>podcentral-ui</module>
+        <module>podcastcentral-database</module>
+        <module>podcastcentral-development</module>
+        <module>podcastcentral-importer</module>
+        <module>podcastcentral-model</module>
+        <module>podcastcentral-preferences</module>
+        <module>podcastcentral-sources</module>
+        <module>podcastcentral-storage</module>
+        <module>podcastcentral-taskexecutor</module>
+        <module>podcastcentral-ui</module>
     </modules>
 
-    <name>PodCentral</name>
+    <name>PodcastCentral</name>
     <description>Podcast Management</description>
-    <url>https://github.com/perdian/podcentral</url>
+    <url>https://github.com/perdian/podcastcentral</url>
 
     <scm>
-        <url>https://github.com/perdian/podcentral</url>
-        <connection>scm:git:https://github.com/perdian/podcentral.git</connection>
-        <developerConnection>scm:git:https://github.com/perdian/podcentral.git</developerConnection>
+        <url>https://github.com/perdian/podcastcentral</url>
+        <connection>scm:git:https://github.com/perdian/podcastcentral.git</connection>
+        <developerConnection>scm:git:https://github.com/perdian/podcastcentral.git</developerConnection>
     </scm>
 
     <developers>
