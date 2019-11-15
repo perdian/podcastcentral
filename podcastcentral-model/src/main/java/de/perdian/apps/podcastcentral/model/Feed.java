@@ -36,7 +36,6 @@ public interface Feed {
     StringProperty getImageUrl();
     StringProperty getCategory();
     BooleanProperty getExpanded();
-    ObjectProperty<FeedInputState> getInputState();
     ObjectProperty<Instant> getRefreshTime();
     ObservableList<Episode> getEpisodes();
 

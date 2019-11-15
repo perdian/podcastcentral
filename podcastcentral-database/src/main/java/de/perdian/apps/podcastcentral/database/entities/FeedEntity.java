@@ -28,7 +28,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import de.perdian.apps.podcastcentral.model.FeedData;
-import de.perdian.apps.podcastcentral.model.FeedInputState;
 
 @Entity
 @Table(name = "feed")
@@ -38,7 +37,6 @@ public class FeedEntity implements Serializable {
 
     private Long id = null;
     private FeedData data = null;
-    private FeedInputState inputState = null;
     private Boolean expanded = Boolean.TRUE;
     private Instant refreshTime = null;
 
@@ -89,13 +87,6 @@ public class FeedEntity implements Serializable {
     }
     public void setData(FeedData data) {
         this.data = data;
-    }
-
-    public FeedInputState getInputState() {
-        return this.inputState;
-    }
-    public void setInputState(FeedInputState inputState) {
-        this.inputState = inputState;
     }
 
     public Boolean getExpanded() {

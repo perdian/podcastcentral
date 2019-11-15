@@ -28,6 +28,10 @@ public interface Localization {
         return "Add feed";
     }
 
+    default String addingFeed() {
+        return "Adding feed";
+    }
+
     default String cancel() {
         return "Cancel";
     }
@@ -48,8 +52,8 @@ public interface Localization {
         return "Cancelling episode downloads";
     }
 
-    default String cannotLoadFeedFromUrl(String feedUrl) {
-        return "Cannot load feed from URL: " + feedUrl;
+    default String cannotLoadFeedFromUrl() {
+        return "Cannot load feed from URL:";
     }
 
     default String completed() {
@@ -120,6 +124,14 @@ public interface Localization {
         return "Exporting library as XML";
     }
 
+    default String feedDetails() {
+        return "Feed details";
+    }
+
+    default String feedSource() {
+        return "Feed source";
+    }
+
     default String feedUrl() {
         return "Feed URL";
     }
@@ -153,7 +165,7 @@ public interface Localization {
     }
 
     default String loadingFeedFrom() {
-        return "Loading feed from:";
+        return "Loading feed from: ";
     }
 
     default String loadingLibrary() {
@@ -242,6 +254,10 @@ public interface Localization {
 
     default String settings() {
         return "Settings";
+    }
+
+    default String subtitle() {
+        return "Subtitle";
     }
 
     default String title() {

@@ -9,6 +9,7 @@ import de.perdian.apps.podcastcentral.ui.modules.library.actions.AddFeedActionEv
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.ExportLibraryAsOpmlActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.ImportFeedCollectionIntoLibraryActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.RefreshFeedsActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library.components.feeds.AddFeedDialog;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.scene.control.Button;
@@ -23,7 +24,7 @@ public class LibraryToolbarPane extends BorderPane {
     public LibraryToolbarPane(Library library, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
         Button addFeedButton = new Button(localization.addFeed(), new FontAwesomeIconView(FontAwesomeIcon.PLUS));
-        addFeedButton.setOnAction(new AddFeedActionEventHandler(library, localization));
+        addFeedButton.setOnAction(new AddFeedActionEventHandler(() -> AddFeedDialog.requestFeedInput(addFeedButton, localization), library, backgroundTaskExecutor, localization));
         ButtonBar.setButtonData(addFeedButton, ButtonData.LEFT);
 
         Button refreshFeedsButton = new Button(localization.refreshFeeds(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));

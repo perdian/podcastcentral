@@ -42,7 +42,6 @@ import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcastcentral.model.Feed;
 import de.perdian.apps.podcastcentral.model.FeedData;
 import de.perdian.apps.podcastcentral.model.FeedInput;
-import de.perdian.apps.podcastcentral.model.FeedInputState;
 import de.perdian.apps.podcastcentral.storage.StorageDirectory;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -68,7 +67,6 @@ class DatabaseBackedFeed implements Feed {
     private StringProperty imageUrl = null;
     private StringProperty category = null;
     private BooleanProperty expanded = null;
-    private ObjectProperty<FeedInputState> inputState = null;
     private ObjectProperty<Instant> refreshTime = null;
     private ObservableList<Episode> episodes = null;
     private StorageDirectory storageDirectory = null;
@@ -80,7 +78,6 @@ class DatabaseBackedFeed implements Feed {
         this.setDescription(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getDescription(), (e, v) -> e.getData().setDescription(v), SimpleStringProperty::new, sessionFactory));
         this.setExpanded(DatabaseHelper.createProperty(feedEntity, e -> e.getExpanded(), (e, v) -> e.setExpanded(v), SimpleBooleanProperty::new, sessionFactory));
         this.setImageUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getImageUrl(), (e, v) -> e.getData().setImageUrl(v), SimpleStringProperty::new, sessionFactory));
-        this.setInputState(DatabaseHelper.createProperty(feedEntity, e -> e.getInputState(), (e, v) -> e.setInputState(v), SimpleObjectProperty::new, sessionFactory));
         this.setLanguageCode(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getLanguageCode(), (e, v) -> e.getData().setLanguageCode(v), SimpleStringProperty::new, sessionFactory));
         this.setOwner(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getOwner(), (e, v) -> e.getData().setOwner(v), SimpleStringProperty::new, sessionFactory));
         this.setOwnerUrl(DatabaseHelper.createProperty(feedEntity, e -> e.getData().getOwnerUrl(), (e, v) -> e.getData().setOwnerUrl(v), SimpleStringProperty::new, sessionFactory));
@@ -289,14 +286,6 @@ class DatabaseBackedFeed implements Feed {
     }
     public void setExpanded(BooleanProperty expanded) {
         this.expanded = expanded;
-    }
-
-    @Override
-    public ObjectProperty<FeedInputState> getInputState() {
-        return this.inputState;
-    }
-    private void setInputState(ObjectProperty<FeedInputState> inputState) {
-        this.inputState = inputState;
     }
 
     @Override

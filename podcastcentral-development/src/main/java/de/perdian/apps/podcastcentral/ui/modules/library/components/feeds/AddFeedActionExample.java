@@ -13,8 +13,9 @@ public class AddFeedActionExample {
 
         @Override
         public void start(Stage primaryStage) throws Exception {
-            Central central = new Central(new Localization() {});
-            AddFeedActionEventHandler addFeedActionEventHandler = new AddFeedActionEventHandler(central.getLibrary(), new Localization() {});
+            Localization localization = new Localization() {};
+            Central central = new Central(localization);
+            AddFeedActionEventHandler addFeedActionEventHandler = new AddFeedActionEventHandler(() -> AddFeedDialog.requestFeedInput(null, localization), central.getLibrary(), central.getBackgroundTaskExecutor(), localization);
             addFeedActionEventHandler.handle(new ActionEvent(primaryStage, null));
         }
 

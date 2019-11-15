@@ -15,55 +15,42 @@
  */
 package de.perdian.apps.podcastcentral.ui.modules.library.actions;
 
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-import de.perdian.apps.podcastcentral.model.Feed;
 import de.perdian.apps.podcastcentral.model.FeedInput;
-import de.perdian.apps.podcastcentral.model.FeedInputState;
 import de.perdian.apps.podcastcentral.model.Library;
-import de.perdian.apps.podcastcentral.ui.modules.library.components.feeds.AddFeedPane;
+import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.DialogPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 public class AddFeedActionEventHandler implements EventHandler<ActionEvent> {
 
+    private Supplier<FeedInput> feedInputSupplier = null;
     private Library library = null;
+    private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Localization localization = null;
 
-    public AddFeedActionEventHandler(Library library, Localization localization) {
+    public AddFeedActionEventHandler(Supplier<FeedInput> feedInputSupplier, Library library, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+        this.setFeedInputSupplier(feedInputSupplier);
         this.setLibrary(library);
+        this.setBackgroundTaskExecutor(backgroundTaskExecutor);
         this.setLocalization(localization);
     }
 
     @Override
     public void handle(ActionEvent event) {
+        FeedInput feedInput = this.getFeedInputSupplier().get();
+        if (feedInput != null) {
+            this.getBackgroundTaskExecutor().execute(this.getLocalization().addingFeed(), () -> this.getLibrary().addFeed(feedInput));
+        }
+    }
 
-        Stage dialogStage = new Stage();
-        dialogStage.sizeToScene();
-        dialogStage.setResizable(false);
-        dialogStage.setTitle(this.getLocalization().addFeed());
-        dialogStage.initModality(Modality.APPLICATION_MODAL);
-
-        Consumer<FeedInput> feedInputConsumer = feedInput -> {
-            dialogStage.close();
-            new Thread(() -> {
-                Feed feed = this.getLibrary().addFeed(feedInput);
-                feed.getInputState().setValue(FeedInputState.OKAY);
-            }).start();
-        };
-
-        DialogPane dialogPane = new DialogPane();
-        dialogPane.setContent(new AddFeedPane(feedInputConsumer, this.getLocalization()));
-        dialogPane.setMinSize(640, 400);
-
-        dialogStage.setScene(new Scene(dialogPane));
-        dialogStage.show();
-
+    private Supplier<FeedInput> getFeedInputSupplier() {
+        return this.feedInputSupplier;
+    }
+    private void setFeedInputSupplier(Supplier<FeedInput> feedInputSupplier) {
+        this.feedInputSupplier = feedInputSupplier;
     }
 
     private Library getLibrary() {
@@ -71,6 +58,13 @@ public class AddFeedActionEventHandler implements EventHandler<ActionEvent> {
     }
     private void setLibrary(Library library) {
         this.library = library;
+    }
+
+    private BackgroundTaskExecutor getBackgroundTaskExecutor() {
+        return this.backgroundTaskExecutor;
+    }
+    private void setBackgroundTaskExecutor(BackgroundTaskExecutor backgroundTaskExecutor) {
+        this.backgroundTaskExecutor = backgroundTaskExecutor;
     }
 
     private Localization getLocalization() {

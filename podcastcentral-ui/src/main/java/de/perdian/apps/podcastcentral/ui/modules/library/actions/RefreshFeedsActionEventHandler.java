@@ -23,7 +23,6 @@ import java.util.function.Supplier;
 
 import de.perdian.apps.podcastcentral.model.Feed;
 import de.perdian.apps.podcastcentral.model.FeedInput;
-import de.perdian.apps.podcastcentral.model.FeedInputState;
 import de.perdian.apps.podcastcentral.sources.feeds.FeedInputLoader;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
@@ -59,14 +58,8 @@ public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent>
     }
 
     private void handleRefreshFeed(Feed feed) throws Exception {
-        try {
-            FeedInput feedInput = FeedInputLoader.loadFeedInputFromUrl(feed.getUrl().getValue());
-            feed.refresh(feedInput, this.getFeedRefreshOptions().toArray(Feed.RefreshOption[]::new));
-            feed.getInputState().setValue(FeedInputState.OKAY);
-        } catch (Exception e) {
-            feed.getInputState().setValue(FeedInputState.ERRORED);
-            throw e;
-        }
+        FeedInput feedInput = FeedInputLoader.loadFeedInputFromUrl(feed.getUrl().getValue());
+        feed.refresh(feedInput, this.getFeedRefreshOptions().toArray(Feed.RefreshOption[]::new));
     }
 
     private Supplier<List<Feed>> getFeedListSupplier() {
