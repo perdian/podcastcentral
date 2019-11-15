@@ -30,6 +30,12 @@ class CentralMainPane extends GridPane {
 
     public CentralMainPane(Central central, Localization localization) {
 
+de.perdian.apps.podcastcentral.ui.modules.library_new.LibraryPane newLibraryPane = new de.perdian.apps.podcastcentral.ui.modules.library_new.LibraryPane(central.getLibrary(), localization);
+newLibraryPane.setPadding(new Insets(10, 8, 8, 8));
+Tab newLibraryTab = new Tab(localization.library(), newLibraryPane);
+newLibraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
+newLibraryTab.setClosable(false);
+
         LibraryPane libraryPane = new LibraryPane(central.getLibrary(), central.getEpisodeContentDownloader(), central.getBackgroundTaskExecutor(), localization);
         libraryPane.setPadding(new Insets(10, 8, 8, 8));
         Tab libraryTab = new Tab(localization.library(), libraryPane);
@@ -42,7 +48,8 @@ class CentralMainPane extends GridPane {
         schedulerTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
         schedulerTab.setClosable(false);
 
-        TabPane tabPane = new TabPane(libraryTab, schedulerTab);
+TabPane tabPane = new TabPane(newLibraryTab, libraryTab, schedulerTab);
+//        TabPane tabPane = new TabPane(libraryTab, schedulerTab);
         GridPane.setHgrow(tabPane, Priority.ALWAYS);
         GridPane.setVgrow(tabPane, Priority.ALWAYS);
 
