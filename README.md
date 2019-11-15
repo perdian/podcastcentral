@@ -30,7 +30,7 @@ For building it simply checkout the repository from GitHub and call the Maven pa
 
 ### macOS build
 
-On macOS a simplified build that directly generates a DMG archive from which the application can be installed or distributed can be built using the following commands:
+On macOS a special build can directly generate a macOS app:
 
     $ git clone https://github.com/perdian/podcastcentral.git
     $ cd podcastcentral
