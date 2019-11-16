@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcastcentral.ui.modules.library_new.treetable;
+package de.perdian.apps.podcastcentral.ui.modules.library_new.components.treetable;
 
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -23,6 +23,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.LibrarySelection;
 import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.ChangeEpisodeReadStateActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.DownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
@@ -37,13 +38,13 @@ import javafx.scene.control.MenuItem;
 
 class LibraryTreeTableContextMenu extends ContextMenu {
 
-    private Supplier<LibraryTreeTableSelection> selectionSupplier = null;
+    private Supplier<LibrarySelection> selectionSupplier = null;
     private final ObservableList<Episode> selectedEpisodesConsolidated = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidatedRead = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidatedUnread = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidatedNotDownloaded = FXCollections.observableArrayList();
 
-    LibraryTreeTableContextMenu(Supplier<LibraryTreeTableSelection> selectionSupplier, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    LibraryTreeTableContextMenu(Supplier<LibrarySelection> selectionSupplier, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setSelectionSupplier(selectionSupplier);
 
         MenuItem markEpisodesAsReadMenuItem = new MenuItem(localization.read(), new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT));
@@ -71,7 +72,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
     @Override
     public void show(Node anchor, double screenX, double screenY) {
-        LibraryTreeTableSelection selection = this.getSelectionSupplier().get();
+        LibrarySelection selection = this.getSelectionSupplier().get();
         this.getSelectedEpisodesConsolidated().setAll(selection.getSelectedEpisodesConsolidated());
         this.getSelectedEpisodesConsolidatedRead().setAll(selection.getSelectedEpisodesConsolidated().stream().filter(episode -> Boolean.TRUE.equals(episode.getRead().getValue())).collect(Collectors.toList()));
         this.getSelectedEpisodesConsolidatedUnread().setAll(selection.getSelectedEpisodesConsolidated().stream().filter(episode -> !Boolean.TRUE.equals(episode.getRead().getValue())).collect(Collectors.toList()));
@@ -79,10 +80,10 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         super.show(anchor, screenX, screenY);
     }
 
-    private Supplier<LibraryTreeTableSelection> getSelectionSupplier() {
+    private Supplier<LibrarySelection> getSelectionSupplier() {
         return this.selectionSupplier;
     }
-    private void setSelectionSupplier(Supplier<LibraryTreeTableSelection> selectionSupplier) {
+    private void setSelectionSupplier(Supplier<LibrarySelection> selectionSupplier) {
         this.selectionSupplier = selectionSupplier;
     }
 

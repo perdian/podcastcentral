@@ -17,7 +17,7 @@ package de.perdian.apps.podcastcentral.ui.modules.library_new;
 
 import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcastcentral.model.Library;
-import de.perdian.apps.podcastcentral.ui.modules.library_new.treetable.LibraryTreeTableView;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.components.treetable.LibraryTreeTableView;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.scene.layout.BorderPane;

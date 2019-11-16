@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcastcentral.ui.modules.library_new.treetable;
+package de.perdian.apps.podcastcentral.ui.modules.library_new;
 
 import java.util.List;
 
 import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.Feed;
-import javafx.scene.control.TreeItem;
 
 /**
  * The {@code TreeTableSelectionModel} isn't enough to determine which feeds and episodes are *selected* for our
@@ -32,41 +31,14 @@ import javafx.scene.control.TreeItem;
  * Furthermore, if a feed is selected, we want to consider all of the episodes below that feed to be processed as if
  * they had been selected as well (which is also something that we don't get from the {@code TreeTableSelectionModel}).
  *
- * So the {@code LibraryTreeTableSelection} not only captures the actually selected items but also precomputes new lists
+ * So the {@code LibrarySelection} not only captures the actually selected items but also precomputes new lists
  * of items for specific usecases.
  */
 
-public class LibraryTreeTableSelection {
+public interface LibrarySelection {
 
-    private List<Feed> selectedFeeds = null;
-    private List<Episode> selectedEpisodesDirectly = null;
-    private List<Episode> selectedEpisodesConsolidated = null;
-
-    LibraryTreeTableSelection(List<TreeItem<LibraryTreeItemValue>> selectedItems) {
-        this.setSelectedFeeds(LibraryTreeTableSelectionHelper.collectSelectedFeeds(selectedItems));
-        this.setSelectedEpisodesDirectly(LibraryTreeTableSelectionHelper.collectSelectedEpisodesDirectly(selectedItems));
-        this.setSelectedEpisodesConsolidated(LibraryTreeTableSelectionHelper.collectSelectedEpisodesConsolidated(selectedItems));
-    }
-
-    public List<Feed> getSelectedFeeds() {
-        return this.selectedFeeds;
-    }
-    private void setSelectedFeeds(List<Feed> selectedFeeds) {
-        this.selectedFeeds = selectedFeeds;
-    }
-
-    public List<Episode> getSelectedEpisodesDirectly() {
-        return this.selectedEpisodesDirectly;
-    }
-    private void setSelectedEpisodesDirectly(List<Episode> selectedEpisodesDirectly) {
-        this.selectedEpisodesDirectly = selectedEpisodesDirectly;
-    }
-
-    public List<Episode> getSelectedEpisodesConsolidated() {
-        return this.selectedEpisodesConsolidated;
-    }
-    private void setSelectedEpisodesConsolidated(List<Episode> selectedEpisodesConsolidated) {
-        this.selectedEpisodesConsolidated = selectedEpisodesConsolidated;
-    }
+    List<Feed> getSelectedFeeds();
+    List<Episode> getSelectedEpisodesDirectly();
+    List<Episode> getSelectedEpisodesConsolidated();
 
 }
