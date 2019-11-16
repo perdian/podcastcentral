@@ -15,15 +15,17 @@
  */
 package de.perdian.apps.podcastcentral.ui.modules.library_new;
 
+import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcastcentral.model.Library;
 import de.perdian.apps.podcastcentral.ui.modules.library_new.treetable.LibraryTreeTableView;
+import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.scene.layout.BorderPane;
 
 public class LibraryPane extends BorderPane {
 
-    public LibraryPane(Library library, Localization localization) {
-        this.setCenter(new LibraryTreeTableView(library, localization));
+    public LibraryPane(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+        this.setCenter(new LibraryTreeTableView(library, episodeDownloader, backgroundTaskExecutor, localization));
     }
 
 }

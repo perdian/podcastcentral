@@ -72,7 +72,7 @@ class LibraryTreeRootItem extends TreeItem<LibraryTreeTableValue> {
             TreeItem<LibraryTreeTableValue> episodeTreeItem = LibraryTreeRootItem.createTreeItemForEpisode(feed, episode);
             feedTreeItem.setExpanded(Optional.ofNullable(feed.getExpanded().getValue()).orElse(Boolean.TRUE));
             feedTreeItem.getChildren().add(episodeTreeItem);
-            feed.getExpanded().bind(feedTreeItem.expandedProperty());
+            feedTreeItem.expandedProperty().addListener((o, oldValue, newValue) -> feed.getExpanded().setValue(newValue));
             episodeTreeItemsByEpisode.put(episode, episodeTreeItem);
         }
         feed.getEpisodes().addListener((ListChangeListener.Change<? extends Episode> change) -> {

@@ -50,7 +50,7 @@ public class DatabaseBackedLibraryBuilder implements LibraryBuilder {
         hibernateConfiguration.setProperty(Environment.PASS, "");
         hibernateConfiguration.setProperty(Environment.DIALECT, "org.hibernate.dialect.H2Dialect");
         hibernateConfiguration.setProperty(Environment.HBM2DDL_AUTO, "update");
-        hibernateConfiguration.setProperty(Environment.SHOW_SQL, "true");
+//        hibernateConfiguration.setProperty(Environment.SHOW_SQL, "true");
 //        hibernateConfiguration.setProperty(Environment.FORMAT_SQL, "true");
         hibernateConfiguration.addAnnotatedClass(FeedEntity.class);
         hibernateConfiguration.addAnnotatedClass(EpisodeEntity.class);

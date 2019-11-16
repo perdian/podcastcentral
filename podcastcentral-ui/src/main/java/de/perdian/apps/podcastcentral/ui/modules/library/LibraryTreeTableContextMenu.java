@@ -43,12 +43,12 @@ class LibraryTreeTableContextMenu extends ContextMenu {
     public LibraryTreeTableContextMenu(LibrarySelection librarySelection, BackgroundTaskExecutor backgroundTaskExecutor, EpisodeDownloader episodeDownloader, Library library, Localization localization) {
         this.setLibrarySelection(librarySelection);
 
-        MenuItem markReadMenuItem = new MenuItem(localization.markAsRead());
+        MenuItem markReadMenuItem = new MenuItem("Mark as read");
         markReadMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()).and(Bindings.isEmpty(librarySelection.getSelectedEpisodesForMarkRead())));
         markReadMenuItem.setOnAction(new MarkReadEpisodesActionEventHandler(librarySelection::getSelectedFeeds, librarySelection::getSelectedEpisodesForMarkRead, Boolean.TRUE));
         this.getItems().add(markReadMenuItem);
 
-        MenuItem markUnreadReadMenuItem = new MenuItem(localization.markAsUnread());
+        MenuItem markUnreadReadMenuItem = new MenuItem("Mark as unread");
         markUnreadReadMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()).and(Bindings.isEmpty(librarySelection.getSelectedEpisodesForMarkUnread())));
         markUnreadReadMenuItem.setOnAction(new MarkReadEpisodesActionEventHandler(librarySelection::getSelectedFeeds, librarySelection::getSelectedEpisodesForMarkUnread, Boolean.FALSE));
         this.getItems().add(markUnreadReadMenuItem);
@@ -62,17 +62,17 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
         this.getItems().add(new SeparatorMenuItem());
 
-        MenuItem startDownloadSelectedEpisodesMenuItem = new MenuItem(localization.downloadSelectedEpisodes());
+        MenuItem startDownloadSelectedEpisodesMenuItem = new MenuItem("Download selected episodes");
         startDownloadSelectedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedEpisodesForDownload()));
         startDownloadSelectedEpisodesMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getSelectedEpisodesForDownload, episodeDownloader, backgroundTaskExecutor, localization));
         this.getItems().add(startDownloadSelectedEpisodesMenuItem);
 
-        MenuItem startDownloadSelectedEpisodesRedownloadExistingMenuItem = new MenuItem(localization.downloadSelectedEpisodesRedownloadExistingEpisodes());
+        MenuItem startDownloadSelectedEpisodesRedownloadExistingMenuItem = new MenuItem("Download selected episodes (redownload existing episodes)");
         startDownloadSelectedEpisodesRedownloadExistingMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedEpisodes()));
         startDownloadSelectedEpisodesRedownloadExistingMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getSelectedEpisodes, episodeDownloader, backgroundTaskExecutor, localization));
         this.getItems().add(startDownloadSelectedEpisodesRedownloadExistingMenuItem);
 
-        MenuItem startDownloadAllEpisodesFromFeedMenuItem = new MenuItem(localization.downloadAllEpisodesFromFeed());
+        MenuItem startDownloadAllEpisodesFromFeedMenuItem = new MenuItem("Download all episodes from feeds");
         startDownloadAllEpisodesFromFeedMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedEpisodesFromFeedsForDownload()));
         startDownloadAllEpisodesFromFeedMenuItem.setOnAction(new StartDownloadEpisodesActionEventHandler(librarySelection::getSelectedEpisodesFromFeedsForDownload, episodeDownloader, backgroundTaskExecutor, localization));
         this.getItems().add(startDownloadAllEpisodesFromFeedMenuItem);

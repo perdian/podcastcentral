@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import de.perdian.apps.podcastcentral.model.Episode;
@@ -83,7 +84,7 @@ interface LibraryTreeItemValue {
 
         @Override
         public ObservableValue<String> getDescription() {
-            return new ReadOnlyStringWrapper("");
+            return PropertiesHelper.map(this.getFeed().getDescription(), StringUtils::normalizeSpace, null);
         }
 
         Feed getFeed() {
@@ -143,7 +144,7 @@ interface LibraryTreeItemValue {
 
         @Override
         public ObservableValue<String> getDescription() {
-            return this.getEpisode().getDescription();
+            return PropertiesHelper.map(this.getEpisode().getDescription(), StringUtils::normalizeSpace, null);
         }
 
         Feed getFeed() {

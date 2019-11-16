@@ -17,8 +17,10 @@ package de.perdian.apps.podcastcentral.ui.modules.library_new.treetable;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcastcentral.model.Library;
+import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -40,7 +42,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeItemValue> {
      * result.
      */
 
-    public LibraryTreeTableView(Library library, Localization localization) {
+    public LibraryTreeTableView(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         super(LibraryTreeItemFactory.createLibraryRootItem(library));
 
         this.getColumns().add(LibraryTreeTableColumnFactory.createColumn(localization.title(), 400, 600, LibraryTreeItemValue::getTitle, TextFieldTreeTableCell::new, null));
@@ -53,6 +55,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeItemValue> {
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setRowFactory(new LibraryTreeTableRowFactory());
+        this.setContextMenu(new LibraryTreeTableContextMenu(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), episodeDownloader, backgroundTaskExecutor, localization));
 
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.getStyleClass().add("podcastcentral-library");

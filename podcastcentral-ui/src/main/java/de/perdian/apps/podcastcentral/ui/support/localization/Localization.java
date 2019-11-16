@@ -80,16 +80,12 @@ public interface Localization {
         return "Download";
     }
 
-    default String downloadSelectedEpisodes() {
-        return "Download selected episodes";
+    default String downloadEpisodes() {
+        return "Download episodes";
     }
 
-    default String downloadSelectedEpisodesRedownloadExistingEpisodes() {
-        return "Download selected episodes (redownload existing episodes)";
-    }
-
-    default String downloadAllEpisodesFromFeed() {
-        return "Download all episodes from feed";
+    default String downloadNewEpisodes() {
+        return "Download new episodes";
     }
 
     default String downloading() {
@@ -172,12 +168,12 @@ public interface Localization {
         return "Loading library...";
     }
 
-    default String markAsRead() {
-        return "Mark as read";
+    default String markEpisodes() {
+        return "Mark episodes";
     }
 
-    default String markAsUnread() {
-        return "Mark as unread";
+    default String markingEpisodes() {
+        return "Marking episodes";
     }
 
     default String missing() {
@@ -218,6 +214,14 @@ public interface Localization {
 
     default String progress() {
         return "Progress";
+    }
+
+    default String read() {
+        return "Read";
+    }
+
+    default String redownloadEpisodes() {
+        return "Redownload episodes";
     }
 
     default String refresh() {
@@ -262,6 +266,10 @@ public interface Localization {
 
     default String title() {
         return "Title";
+    }
+
+    default String unread() {
+        return "Unread";
     }
 
     default String bytesOfBytesTransfered(long bytesWritten, long bytesTotal) {
