@@ -67,12 +67,12 @@ public class CentralApplication extends Application {
 
                 log.info("Creating main JavaFX window");
                 Platform.runLater(() -> {
-                    primaryStage.setMinWidth(800);
+                    primaryStage.setMinWidth(1024);
                     primaryStage.setMinHeight(600);
                     primaryStage.setTitle(localization.podcastCentral());
                     primaryStage.setOnCloseRequest(event -> System.exit(0));
                     primaryStage.setScene(centralScene);
-                    primaryStage.setWidth(1200);
+                    primaryStage.setWidth(1400);
                     primaryStage.setHeight(800);
                     primaryStage.show();
                 });

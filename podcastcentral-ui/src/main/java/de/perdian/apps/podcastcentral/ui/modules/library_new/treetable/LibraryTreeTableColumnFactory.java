@@ -16,16 +16,23 @@
 package de.perdian.apps.podcastcentral.ui.modules.library_new.treetable;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 
 class LibraryTreeTableColumnFactory {
 
-    static <T> TreeTableColumn<LibraryTreeItemValue, T> createColumn(String title, Function<LibraryTreeItemValue, ObservableValue<T>> valueFunction) {
+    static <T> TreeTableColumn<LibraryTreeItemValue, T> createColumn(String title, double minWidth, double maxWidth, Function<LibraryTreeItemValue, ObservableValue<T>> valueFunction, Supplier<TreeTableCell<LibraryTreeItemValue, T>> cellSupplier, String style) {
         TreeTableColumn<LibraryTreeItemValue, T> column = new TreeTableColumn<>(title);
         column.setCellValueFactory(cell -> cell.getValue() == null || cell.getValue().getValue() == null ? null : valueFunction.apply(cell.getValue().getValue()));
+        column.setCellFactory(cell -> cellSupplier.get());
+        column.setMinWidth(minWidth);
+        column.setMaxWidth(maxWidth);
         column.setReorderable(false);
+        column.setSortable(false);
+        column.setStyle(style);
         return column;
     }
 
