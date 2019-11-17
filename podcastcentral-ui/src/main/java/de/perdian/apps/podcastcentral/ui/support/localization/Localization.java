@@ -128,8 +128,12 @@ public interface Localization {
         return "Export";
     }
 
-    default String exportingLibraryAsXml() {
-        return "Exporting library as XML";
+    default String exportOpml() {
+        return "Export OPML";
+    }
+
+    default String exportingLibraryAsOpml() {
+        return "Exporting library as OPML";
     }
 
     default String feedDetails() {
@@ -148,8 +152,8 @@ public interface Localization {
         return "Feed URL";
     }
 
-    default String import_() {
-        return "Import";
+    default String importOpml() {
+        return "Import OPML";
     }
 
     default String importingFeedsFromOpmlFile() {
@@ -244,8 +248,8 @@ public interface Localization {
         return "Refresh";
     }
 
-    default String refreshRestoreDeletedEpisodes() {
-        return "Refresh (restore deleted episodes)";
+    default String refreshAllFeeds() {
+        return "Refresh all feeds";
     }
 
     default String refreshingFeed(String feedName) {
@@ -254,6 +258,10 @@ public interface Localization {
 
     default String refreshingFeeds() {
         return "Refreshing feeds";
+    }
+
+    default String refreshRestoreDeletedEpisodes() {
+        return "Refresh (restore deleted episodes)";
     }
 
     default String scheduled() {

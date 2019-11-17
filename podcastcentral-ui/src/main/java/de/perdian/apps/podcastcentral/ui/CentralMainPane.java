@@ -31,7 +31,6 @@ class CentralMainPane extends GridPane {
     public CentralMainPane(Central central, Localization localization) {
 
 de.perdian.apps.podcastcentral.ui.modules.library_new.LibraryPane newLibraryPane = new de.perdian.apps.podcastcentral.ui.modules.library_new.LibraryPane(central.getLibrary(), central.getEpisodeContentDownloader(), central.getBackgroundTaskExecutor(), localization);
-newLibraryPane.setPadding(new Insets(10, 8, 8, 8));
 Tab newLibraryTab = new Tab(localization.library(), newLibraryPane);
 newLibraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
 newLibraryTab.setClosable(false);

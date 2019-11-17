@@ -5,11 +5,11 @@ import java.util.Set;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcastcentral.model.Library;
-import de.perdian.apps.podcastcentral.ui.modules.library.actions.AddFeedActionEventHandler;
-import de.perdian.apps.podcastcentral.ui.modules.library.actions.ExportLibraryAsOpmlActionEventHandler;
-import de.perdian.apps.podcastcentral.ui.modules.library.actions.ImportFeedCollectionIntoLibraryActionEventHandler;
-import de.perdian.apps.podcastcentral.ui.modules.library.components.feeds.AddFeedDialog;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.AddFeedActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.LibraryExportAsOpmlActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.LibraryImportFromOpmlActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.RefreshFeedsActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.components.addfeed.AddFeedDialog;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.scene.control.Button;
@@ -31,12 +31,12 @@ public class LibraryToolbarPane extends BorderPane {
         refreshFeedsButton.setOnAction(new RefreshFeedsActionEventHandler(() -> library.getFeeds(), Set.of(), backgroundTaskExecutor, localization));
         ButtonBar.setButtonData(refreshFeedsButton, ButtonData.LEFT);
 
-        Button importButton = new Button(localization.import_(), new FontAwesomeIconView(FontAwesomeIcon.FILE));
-        importButton.setOnAction(new ImportFeedCollectionIntoLibraryActionEventHandler(this, library, backgroundTaskExecutor, localization));
+        Button importButton = new Button(localization.importOpml(), new FontAwesomeIconView(FontAwesomeIcon.FILE));
+        importButton.setOnAction(new LibraryImportFromOpmlActionEventHandler(this, library, backgroundTaskExecutor, localization));
         ButtonBar.setButtonData(importButton, ButtonData.RIGHT);
 
         MenuItem exportOpmlMenuItem = new MenuItem("as OPML");
-        exportOpmlMenuItem.setOnAction(new ExportLibraryAsOpmlActionEventHandler(this, library, backgroundTaskExecutor, localization));
+        exportOpmlMenuItem.setOnAction(new LibraryExportAsOpmlActionEventHandler(this, library, backgroundTaskExecutor, localization));
         MenuButton exportButton = new MenuButton(localization.export(), new FontAwesomeIconView(FontAwesomeIcon.FILE));
         exportButton.getItems().add(exportOpmlMenuItem);
         ButtonBar.setButtonData(exportButton, ButtonData.RIGHT);

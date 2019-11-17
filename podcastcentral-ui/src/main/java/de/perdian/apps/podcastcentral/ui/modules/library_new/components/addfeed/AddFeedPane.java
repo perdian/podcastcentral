@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcastcentral.ui.modules.library.components.feeds;
+package de.perdian.apps.podcastcentral.ui.modules.library_new.components.addfeed;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,6 +27,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcastcentral.model.FeedInput;
 import de.perdian.apps.podcastcentral.sources.feeds.FeedInputLoader;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.components.feeddata.FeedDataPane;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcastcentral.ui.modules.library.actions;
+package de.perdian.apps.podcastcentral.ui.modules.library_new.actions;
 
 import java.io.File;
 
@@ -32,7 +32,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.stage.FileChooser;
 
-public class ImportFeedCollectionIntoLibraryActionEventHandler implements EventHandler<ActionEvent> {
+public class LibraryImportFromOpmlActionEventHandler implements EventHandler<ActionEvent> {
 
     private Node parent = null;
     private Library library = null;
@@ -40,7 +40,7 @@ public class ImportFeedCollectionIntoLibraryActionEventHandler implements EventH
     private Localization localization = null;
     private File initialDirectory = null;
 
-    public ImportFeedCollectionIntoLibraryActionEventHandler(Node parent, Library library, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    public LibraryImportFromOpmlActionEventHandler(Node parent, Library library, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setParent(parent);
         this.setLibrary(library);
         this.setBackgroundTaskExecutor(backgroundTaskExecutor);

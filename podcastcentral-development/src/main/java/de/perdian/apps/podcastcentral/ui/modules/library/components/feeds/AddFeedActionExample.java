@@ -1,7 +1,8 @@
 package de.perdian.apps.podcastcentral.ui.modules.library.components.feeds;
 
 import de.perdian.apps.podcastcentral.ui.Central;
-import de.perdian.apps.podcastcentral.ui.modules.library.actions.AddFeedActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.AddFeedActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.components.addfeed.AddFeedDialog;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
