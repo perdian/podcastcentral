@@ -25,8 +25,8 @@ import de.perdian.apps.podcastcentral.model.Library;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.CancelDownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.DeleteFeedActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.MarkReadEpisodesActionEventHandler;
-import de.perdian.apps.podcastcentral.ui.modules.library.actions.OpenEpisodeActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.StartDownloadEpisodesActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.OpenEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.RefreshFeedsActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
@@ -57,7 +57,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
         MenuItem openEpisodeMenuItem = new MenuItem(localization.openEpisode());
         openEpisodeMenuItem.disableProperty().bind(Bindings.size(librarySelection.getSelectedEpisodesForOpen()).isNotEqualTo(1));
-        openEpisodeMenuItem.setOnAction(new OpenEpisodeActionEventHandler(librarySelection::getSelectedEpisodesForOpen));
+        openEpisodeMenuItem.setOnAction(new OpenEpisodesActionEventHandler(librarySelection::getSelectedEpisodesForOpen));
         this.getItems().add(openEpisodeMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());

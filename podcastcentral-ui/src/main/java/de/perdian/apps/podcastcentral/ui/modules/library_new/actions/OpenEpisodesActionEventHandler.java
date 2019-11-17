@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcastcentral.ui.modules.library.actions;
+package de.perdian.apps.podcastcentral.ui.modules.library_new.actions;
 
 import java.io.File;
 import java.util.List;
@@ -26,19 +26,19 @@ import de.perdian.apps.podcastcentral.model.Episode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-public class OpenEpisodeActionEventHandler implements EventHandler<ActionEvent> {
+public class OpenEpisodesActionEventHandler implements EventHandler<ActionEvent> {
 
-    private static final Logger log = LoggerFactory.getLogger(OpenEpisodeActionEventHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenEpisodesActionEventHandler.class);
 
-    private Supplier<List<Episode>> episodeListSupplier = null;
+    private Supplier<List<Episode>> episodesSupplier = null;
 
-    public OpenEpisodeActionEventHandler(Supplier<List<Episode>> episodeListSupplier) {
-        this.setEpisodeListSupplier(episodeListSupplier);
+    public OpenEpisodesActionEventHandler(Supplier<List<Episode>> episodesSupplier) {
+        this.setEpisodesSupplier(episodesSupplier);
     }
 
     @Override
     public void handle(ActionEvent event) {
-        List<Episode> selectedEpisodes = this.getEpisodeListSupplier().get();
+        List<Episode> selectedEpisodes = this.getEpisodesSupplier().get();
         if (selectedEpisodes.size() == 1) {
             Episode selectedEpisode = selectedEpisodes.get(0);
             File selectedFile = selectedEpisode.getContentFile().getValue();
@@ -53,11 +53,11 @@ public class OpenEpisodeActionEventHandler implements EventHandler<ActionEvent> 
         }
     }
 
-    private Supplier<List<Episode>> getEpisodeListSupplier() {
-        return this.episodeListSupplier;
+    private Supplier<List<Episode>> getEpisodesSupplier() {
+        return this.episodesSupplier;
     }
-    private void setEpisodeListSupplier(Supplier<List<Episode>> episodeListSupplier) {
-        this.episodeListSupplier = episodeListSupplier;
+    private void setEpisodesSupplier(Supplier<List<Episode>> episodesSupplier) {
+        this.episodesSupplier = episodesSupplier;
     }
 
 }

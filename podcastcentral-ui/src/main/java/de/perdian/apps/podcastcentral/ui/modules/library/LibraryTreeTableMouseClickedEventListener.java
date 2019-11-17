@@ -21,8 +21,8 @@ import java.util.List;
 import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
-import de.perdian.apps.podcastcentral.ui.modules.library.actions.OpenEpisodeActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.StartDownloadEpisodesActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.OpenEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
@@ -52,7 +52,7 @@ class LibraryTreeTableMouseClickedEventListener implements EventHandler<MouseEve
                 Episode selectedEpisode = selectedEpisodes.get(0);
                 File selectedFile = selectedEpisode.getContentFile().getValue();
                 if (selectedFile != null && selectedFile.exists() && EpisodeDownloadState.COMPLETED.equals(selectedEpisode.getDownloadState().getValue())) {
-                    OpenEpisodeActionEventHandler eventHandler = new OpenEpisodeActionEventHandler(() -> List.of(selectedEpisode));
+                    OpenEpisodesActionEventHandler eventHandler = new OpenEpisodesActionEventHandler(() -> List.of(selectedEpisode));
                     eventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
                 } else {
                     StartDownloadEpisodesActionEventHandler eventHandler = new StartDownloadEpisodesActionEventHandler(() -> List.of(selectedEpisode), this.getEpisodeDownloader(), this.getBackgroundTaskExecutor(), this.getLocalization());

@@ -56,6 +56,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeItemValue> {
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setRowFactory(new LibraryTreeTableRowFactory(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems())));
         this.setContextMenu(new LibraryTreeTableContextMenu(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), library, episodeDownloader, backgroundTaskExecutor, localization));
+        this.setOnKeyPressed(new LibraryTreeTableKeyEventHandler(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), library, episodeDownloader, backgroundTaskExecutor, localization));
 
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.getStyleClass().add("podcastcentral-library");
