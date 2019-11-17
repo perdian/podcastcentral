@@ -27,7 +27,7 @@ public class LibraryToolbarPane extends BorderPane {
         addFeedButton.setOnAction(new AddFeedActionEventHandler(() -> AddFeedDialog.requestFeedInput(addFeedButton, localization), library, backgroundTaskExecutor, localization));
         ButtonBar.setButtonData(addFeedButton, ButtonData.LEFT);
 
-        Button refreshFeedsButton = new Button(localization.refreshFeeds(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
+        Button refreshFeedsButton = new Button(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshFeedsButton.setOnAction(new RefreshFeedsActionEventHandler(() -> library.getFeeds(), Set.of(), backgroundTaskExecutor, localization));
         ButtonBar.setButtonData(refreshFeedsButton, ButtonData.LEFT);
 

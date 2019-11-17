@@ -60,42 +60,41 @@ class LibraryTreeTableContextMenu extends ContextMenu {
     LibraryTreeTableContextMenu(Supplier<LibrarySelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setSelectionSupplier(selectionSupplier);
 
-        MenuItem markEpisodesAsReadMenuItem = new MenuItem(localization.read(), new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT));
+        MenuItem refreshFeedsMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
+        refreshFeedsMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
+        refreshFeedsMenuItem.setOnAction(new RefreshFeedsActionEventHandler(this::getSelectedFeeds, Collections.emptySet(), backgroundTaskExecutor, localization));
+        MenuItem refreshFeedsRestoreDeletedEpisodesMenuItem = new MenuItem(localization.refreshRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
+        refreshFeedsRestoreDeletedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
+        refreshFeedsRestoreDeletedEpisodesMenuItem.setOnAction(new RefreshFeedsActionEventHandler(this::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), backgroundTaskExecutor, localization));
+        Menu feedsMenu = new Menu(localization.feeds(), new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
+        feedsMenu.getItems().addAll(refreshFeedsMenuItem, refreshFeedsRestoreDeletedEpisodesMenuItem);
+        feedsMenu.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
+        this.getItems().add(feedsMenu);
+
+        MenuItem markEpisodesAsReadMenuItem = new MenuItem(localization.markAsRead(), new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT));
         markEpisodesAsReadMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedUnread()));
         markEpisodesAsReadMenuItem.setOnAction(new ChangeEpisodeReadStateActionEventHandler(this::getSelectedEpisodesConsolidatedUnread, Boolean.TRUE, backgroundTaskExecutor, localization));
-        MenuItem markEpisodesAsUnreadMenuItem = new MenuItem(localization.unread(), new FontAwesomeIconView(FontAwesomeIcon.FOLDER));
+        MenuItem markEpisodesAsUnreadMenuItem = new MenuItem(localization.markAsUnRead(), new FontAwesomeIconView(FontAwesomeIcon.FOLDER));
         markEpisodesAsUnreadMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedRead()));
         markEpisodesAsUnreadMenuItem.setOnAction(new ChangeEpisodeReadStateActionEventHandler(this::getSelectedEpisodesConsolidatedRead, Boolean.FALSE, backgroundTaskExecutor, localization));
-        Menu markEpisodesMenu = new Menu(localization.markEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.FOLDER), markEpisodesAsReadMenuItem, markEpisodesAsUnreadMenuItem);
-        markEpisodesMenu.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidated()));
-        this.getItems().add(markEpisodesMenu);
-
-        MenuItem downloadNewEpisodesMenuItem = new MenuItem(localization.downloadNewEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
-        downloadNewEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedNotDownloaded()));
-        downloadNewEpisodesMenuItem.setOnAction(new DownloadEpisodesActionEventHandler(this::getSelectedEpisodesConsolidatedNotDownloaded, episodeDownloader, backgroundTaskExecutor, localization));
-        MenuItem downloadEpisodesRedownloadMenuItem = new MenuItem(localization.redownloadEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
-        downloadEpisodesRedownloadMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidated()));
-        downloadEpisodesRedownloadMenuItem.setOnAction(new DownloadEpisodesActionEventHandler(this::getSelectedEpisodesConsolidated, episodeDownloader, backgroundTaskExecutor, localization));
-        MenuItem cancelEpisodeDownloadsMenuItem = new MenuItem(localization.cancelDownloads(), new FontAwesomeIconView(FontAwesomeIcon.STOP));
-        cancelEpisodeDownloadsMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDownloading()));
-        cancelEpisodeDownloadsMenuItem.setOnAction(new CancelEpisodeDownloadsActionEventHandler(this::getSelectedEpisodesConsolidatedDownloading, episodeDownloader, backgroundTaskExecutor, localization));
-        Menu downloadMenu = new Menu(localization.downloadEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
-        downloadMenu.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidated()).and(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDownloading())));
-        downloadMenu.getItems().addAll(downloadNewEpisodesMenuItem, downloadEpisodesRedownloadMenuItem, cancelEpisodeDownloadsMenuItem);
-        this.getItems().add(downloadMenu);
+        MenuItem refreshEpisodesMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
+        refreshEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidated()));
+        refreshEpisodesMenuItem.setOnAction(new DownloadEpisodesActionEventHandler(this::getSelectedEpisodesConsolidated, episodeDownloader, backgroundTaskExecutor, localization));
+        Menu episodesMenu = new Menu(localization.episodes(), new FontAwesomeIconView(FontAwesomeIcon.MICROPHONE));
+        episodesMenu.getItems().addAll(markEpisodesAsReadMenuItem, markEpisodesAsUnreadMenuItem, new SeparatorMenuItem(), refreshEpisodesMenuItem);
+        episodesMenu.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidated()));
+        this.getItems().add(episodesMenu);
 
         this.getItems().add(new SeparatorMenuItem());
 
-        MenuItem refreshFeedsMenuItem = new MenuItem(localization.refreshFeeds(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        refreshFeedsMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
-        refreshFeedsMenuItem.setOnAction(new RefreshFeedsActionEventHandler(this::getSelectedFeeds, Collections.emptySet(), backgroundTaskExecutor, localization));
-        MenuItem refreshFeedsRestoreDeletedEpisodesMenuItem = new MenuItem(localization.refreshFeedsRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        refreshFeedsRestoreDeletedEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
-        refreshFeedsRestoreDeletedEpisodesMenuItem.setOnAction(new RefreshFeedsActionEventHandler(this::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), backgroundTaskExecutor, localization));
-        Menu refreshMenu = new Menu(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        refreshMenu.getItems().addAll(refreshFeedsMenuItem, refreshFeedsRestoreDeletedEpisodesMenuItem);
-        refreshMenu.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
-        this.getItems().add(refreshMenu);
+        MenuItem downloadMenuItem = new MenuItem(localization.download(), new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
+        downloadMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedNotDownloaded()));
+        downloadMenuItem.setOnAction(new DownloadEpisodesActionEventHandler(this::getSelectedEpisodesConsolidatedNotDownloaded, episodeDownloader, backgroundTaskExecutor, localization));
+        this.getItems().add(downloadMenuItem);
+
+        MenuItem cancelDownloadsMenuItem = new MenuItem(localization.cancelDownloads(), new FontAwesomeIconView(FontAwesomeIcon.STOP));
+        cancelDownloadsMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDownloading()));
+        cancelDownloadsMenuItem.setOnAction(new CancelEpisodeDownloadsActionEventHandler(this::getSelectedEpisodesConsolidatedDownloading, episodeDownloader, backgroundTaskExecutor, localization));
 
         MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.TRASH));
         deleteMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeedsDeletable()).and(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDeletable())));

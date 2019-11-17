@@ -91,7 +91,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         refreshMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(), backgroundTaskExecutor, localization));
         this.getItems().add(refreshMenuItem);
 
-        MenuItem refreshRestoreEpisodesMenuItem = new MenuItem(localization.refreshFeedsRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
+        MenuItem refreshRestoreEpisodesMenuItem = new MenuItem(localization.refreshRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshRestoreEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()));
         refreshRestoreEpisodesMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), backgroundTaskExecutor, localization));
         this.getItems().add(refreshRestoreEpisodesMenuItem);

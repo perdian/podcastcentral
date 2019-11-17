@@ -116,6 +116,10 @@ public interface Localization {
         return "Duration";
     }
 
+    default String episodes() {
+        return "Episodes";
+    }
+
     default String errored() {
         return "Errored";
     }
@@ -130,6 +134,10 @@ public interface Localization {
 
     default String feedDetails() {
         return "Feed details";
+    }
+
+    default String feeds() {
+        return "Feeds";
     }
 
     default String feedSource() {
@@ -176,8 +184,12 @@ public interface Localization {
         return "Loading library...";
     }
 
-    default String markEpisodes() {
-        return "Mark episodes";
+    default String markAsRead() {
+        return "Mark as read";
+    }
+
+    default String markAsUnRead() {
+        return "Mark as unread";
     }
 
     default String markingEpisodes() {
@@ -224,28 +236,16 @@ public interface Localization {
         return "Progress";
     }
 
-    default String read() {
-        return "Read";
-    }
-
     default String reallyDeleteFeeds(int numberOfFeeds) {
         return "Really delete " + numberOfFeeds + " feeds?";
-    }
-
-    default String redownloadEpisodes() {
-        return "Redownload episodes";
     }
 
     default String refresh() {
         return "Refresh";
     }
 
-    default String refreshFeedsRestoreDeletedEpisodes() {
-        return "Refresh feeds (restore deleted episodes)";
-    }
-
-    default String refreshFeeds() {
-        return "Refresh feeds";
+    default String refreshRestoreDeletedEpisodes() {
+        return "Refresh (restore deleted episodes)";
     }
 
     default String refreshingFeed(String feedName) {
@@ -282,10 +282,6 @@ public interface Localization {
 
     default String title() {
         return "Title";
-    }
-
-    default String unread() {
-        return "Unread";
     }
 
     default String bytesOfBytesTransfered(long bytesWritten, long bytesTotal) {
