@@ -17,9 +17,11 @@ package de.perdian.apps.podcastcentral.ui.modules.library_new.components.treetab
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.Feed;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.LibrarySelection;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TreeTableRow;
@@ -27,6 +29,12 @@ import javafx.scene.control.TreeTableView;
 import javafx.util.Callback;
 
 class LibraryTreeTableRowFactory implements Callback<TreeTableView<LibraryTreeItemValue>, TreeTableRow<LibraryTreeItemValue>> {
+
+    private Supplier<LibrarySelection> selectionSupplier = null;
+
+    LibraryTreeTableRowFactory(Supplier<LibrarySelection> selectionSupplier) {
+        this.setSelectionSupplier(selectionSupplier);
+    }
 
     @Override
     public TreeTableRow<LibraryTreeItemValue> call(TreeTableView<LibraryTreeItemValue> treeTableView) {
@@ -44,6 +52,7 @@ class LibraryTreeTableRowFactory implements Callback<TreeTableView<LibraryTreeIt
             });
         };
 
+        row.setOnDragDetected(new LibraryTreeTableDragMouseEventHandler(() -> this.getSelectionSupplier().get().getSelectedEpisodesDirectly()));
         row.treeItemProperty().addListener((o, oldValue, newValue) -> {
             LibraryTreeItemValue oldTreeItemValue = oldValue == null ? null : oldValue.getValue();
             LibraryTreeItemValue newTreeItemValue = newValue == null ? null : newValue.getValue();
@@ -69,6 +78,13 @@ class LibraryTreeTableRowFactory implements Callback<TreeTableView<LibraryTreeIt
         List<String> styleClasses = new ArrayList<>(List.of("podcastcentral-episode"));
         styleClasses.add(Boolean.TRUE.equals(episode.getRead().getValue()) ? "podcastcentral-read" : "podcastcentral-unread");
         return styleClasses;
+    }
+
+    private Supplier<LibrarySelection> getSelectionSupplier() {
+        return this.selectionSupplier;
+    }
+    private void setSelectionSupplier(Supplier<LibrarySelection> selectionSupplier) {
+        this.selectionSupplier = selectionSupplier;
     }
 
 }

@@ -54,7 +54,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeItemValue> {
         this.getColumns().add(LibraryTreeTableColumnFactory.createColumn(localization.description(), 200, Double.MAX_VALUE, LibraryTreeItemValue::getDescription, TextFieldTreeTableCell::new, null));
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
-        this.setRowFactory(new LibraryTreeTableRowFactory());
+        this.setRowFactory(new LibraryTreeTableRowFactory(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems())));
         this.setContextMenu(new LibraryTreeTableContextMenu(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), library, episodeDownloader, backgroundTaskExecutor, localization));
 
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
