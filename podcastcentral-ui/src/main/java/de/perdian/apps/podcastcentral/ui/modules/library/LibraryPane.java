@@ -17,26 +17,23 @@ package de.perdian.apps.podcastcentral.ui.modules.library;
 
 import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcastcentral.model.Library;
+import de.perdian.apps.podcastcentral.ui.modules.library.components.toolbar.LibraryToolbarPane;
+import de.perdian.apps.podcastcentral.ui.modules.library.components.treetable.LibraryTreeTableView;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.geometry.Insets;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.BorderPane;
 
-public class LibraryPane extends GridPane {
+public class LibraryPane extends BorderPane {
 
     public LibraryPane(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
-        LibraryToolbarPane toolbarPane = new LibraryToolbarPane(library, backgroundTaskExecutor, localization);
-        GridPane.setMargin(toolbarPane, new Insets(0, 0, 8, 0));
-        GridPane.setHgrow(toolbarPane, Priority.ALWAYS);
+        this.setTop(new LibraryToolbarPane(library, episodeDownloader, backgroundTaskExecutor, localization));
 
-        LibraryTreeTableView treeTableView = new LibraryTreeTableView(library, episodeDownloader, backgroundTaskExecutor, localization);
-        GridPane.setHgrow(treeTableView, Priority.ALWAYS);
-        GridPane.setVgrow(treeTableView, Priority.ALWAYS);
-
-        this.add(toolbarPane, 0, 0, 1, 1);
-        this.add(treeTableView, 0, 1, 1, 1);
+        LibraryTreeTableView libraryTreeTableView = new LibraryTreeTableView(library, episodeDownloader, backgroundTaskExecutor, localization);
+        BorderPane libraryTreeTableViewPane = new BorderPane(libraryTreeTableView);
+        libraryTreeTableViewPane.setPadding(new Insets(8, 8, 8, 8));
+        this.setCenter(libraryTreeTableViewPane);
 
     }
 

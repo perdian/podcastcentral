@@ -38,8 +38,7 @@ public class EpisodeDownloaderPane extends GridPane {
 
     public EpisodeDownloaderPane(EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
 
-        EpisodeDownloaderToolbar toolbarPane = new EpisodeDownloaderToolbar(episodeDownloader, backgroundTaskExecutor, localization);
-        GridPane.setMargin(toolbarPane, new Insets(0, 0, 8, 0));
+        EpisodeDownloaderToolbarPane toolbarPane = new EpisodeDownloaderToolbarPane(episodeDownloader, backgroundTaskExecutor, localization);
         GridPane.setHgrow(toolbarPane, Priority.ALWAYS);
 
         EpisodeDownloaderItemsPane scheduledDownloadsPane = new EpisodeDownloaderItemsPane(episodeDownloader.getScheduledEpisodes(), episode -> new ScheduledEpisodeItemPane(episode, episodeDownloader, localization));
@@ -48,14 +47,14 @@ public class EpisodeDownloaderPane extends GridPane {
         scheduledDownloadsTitledPane.setMaxHeight(Double.MAX_VALUE);
         GridPane.setHgrow(scheduledDownloadsTitledPane, Priority.ALWAYS);
         GridPane.setVgrow(scheduledDownloadsTitledPane, Priority.ALWAYS);
-        GridPane.setMargin(scheduledDownloadsTitledPane, new Insets(0, 0, 4, 0));
+        GridPane.setMargin(scheduledDownloadsTitledPane, new Insets(8, 4, 4, 8));
 
         EpisodeDownloaderSettingsPane settingsPane = new EpisodeDownloaderSettingsPane(episodeDownloader, localization);
         settingsPane.setPadding(new Insets(8, 8, 8, 8));
         TitledPane settingsTitledPane = new TitledPane(localization.settings(), settingsPane);
         settingsTitledPane.setCollapsible(false);
         GridPane.setHgrow(settingsTitledPane, Priority.ALWAYS);
-        GridPane.setMargin(settingsTitledPane, new Insets(4, 0, 0, 0));
+        GridPane.setMargin(settingsTitledPane, new Insets(4, 4, 8, 8));
 
         EpisodeDownloaderItemsPane activeDownloadsPane = new EpisodeDownloaderItemsPane(episodeDownloader.getDownloadingEpisodes(), episode -> new ActiveEpisodeItemPane(episode, episodeDownloader, localization));
         TitledPane activeDownloadsTitledPane = new TitledPane(localization.activeDownloads(), activeDownloadsPane);
@@ -63,6 +62,7 @@ public class EpisodeDownloaderPane extends GridPane {
         activeDownloadsTitledPane.setMaxHeight(Double.MAX_VALUE);
         GridPane.setHgrow(activeDownloadsTitledPane, Priority.ALWAYS);
         GridPane.setVgrow(activeDownloadsTitledPane, Priority.ALWAYS);
+        GridPane.setMargin(activeDownloadsTitledPane, new Insets(8, 8, 8, 4));
 
         ColumnConstraints leftColumnConstraints = new ColumnConstraints();
         leftColumnConstraints.setPercentWidth(30);
@@ -70,7 +70,6 @@ public class EpisodeDownloaderPane extends GridPane {
         rightColumnConstraints.setPercentWidth(70 );
         this.getColumnConstraints().addAll(leftColumnConstraints, rightColumnConstraints);
 
-        this.setHgap(8);
         this.add(toolbarPane, 0, 0, 2, 1);
         this.add(scheduledDownloadsTitledPane, 0, 1, 1, 1);
         this.add(settingsTitledPane, 0, 2, 1, 1);
