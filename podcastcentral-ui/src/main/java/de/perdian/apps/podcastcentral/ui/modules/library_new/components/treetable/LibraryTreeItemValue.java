@@ -34,133 +34,111 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
-interface LibraryTreeItemValue {
+class LibraryTreeItemValue {
 
-    ObservableValue<String> getTitle();
-    ObservableValue<String> getDateString();
-    ObservableValue<String> getDurationString();
-    ObservableValue<EpisodeDownloadState> getDownloadState();
-    ObservableValue<Double> getDownloadProgress();
-    ObservableValue<String> getDownloadProgressLabel();
-    ObservableValue<String> getDescription();
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy").withLocale(Locale.getDefault());
 
-    static class FeedItemValue implements LibraryTreeItemValue {
+    private Feed feed = null;
+    private Episode episode = null;
+    private ObservableValue<String> title = null;
+    private ObservableValue<String> dateString = null;
+    private ObservableValue<String> durationString = null;
+    private ObservableValue<EpisodeDownloadState> downloadState = null;
+    private ObservableValue<Double> downloadProgress = null;
+    private ObservableValue<String> downloadProgressLabel = null;
+    private ObservableValue<String> description = null;
 
-        private Feed feed = null;
-
-        FeedItemValue(Feed feed) {
-            this.setFeed(feed);
-        }
-
-        @Override
-        public ObservableValue<String> getTitle() {
-            return this.getFeed().getTitle();
-        }
-
-        @Override
-        public ObservableValue<String> getDateString() {
-            return new ReadOnlyStringWrapper("");
-        }
-
-        @Override
-        public ObservableValue<String> getDurationString() {
-            return new ReadOnlyStringWrapper("");
-        }
-
-        @Override
-        public ObservableValue<EpisodeDownloadState> getDownloadState() {
-            return new ReadOnlyObjectWrapper<>(null);
-        }
-
-        @Override
-        public ObservableValue<Double> getDownloadProgress() {
-            return new ReadOnlyObjectWrapper<>(null);
-        }
-
-        @Override
-        public ObservableValue<String> getDownloadProgressLabel() {
-            return new ReadOnlyStringWrapper("");
-        }
-
-        @Override
-        public ObservableValue<String> getDescription() {
-            return PropertiesHelper.map(this.getFeed().getDescription(), StringUtils::normalizeSpace, null);
-        }
-
-        Feed getFeed() {
-            return this.feed;
-        }
-        private void setFeed(Feed feed) {
-            this.feed = feed;
-        }
-
+    LibraryTreeItemValue(Feed feed) {
+        this.setFeed(feed);
+        this.setTitle(feed.getTitle());
+        this.setDateString(new ReadOnlyStringWrapper(""));
+        this.setDurationString(new ReadOnlyStringWrapper(""));
+        this.setDownloadState(new ReadOnlyObjectWrapper<>(null));
+        this.setDownloadProgress(new ReadOnlyObjectWrapper<>(null));
+        this.setDownloadProgressLabel(new ReadOnlyStringWrapper(""));
+        this.setDescription(PropertiesHelper.map(feed.getDescription(), StringUtils::normalizeSpace, null));
     }
 
-    static class EpisodeItemValue implements LibraryTreeItemValue {
+    LibraryTreeItemValue(Episode episode) {
+        this.setEpisode(episode);
+        this.setTitle(episode.getTitle());
+        this.setDateString(PropertiesHelper.map(episode.getPublicationDate(), date -> DATE_TIME_FORMATTER.format(date.atZone(ZoneId.systemDefault())), null));
+        this.setDurationString(PropertiesHelper.map(episode.getDuration(), duration -> duration == null ? "" : DurationFormatUtils.formatDuration(duration.toMillis(), "HH:mm:ss"), null));
+        this.setDownloadState(episode.getDownloadState());
+        this.setDownloadProgress(episode.getDownloadProgress());
+        this.setDownloadProgressLabel(LibraryTreeItemValue.createDownloadProgressLabel(episode));
+        this.setDescription(PropertiesHelper.map(episode.getDescription(), StringUtils::normalizeSpace, null));
+    }
 
-        private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy").withLocale(Locale.getDefault());
+    private static ObservableValue<String> createDownloadProgressLabel(Episode episode) {
+        Double progressValue = episode.getDownloadProgress().getValue();
+        NumberFormat numberFormat = new DecimalFormat("0");
+        StringProperty progressLabelProperty = new SimpleStringProperty(progressValue == null || Double.valueOf(0).equals(progressValue) ? "" : (numberFormat.format(progressValue * 100d) + " %"));
+        episode.getDownloadProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(newValue == null  || Double.valueOf(0).equals(newValue) ? "" : (numberFormat.format(newValue * 100d) + " %")));
+        return progressLabelProperty;
+    }
 
-        private Feed feed = null;
-        private Episode episode = null;
+    Feed getFeed() {
+        return this.feed;
+    }
+    private void setFeed(Feed feed) {
+        this.feed = feed;
+    }
 
-        EpisodeItemValue(Feed feed, Episode episode) {
-            this.setFeed(feed);
-            this.setEpisode(episode);
-        }
+    Episode getEpisode() {
+        return this.episode;
+    }
+    private void setEpisode(Episode episode) {
+        this.episode = episode;
+    }
 
-        @Override
-        public ObservableValue<String> getTitle() {
-            return this.getEpisode().getTitle();
-        }
+    ObservableValue<String> getTitle() {
+        return this.title;
+    }
+    private void setTitle(ObservableValue<String> title) {
+        this.title = title;
+    }
 
-        @Override
-        public ObservableValue<String> getDateString() {
-            return PropertiesHelper.map(this.getEpisode().getPublicationDate(), date -> DATE_TIME_FORMATTER.format(date.atZone(ZoneId.systemDefault())), null);
-        }
+    ObservableValue<String> getDateString() {
+        return this.dateString;
+    }
+    private void setDateString(ObservableValue<String> dateString) {
+        this.dateString = dateString;
+    }
 
-        @Override
-        public ObservableValue<String> getDurationString() {
-            return PropertiesHelper.map(this.getEpisode().getDuration(), duration -> duration == null ? "" : DurationFormatUtils.formatDuration(duration.toMillis(), "HH:mm:ss"), null);
-        }
+    ObservableValue<String> getDurationString() {
+        return this.durationString;
+    }
+    private void setDurationString(ObservableValue<String> durationString) {
+        this.durationString = durationString;
+    }
 
-        @Override
-        public ObservableValue<EpisodeDownloadState> getDownloadState() {
-            return this.getEpisode().getDownloadState();
-        }
+    ObservableValue<EpisodeDownloadState> getDownloadState() {
+        return this.downloadState;
+    }
+    private void setDownloadState(ObservableValue<EpisodeDownloadState> downloadState) {
+        this.downloadState = downloadState;
+    }
 
-        @Override
-        public ObservableValue<Double> getDownloadProgress() {
-            return this.getEpisode().getDownloadProgress();
-        }
+    ObservableValue<Double> getDownloadProgress() {
+        return this.downloadProgress;
+    }
+    private void setDownloadProgress(ObservableValue<Double> downloadProgress) {
+        this.downloadProgress = downloadProgress;
+    }
 
-        @Override
-        public ObservableValue<String> getDownloadProgressLabel() {
-            Double progressValue = this.getEpisode().getDownloadProgress().getValue();
-            NumberFormat numberFormat = new DecimalFormat("0");
-            StringProperty progressLabelProperty = new SimpleStringProperty(progressValue == null || Double.valueOf(0).equals(progressValue) ? "" : (numberFormat.format(progressValue * 100d) + " %"));
-            this.getEpisode().getDownloadProgress().addListener((o, oldValue, newValue) -> progressLabelProperty.setValue(newValue == null  || Double.valueOf(0).equals(newValue) ? "" : (numberFormat.format(newValue * 100d) + " %")));
-            return progressLabelProperty;
-        }
+    ObservableValue<String> getDownloadProgressLabel() {
+        return this.downloadProgressLabel;
+    }
+    private void setDownloadProgressLabel(ObservableValue<String> downloadProgressLabel) {
+        this.downloadProgressLabel = downloadProgressLabel;
+    }
 
-        @Override
-        public ObservableValue<String> getDescription() {
-            return PropertiesHelper.map(this.getEpisode().getDescription(), StringUtils::normalizeSpace, null);
-        }
-
-        Feed getFeed() {
-            return this.feed;
-        }
-        private void setFeed(Feed feed) {
-            this.feed = feed;
-        }
-
-        Episode getEpisode() {
-            return this.episode;
-        }
-        private void setEpisode(Episode episode) {
-            this.episode = episode;
-        }
-
+    ObservableValue<String> getDescription() {
+        return this.description;
+    }
+    private void setDescription(ObservableValue<String> description) {
+        this.description = description;
     }
 
 }

@@ -17,6 +17,7 @@ package de.perdian.apps.podcastcentral.ui.modules.library_new.components.treetab
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import de.perdian.apps.podcastcentral.model.Episode;
@@ -27,17 +28,15 @@ class LibraryTreeTableSelectionHelper {
 
     static List<Feed> collectSelectedFeeds(List<TreeItem<LibraryTreeItemValue>> selectedItems) {
         return selectedItems.stream()
-            .filter(item -> item.getValue() instanceof LibraryTreeItemValue.FeedItemValue)
-            .map(item -> (LibraryTreeItemValue.FeedItemValue)item.getValue())
-            .map(value -> value.getFeed())
+            .map(item -> item.getValue() == null ? null : item.getValue().getFeed())
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 
     static List<Episode> collectSelectedEpisodesDirectly(List<TreeItem<LibraryTreeItemValue>> selectedItems) {
         return selectedItems.stream()
-            .filter(item -> item.getValue() instanceof LibraryTreeItemValue.EpisodeItemValue)
-            .map(item -> (LibraryTreeItemValue.EpisodeItemValue)item.getValue())
-            .map(value -> value.getEpisode())
+            .map(item -> item.getValue() == null ? null : item.getValue().getEpisode())
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 

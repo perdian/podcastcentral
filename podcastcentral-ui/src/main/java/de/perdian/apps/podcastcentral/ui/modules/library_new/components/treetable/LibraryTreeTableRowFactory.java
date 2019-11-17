@@ -47,15 +47,15 @@ class LibraryTreeTableRowFactory implements Callback<TreeTableView<LibraryTreeIt
         row.treeItemProperty().addListener((o, oldValue, newValue) -> {
             LibraryTreeItemValue oldTreeItemValue = oldValue == null ? null : oldValue.getValue();
             LibraryTreeItemValue newTreeItemValue = newValue == null ? null : newValue.getValue();
-            if (oldTreeItemValue instanceof LibraryTreeItemValue.EpisodeItemValue) {
-                ((LibraryTreeItemValue.EpisodeItemValue)oldTreeItemValue).getEpisode().getRead().removeListener(readPropertyChangeListener);
+            if (oldTreeItemValue != null && oldTreeItemValue.getEpisode() != null) {
+                oldTreeItemValue.getEpisode().getRead().removeListener(readPropertyChangeListener);
             }
             row.getStyleClass().removeIf(styleClass -> styleClass.startsWith("podcastcentral-"));
-            if (newTreeItemValue instanceof LibraryTreeItemValue.FeedItemValue) {
-                row.getStyleClass().addAll(LibraryTreeTableRowFactory.computeStyleClassesForFeed(((LibraryTreeItemValue.FeedItemValue)newTreeItemValue).getFeed()));
-            } else if (newTreeItemValue instanceof LibraryTreeItemValue.EpisodeItemValue) {
-                row.getStyleClass().addAll(LibraryTreeTableRowFactory.computeStyleClassesForEpisode(((LibraryTreeItemValue.EpisodeItemValue)newTreeItemValue).getEpisode()));
-                ((LibraryTreeItemValue.EpisodeItemValue)newTreeItemValue).getEpisode().getRead().addListener(readPropertyChangeListener);
+            if (newTreeItemValue != null && newTreeItemValue.getFeed() != null) {
+                row.getStyleClass().addAll(LibraryTreeTableRowFactory.computeStyleClassesForFeed(newTreeItemValue.getFeed()));
+            } else if (newTreeItemValue != null && newTreeItemValue.getEpisode() != null) {
+                row.getStyleClass().addAll(LibraryTreeTableRowFactory.computeStyleClassesForEpisode(newTreeItemValue.getEpisode()));
+                newTreeItemValue.getEpisode().getRead().addListener(readPropertyChangeListener);
             }
         });
 

@@ -68,9 +68,9 @@ class LibraryTreeItemFactory {
     }
 
     private static TreeItem<LibraryTreeItemValue> createFeedTreeItem(Feed feed) {
-        List<TreeItem<LibraryTreeItemValue>> episodeTreeItems = feed.getEpisodes().stream().map(episode -> LibraryTreeItemFactory.createEpisodeTreeItem(feed, episode)).collect(Collectors.toList());
+        List<TreeItem<LibraryTreeItemValue>> episodeTreeItems = feed.getEpisodes().stream().map(episode -> LibraryTreeItemFactory.createEpisodeTreeItem(episode)).collect(Collectors.toList());
         EpisodeTreeItemsCollector episodeTreeItemsCollector = new EpisodeTreeItemsCollector(episodeTreeItems);
-        TreeItem<LibraryTreeItemValue> feedTreeItem = new TreeItem<>(new LibraryTreeItemValue.FeedItemValue(feed));
+        TreeItem<LibraryTreeItemValue> feedTreeItem = new TreeItem<>(new LibraryTreeItemValue(feed));
         feedTreeItem.setExpanded(feed.getExpanded().getValue());
         feedTreeItem.expandedProperty().addListener((o, oldValue, newValue) -> feed.getExpanded().setValue(newValue));
         feedTreeItem.getChildren().addAll(episodeTreeItems);
@@ -100,8 +100,8 @@ class LibraryTreeItemFactory {
         return feedTreeItem;
     }
 
-    private static TreeItem<LibraryTreeItemValue> createEpisodeTreeItem(Feed feed, Episode episode) {
-        TreeItem<LibraryTreeItemValue> treeItem = new TreeItem<>(new LibraryTreeItemValue.EpisodeItemValue(feed, episode));
+    private static TreeItem<LibraryTreeItemValue> createEpisodeTreeItem(Episode episode) {
+        TreeItem<LibraryTreeItemValue> treeItem = new TreeItem<>(new LibraryTreeItemValue(episode));
         return treeItem;
     }
 
@@ -115,14 +115,14 @@ class LibraryTreeItemFactory {
 
         private EpisodeTreeItemsCollector(List<TreeItem<LibraryTreeItemValue>> treeItems) {
             Map<Episode, TreeItem<LibraryTreeItemValue>> treeItemsByEpisode = new HashMap<>();
-            treeItems.forEach(treeItem -> treeItemsByEpisode.put(((LibraryTreeItemValue.EpisodeItemValue)treeItem.getValue()).getEpisode(), treeItem));
+            treeItems.forEach(treeItem -> treeItemsByEpisode.put(treeItem.getValue().getEpisode(), treeItem));
             this.setTreeItemsByEpisode(treeItemsByEpisode);
         }
 
         public List<TreeItem<LibraryTreeItemValue>> addAll(Feed feed, List<? extends Episode> episodesToAdd) {
             List<TreeItem<LibraryTreeItemValue>> resultTreeItems = new ArrayList<>(episodesToAdd.size());
             for (Episode episode : episodesToAdd) {
-                TreeItem<LibraryTreeItemValue> resultTreeItem = LibraryTreeItemFactory.createEpisodeTreeItem(feed, episode);
+                TreeItem<LibraryTreeItemValue> resultTreeItem = LibraryTreeItemFactory.createEpisodeTreeItem(episode);
                 this.getTreeItemsByEpisode().put(episode, resultTreeItem);
                 resultTreeItems.add(resultTreeItem);
             }
@@ -141,7 +141,7 @@ class LibraryTreeItemFactory {
             for (Episode episode : episodes) {
                 TreeItem<LibraryTreeItemValue> resultTreeItem = this.getTreeItemsByEpisode().get(episode);
                 if (resultTreeItem == null) {
-                    resultTreeItem = LibraryTreeItemFactory.createEpisodeTreeItem(feed, episode);
+                    resultTreeItem = LibraryTreeItemFactory.createEpisodeTreeItem(episode);
                     this.getTreeItemsByEpisode().put(episode, resultTreeItem);
                 }
                 resultTreeItems.add(resultTreeItem);
