@@ -56,7 +56,7 @@ public class TaskExecutor {
             throw new NullPointerException("Property 'runnable' of task request must not be null!");
         } else {
 
-            log.info("Accepting job: {}", taskRequest);
+            log.trace("Accepting job: {}", taskRequest);
             Task task = new Task(this);
             task.setRequest(taskRequest);
             task.setSubmitTime(this.getClock().instant());
@@ -103,13 +103,13 @@ public class TaskExecutor {
             taskRunnable.run(taskProgress);
 
             task.setEndTime(this.getClock().instant());
-            log.info("Task completed: {} in {}", task, Duration.between(task.getStartTime(), task.getEndTime()));
+            log.debug("Completed task: {} in {}", task, Duration.between(task.getStartTime(), task.getEndTime()));
 
         } catch (Exception e) {
 
             task.setEndTime(this.getClock().instant());
             task.setException(e);
-            log.info("Exception occured during job execution: " + task, e);
+            log.debug("Exception occured during job execution: " + task, e);
 
         } finally {
             if (!TaskStatus.CANCELLED.equals(task.getStatus())) {
