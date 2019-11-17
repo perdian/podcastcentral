@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcastcentral.ui.modules.library.actions;
+package de.perdian.apps.podcastcentral.ui.modules.library_new.actions;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent>
             this.getBackgroundTaskExecutor().execute(this.getLocalization().refreshingFeeds(), progress -> {
                 progress.updateProgress(0d, null);
                 for (int i = 0; i < feedList.size(); i++) {
-                    progress.updateProgress((double)(i+1) / (double)feedList.size(), null);
+                    progress.updateProgress((double)(i+1) / (double)feedList.size(), this.getLocalization().refreshingFeed(feedList.get(i).getTitle().getValue()));
                     this.handleRefreshFeed(feedList.get(i));
                 }
             });

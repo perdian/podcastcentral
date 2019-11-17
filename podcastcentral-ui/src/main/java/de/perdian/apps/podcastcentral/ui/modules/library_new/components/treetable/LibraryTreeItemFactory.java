@@ -101,8 +101,7 @@ class LibraryTreeItemFactory {
     }
 
     private static TreeItem<LibraryTreeItemValue> createEpisodeTreeItem(Episode episode) {
-        TreeItem<LibraryTreeItemValue> treeItem = new TreeItem<>(new LibraryTreeItemValue(episode));
-        return treeItem;
+        return new TreeItem<>(new LibraryTreeItemValue(episode));
     }
 
     private static int compareTreeItems(TreeItem<LibraryTreeItemValue> o1, TreeItem<LibraryTreeItemValue> o2) {

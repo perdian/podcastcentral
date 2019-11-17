@@ -16,6 +16,7 @@ import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcastcentral.taskexecutor.TaskProgress;
 import de.perdian.apps.podcastcentral.taskexecutor.TaskRunnable;
+import de.perdian.apps.podcastcentral.taskexecutor.TaskStatus;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -40,7 +41,11 @@ class EpisodeDownloaderJobRunnable implements TaskRunnable {
     public void run(TaskProgress progress) throws Exception {
         try {
             this.runDownload(progress);
-            this.getEpisode().getDownloadState().setValue(EpisodeDownloadState.COMPLETED);
+            if (TaskStatus.CANCELLED.equals(progress.getStatus())) {
+                this.getEpisode().getDownloadState().setValue(EpisodeDownloadState.CANCELLED);
+            } else {
+                this.getEpisode().getDownloadState().setValue(EpisodeDownloadState.COMPLETED);
+            }
             this.getEpisode().getDownloadError().setValue(null);
         } catch (Exception e) {
             log.debug("Cannot execute download for episode: " + this.getEpisode(), e);
@@ -71,7 +76,7 @@ class EpisodeDownloaderJobRunnable implements TaskRunnable {
                     }
                     try (BufferedOutputStream targetStream = new BufferedOutputStream(new FileOutputStream(targetFile))) {
                         long totalBytesRead = 0;
-                        for (int bytesRead = downloadStream.read(downloadBuffer); bytesRead > -1; bytesRead = downloadStream.read(downloadBuffer)) {
+                        for (int bytesRead = downloadStream.read(downloadBuffer); bytesRead > -1 && TaskStatus.ACTIVE.equals(progress.getStatus()); bytesRead = downloadStream.read(downloadBuffer)) {
                             targetStream.write(downloadBuffer, 0, bytesRead);
                             totalBytesRead += bytesRead;
                             double downloadProgress = (double)totalBytesRead / (double)actualLength;

@@ -55,7 +55,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeItemValue> {
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setRowFactory(new LibraryTreeTableRowFactory());
-        this.setContextMenu(new LibraryTreeTableContextMenu(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), episodeDownloader, backgroundTaskExecutor, localization));
+        this.setContextMenu(new LibraryTreeTableContextMenu(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), library, episodeDownloader, backgroundTaskExecutor, localization));
 
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.getStyleClass().add("podcastcentral-library");

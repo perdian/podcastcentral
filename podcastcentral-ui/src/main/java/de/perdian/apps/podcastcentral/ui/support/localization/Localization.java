@@ -72,6 +72,14 @@ public interface Localization {
         return "Deleting entries";
     }
 
+    default String deletingEpisodesFromFeed(int numberOfEpisodes, String feedName) {
+        return "Deleting " + numberOfEpisodes + " episodes from feed: " + feedName;
+    }
+
+    default String deletingFeed(String feedName) {
+        return "Deleting feed: " + feedName;
+    }
+
     default String description() {
         return "Description";
     }
@@ -220,6 +228,10 @@ public interface Localization {
         return "Read";
     }
 
+    default String reallyDeleteFeeds(int numberOfFeeds) {
+        return "Really delete " + numberOfFeeds + " feeds?";
+    }
+
     default String redownloadEpisodes() {
         return "Redownload episodes";
     }
@@ -228,12 +240,16 @@ public interface Localization {
         return "Refresh";
     }
 
-    default String refreshRestoreDeletedEpisodes() {
-        return "Refresh (restore deleted episodes)";
+    default String refreshFeedsRestoreDeletedEpisodes() {
+        return "Refresh feeds (restore deleted episodes)";
     }
 
     default String refreshFeeds() {
         return "Refresh feeds";
+    }
+
+    default String refreshingFeed(String feedName) {
+        return "Refreshing feed: " + feedName;
     }
 
     default String refreshingFeeds() {

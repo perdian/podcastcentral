@@ -26,8 +26,8 @@ import de.perdian.apps.podcastcentral.ui.modules.library.actions.CancelDownloadE
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.DeleteFeedActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.MarkReadEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.OpenEpisodeActionEventHandler;
-import de.perdian.apps.podcastcentral.ui.modules.library.actions.RefreshFeedsActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.StartDownloadEpisodesActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library_new.actions.RefreshFeedsActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.beans.binding.Bindings;
@@ -91,7 +91,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         refreshMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(), backgroundTaskExecutor, localization));
         this.getItems().add(refreshMenuItem);
 
-        MenuItem refreshRestoreEpisodesMenuItem = new MenuItem(localization.refreshRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
+        MenuItem refreshRestoreEpisodesMenuItem = new MenuItem(localization.refreshFeedsRestoreDeletedEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshRestoreEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(librarySelection.getSelectedFeeds()));
         refreshRestoreEpisodesMenuItem.setOnAction(new RefreshFeedsActionEventHandler(librarySelection::getSelectedFeeds, Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES), backgroundTaskExecutor, localization));
         this.getItems().add(refreshRestoreEpisodesMenuItem);
