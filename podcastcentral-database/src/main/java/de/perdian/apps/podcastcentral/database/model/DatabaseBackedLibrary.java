@@ -17,11 +17,13 @@ package de.perdian.apps.podcastcentral.database.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaDelete;
@@ -87,7 +89,7 @@ class DatabaseBackedLibrary implements Library, AutoCloseable {
             feedEntities.sort(new FeedEntity.TitleComparator());
             for (FeedEntity feedEntity : feedEntities) {
                 log.debug("Loading initial feed from database: {}", ToStringBuilder.reflectionToString(feedEntity, ToStringStyle.NO_CLASS_NAME_STYLE));
-                List<EpisodeEntity> episodeEntitiesForFeed = episodeEntitiesByFeed.get(feedEntity);
+                List<EpisodeEntity> episodeEntitiesForFeed = Optional.ofNullable(episodeEntitiesByFeed.get(feedEntity)).orElseGet(Collections::emptyList);
                 DatabaseBackedFeed feedImpl = new DatabaseBackedFeed(feedEntity, episodeEntitiesForFeed, this.getSessionFactory(), this.getStorage().resolveDirectory(feedEntity.getData().getTitle()));
                 this.getFeeds().add(feedImpl);
                 this.getFeedsByFeedUrl().put(feedImpl.getUrl().getValue(), feedImpl);
