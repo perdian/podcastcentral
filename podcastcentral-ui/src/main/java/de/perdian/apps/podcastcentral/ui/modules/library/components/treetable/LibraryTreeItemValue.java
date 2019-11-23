@@ -21,13 +21,13 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcastcentral.model.Feed;
 import de.perdian.apps.podcastcentral.ui.support.properties.PropertiesHelper;
+import de.perdian.apps.podcastcentral.ui.support.text.TextHelper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -56,7 +56,7 @@ class LibraryTreeItemValue {
         this.setDownloadState(new ReadOnlyObjectWrapper<>(null));
         this.setDownloadProgress(new ReadOnlyObjectWrapper<>(null));
         this.setDownloadProgressLabel(new ReadOnlyStringWrapper(""));
-        this.setDescription(PropertiesHelper.map(feed.getDescription(), StringUtils::normalizeSpace, null));
+        this.setDescription(PropertiesHelper.map(feed.getDescription(), TextHelper::normalizeHtml, null));
     }
 
     LibraryTreeItemValue(Episode episode) {
@@ -67,7 +67,7 @@ class LibraryTreeItemValue {
         this.setDownloadState(episode.getDownloadState());
         this.setDownloadProgress(episode.getDownloadProgress());
         this.setDownloadProgressLabel(LibraryTreeItemValue.createDownloadProgressLabel(episode));
-        this.setDescription(PropertiesHelper.map(episode.getDescription(), StringUtils::normalizeSpace, null));
+        this.setDescription(PropertiesHelper.map(episode.getDescription(), TextHelper::normalizeHtml, null));
     }
 
     private static ObservableValue<String> createDownloadProgressLabel(Episode episode) {
