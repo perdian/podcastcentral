@@ -26,7 +26,6 @@ import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcastcentral.model.Feed;
 import de.perdian.apps.podcastcentral.model.Library;
-import de.perdian.apps.podcastcentral.ui.modules.library.LibrarySelection;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.DeleteFeedsOrEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.DownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.OpenEpisodesActionEventHandler;
@@ -42,13 +41,13 @@ import javafx.scene.input.KeyEvent;
 
 class LibraryTreeTableKeyEventHandler implements EventHandler<KeyEvent> {
 
-    private Supplier<LibrarySelection> selectionSupplier = null;
+    private Supplier<LibraryTreeTableSelection> selectionSupplier = null;
     private Library library = null;
     private EpisodeDownloader episodeDownloader = null;
     private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Localization localization = null;
 
-    LibraryTreeTableKeyEventHandler(Supplier<LibrarySelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    LibraryTreeTableKeyEventHandler(Supplier<LibraryTreeTableSelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setSelectionSupplier(selectionSupplier);
         this.setLibrary(library);
         this.setEpisodeDownloader(episodeDownloader);
@@ -59,7 +58,7 @@ class LibraryTreeTableKeyEventHandler implements EventHandler<KeyEvent> {
     @Override
     public void handle(KeyEvent event) {
         if (event.getCode() == KeyCode.DELETE || event.getCode() == KeyCode.X || (event.getCode() == KeyCode.BACK_SPACE && event.isMetaDown())) {
-            LibrarySelection selection = this.getSelectionSupplier().get();
+            LibraryTreeTableSelection selection = this.getSelectionSupplier().get();
             List<Feed> selectedFeeds = event.isShiftDown() ? selection.getSelectedFeeds() : Collections.emptyList();
             List<Episode> selectedEpisodes = selection.getSelectedEpisodesDirectly();
             new DeleteFeedsOrEpisodesActionEventHandler(() -> selectedFeeds, () -> selectedEpisodes, this.getLibrary(), this.getEpisodeDownloader(), this.getBackgroundTaskExecutor(), this.getLocalization()).handle(new ActionEvent(event.getSource(), event.getTarget()));
@@ -69,7 +68,7 @@ class LibraryTreeTableKeyEventHandler implements EventHandler<KeyEvent> {
             new DownloadEpisodesActionEventHandler(() -> downloadableEpisodes, this.getEpisodeDownloader(), this.getBackgroundTaskExecutor(), this.getLocalization()).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         } else if (event.getCode() == KeyCode.R) {
-            LibrarySelection selection = this.getSelectionSupplier().get();
+            LibraryTreeTableSelection selection = this.getSelectionSupplier().get();
             List<Episode> refreshableEpisodes = selection.getSelectedEpisodesDirectly().stream().filter(episode -> List.of(EpisodeDownloadState.COMPLETED).contains(episode.getDownloadState().getValue())).collect(Collectors.toList());
             Set<Feed.RefreshOption> refreshOptions = event.isShiftDown() ? Set.of(Feed.RefreshOption.RESTORE_DELETED_EPISODES) : Collections.emptySet();
             new DownloadEpisodesActionEventHandler(() -> refreshableEpisodes, this.getEpisodeDownloader(), this.getBackgroundTaskExecutor(), this.getLocalization()).handle(new ActionEvent(event.getSource(), event.getTarget()));
@@ -80,7 +79,7 @@ class LibraryTreeTableKeyEventHandler implements EventHandler<KeyEvent> {
             new OpenEpisodesActionEventHandler(() -> openableEpisodes).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         } else if (event.getCode() == KeyCode.SPACE) {
-            LibrarySelection selection = this.getSelectionSupplier().get();
+            LibraryTreeTableSelection selection = this.getSelectionSupplier().get();
             if (selection.getSelectedFeeds().isEmpty() && selection.getSelectedEpisodesDirectly().size() == 1) {
                 new ShowEpisodeDetailsActionEventHandler(() -> selection.getSelectedEpisodesDirectly().get(0), this.getLocalization()).handle(new ActionEvent(event.getSource(), event.getTarget()));
                 event.consume();
@@ -91,10 +90,10 @@ class LibraryTreeTableKeyEventHandler implements EventHandler<KeyEvent> {
         }
     }
 
-    private Supplier<LibrarySelection> getSelectionSupplier() {
+    private Supplier<LibraryTreeTableSelection> getSelectionSupplier() {
         return this.selectionSupplier;
     }
-    private void setSelectionSupplier(Supplier<LibrarySelection> selectionSupplier) {
+    private void setSelectionSupplier(Supplier<LibraryTreeTableSelection> selectionSupplier) {
         this.selectionSupplier = selectionSupplier;
     }
 

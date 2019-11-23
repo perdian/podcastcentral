@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 
 import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.Feed;
-import de.perdian.apps.podcastcentral.ui.modules.library.LibrarySelection;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TreeTableRow;
@@ -30,9 +29,9 @@ import javafx.util.Callback;
 
 class LibraryTreeTableRowFactory implements Callback<TreeTableView<LibraryTreeItemValue>, TreeTableRow<LibraryTreeItemValue>> {
 
-    private Supplier<LibrarySelection> selectionSupplier = null;
+    private Supplier<LibraryTreeTableSelection> selectionSupplier = null;
 
-    LibraryTreeTableRowFactory(Supplier<LibrarySelection> selectionSupplier) {
+    LibraryTreeTableRowFactory(Supplier<LibraryTreeTableSelection> selectionSupplier) {
         this.setSelectionSupplier(selectionSupplier);
     }
 
@@ -80,10 +79,10 @@ class LibraryTreeTableRowFactory implements Callback<TreeTableView<LibraryTreeIt
         return styleClasses;
     }
 
-    private Supplier<LibrarySelection> getSelectionSupplier() {
+    private Supplier<LibraryTreeTableSelection> getSelectionSupplier() {
         return this.selectionSupplier;
     }
-    private void setSelectionSupplier(Supplier<LibrarySelection> selectionSupplier) {
+    private void setSelectionSupplier(Supplier<LibraryTreeTableSelection> selectionSupplier) {
         this.selectionSupplier = selectionSupplier;
     }
 

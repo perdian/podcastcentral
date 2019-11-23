@@ -22,7 +22,6 @@ import java.util.function.Supplier;
 import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
-import de.perdian.apps.podcastcentral.ui.modules.library.LibrarySelection;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.DownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.OpenEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
@@ -34,12 +33,12 @@ import javafx.scene.input.MouseEvent;
 
 class LibraryTreeTableClickMouseEventHandler implements EventHandler<MouseEvent> {
 
-    private Supplier<LibrarySelection> selectionSupplier = null;
+    private Supplier<LibraryTreeTableSelection> selectionSupplier = null;
     private EpisodeDownloader episodeDownloader = null;
     private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Localization localization = null;
 
-    LibraryTreeTableClickMouseEventHandler(Supplier<LibrarySelection> selectionSupplier, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    LibraryTreeTableClickMouseEventHandler(Supplier<LibraryTreeTableSelection> selectionSupplier, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setSelectionSupplier(selectionSupplier);
         this.setEpisodeDownloader(episodeDownloader);
         this.setBackgroundTaskExecutor(backgroundTaskExecutor);
@@ -62,10 +61,10 @@ class LibraryTreeTableClickMouseEventHandler implements EventHandler<MouseEvent>
         }
     }
 
-    private Supplier<LibrarySelection> getSelectionSupplier() {
+    private Supplier<LibraryTreeTableSelection> getSelectionSupplier() {
         return this.selectionSupplier;
     }
-    private void setSelectionSupplier(Supplier<LibrarySelection> selectionSupplier) {
+    private void setSelectionSupplier(Supplier<LibraryTreeTableSelection> selectionSupplier) {
         this.selectionSupplier = selectionSupplier;
     }
 

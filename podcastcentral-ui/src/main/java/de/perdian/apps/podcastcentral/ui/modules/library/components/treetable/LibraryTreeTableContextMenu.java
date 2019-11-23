@@ -28,7 +28,6 @@ import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcastcentral.model.Feed;
 import de.perdian.apps.podcastcentral.model.Library;
-import de.perdian.apps.podcastcentral.ui.modules.library.LibrarySelection;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.CancelEpisodeDownloadsActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.ChangeEpisodeReadStateActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.DeleteFeedsOrEpisodesActionEventHandler;
@@ -47,7 +46,7 @@ import javafx.scene.control.SeparatorMenuItem;
 
 class LibraryTreeTableContextMenu extends ContextMenu {
 
-    private Supplier<LibrarySelection> selectionSupplier = null;
+    private Supplier<LibraryTreeTableSelection> selectionSupplier = null;
     private final ObservableList<Feed> selectedFeeds = FXCollections.observableArrayList();
     private final ObservableList<Feed> selectedFeedsDeletable = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidated = FXCollections.observableArrayList();
@@ -57,7 +56,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
     private final ObservableList<Episode> selectedEpisodesConsolidatedDownloading = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidatedDeletable = FXCollections.observableArrayList();
 
-    LibraryTreeTableContextMenu(Supplier<LibrarySelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    LibraryTreeTableContextMenu(Supplier<LibraryTreeTableSelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setSelectionSupplier(selectionSupplier);
 
         MenuItem refreshFeedsMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
@@ -105,7 +104,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
     @Override
     public void show(Node anchor, double screenX, double screenY) {
-        LibrarySelection selection = this.getSelectionSupplier().get();
+        LibraryTreeTableSelection selection = this.getSelectionSupplier().get();
         this.getSelectedFeeds().setAll(selection.getSelectedFeeds());
         this.getSelectedFeedsDeletable().setAll(selection.getSelectedFeeds().stream().filter(feed -> feed.getEpisodes().stream().filter(episode -> List.of(EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.CANCELLED).contains(episode.getDownloadState().getValue())).findAny().isEmpty()).collect(Collectors.toList()));
         this.getSelectedEpisodesConsolidated().setAll(selection.getSelectedEpisodesConsolidated());
@@ -117,10 +116,10 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         super.show(anchor, screenX, screenY);
     }
 
-    private Supplier<LibrarySelection> getSelectionSupplier() {
+    private Supplier<LibraryTreeTableSelection> getSelectionSupplier() {
         return this.selectionSupplier;
     }
-    private void setSelectionSupplier(Supplier<LibrarySelection> selectionSupplier) {
+    private void setSelectionSupplier(Supplier<LibraryTreeTableSelection> selectionSupplier) {
         this.selectionSupplier = selectionSupplier;
     }
 
