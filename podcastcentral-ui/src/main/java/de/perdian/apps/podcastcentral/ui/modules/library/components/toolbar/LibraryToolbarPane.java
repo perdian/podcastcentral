@@ -25,7 +25,7 @@ import de.perdian.apps.podcastcentral.ui.modules.library.actions.AddFeedActionEv
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.LibraryExportAsOpmlActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.LibraryImportFromOpmlActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.RefreshFeedsActionEventHandler;
-import de.perdian.apps.podcastcentral.ui.modules.library.components.addfeed.AddFeedDialog;
+import de.perdian.apps.podcastcentral.ui.modules.library.components.feeds.AddFeedDialog;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.beans.binding.Bindings;

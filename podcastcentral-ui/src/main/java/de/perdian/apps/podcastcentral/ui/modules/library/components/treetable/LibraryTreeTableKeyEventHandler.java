@@ -31,6 +31,8 @@ import de.perdian.apps.podcastcentral.ui.modules.library.actions.DeleteFeedsOrEp
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.DownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.OpenEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.RefreshFeedsActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library.actions.ShowEpisodeDetailsActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library.actions.ShowFeedDetailsActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.event.ActionEvent;
@@ -77,6 +79,15 @@ class LibraryTreeTableKeyEventHandler implements EventHandler<KeyEvent> {
             List<Episode> openableEpisodes = this.getSelectionSupplier().get().getSelectedEpisodesConsolidated().stream().filter(episode -> List.of(EpisodeDownloadState.COMPLETED).contains(episode.getDownloadState().getValue())).collect(Collectors.toList());
             new OpenEpisodesActionEventHandler(() -> openableEpisodes).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
+        } else if (event.getCode() == KeyCode.SPACE) {
+            LibrarySelection selection = this.getSelectionSupplier().get();
+            if (selection.getSelectedFeeds().isEmpty() && selection.getSelectedEpisodesDirectly().size() == 1) {
+                new ShowEpisodeDetailsActionEventHandler(() -> selection.getSelectedEpisodesDirectly().get(0), this.getLocalization()).handle(new ActionEvent(event.getSource(), event.getTarget()));
+                event.consume();
+            } else if (selection.getSelectedFeeds().size() == 1 && selection.getSelectedEpisodesDirectly().isEmpty()) {
+                new ShowFeedDetailsActionEventHandler(() -> selection.getSelectedFeeds().get(0), this.getLocalization()).handle(new ActionEvent(event.getSource(), event.getTarget()));
+                event.consume();
+            }
         }
     }
 

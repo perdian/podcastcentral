@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.podcastcentral.ui.modules.library.components.feeddata;
+package de.perdian.apps.podcastcentral.ui.modules.library.components.feeds;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -45,9 +45,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class FeedDataPane extends GridPane {
+public class FeedDataDetailsPane extends GridPane {
 
-    public FeedDataPane(FeedData feedData, List<EpisodeData> episodes, Localization localization) {
+    public FeedDataDetailsPane(FeedData feedData, List<EpisodeData> episodes, Localization localization) {
 
         Label titleLabel = new Label(localization.title());
         TextField titleField = new TextField(feedData.getTitle());

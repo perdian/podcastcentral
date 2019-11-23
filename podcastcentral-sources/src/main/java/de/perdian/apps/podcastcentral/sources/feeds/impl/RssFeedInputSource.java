@@ -17,6 +17,7 @@ package de.perdian.apps.podcastcentral.sources.feeds.impl;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,7 +64,7 @@ public class RssFeedInputSource implements FeedInputSource {
     }
 
     @Override
-    public FeedInput loadFeedInput(String data, String contentType, String sourceUrl) throws IOException {
+    public FeedInput loadFeedInput(String data, String contentType, URL sourceUrl) throws IOException {
         if (this.getValidContentTypes().contains(contentType)) {
             try {
                 SAXReader saxReader = new SAXReader();
@@ -79,17 +80,17 @@ public class RssFeedInputSource implements FeedInputSource {
         }
     }
 
-    private FeedInput parseFeedInputFromDocument(Document document, String sourceUrl) {
+    private FeedInput parseFeedInputFromDocument(Document document, URL sourceUrl) {
         FeedInput feedInput = new FeedInput();
         feedInput.setData(this.parseFeedDataFromDocument(document, sourceUrl));
         feedInput.setEpisodes(this.parseEpisodeDataListFromDocument(document, sourceUrl));
         return feedInput;
     }
 
-    private FeedData parseFeedDataFromDocument(Document document, String sourceUrl) {
+    private FeedData parseFeedDataFromDocument(Document document, URL sourceUrl) {
         log.debug("Parsing feed response for feed: {}", sourceUrl);
         FeedData feedData = new FeedData();
-        feedData.setUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:new-feed-url")).orElse(sourceUrl));
+        feedData.setUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/itunes:new-feed-url")).orElse(sourceUrl.toString()));
         feedData.setWebsiteUrl(XmlHelper.getFirstMatchingValue(document, List.of("//channel/link")).orElse(null));
         feedData.setTitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/title")).orElse(null));
         feedData.setSubtitle(XmlHelper.getFirstMatchingValue(document, List.of("//channel/subtitle", "//channel/itunes:subtitle")).orElse(null));
@@ -101,7 +102,7 @@ public class RssFeedInputSource implements FeedInputSource {
         return feedData;
     }
 
-    private List<EpisodeData> parseEpisodeDataListFromDocument(Document document, String sourceUrl) {
+    private List<EpisodeData> parseEpisodeDataListFromDocument(Document document, URL sourceUrl) {
         List<Node> itemNodes = Optional.ofNullable(document.selectNodes("//channel/item")).orElseGet(Collections::emptyList);
         log.debug("Parsing {} episodes retrieved for feed: {}", itemNodes.size(), sourceUrl);
         List<EpisodeData> episodes = new ArrayList<>();

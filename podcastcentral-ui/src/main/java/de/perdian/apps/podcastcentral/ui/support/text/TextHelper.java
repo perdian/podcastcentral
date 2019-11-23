@@ -19,7 +19,7 @@ import org.jsoup.Jsoup;
 
 public class TextHelper {
 
-    public static String normalizeHtml(String html) {
+    public static String stripHtml(String html) {
         return Jsoup.parse(html).text();
     }
 

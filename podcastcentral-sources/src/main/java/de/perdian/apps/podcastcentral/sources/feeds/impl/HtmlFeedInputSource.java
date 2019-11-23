@@ -30,13 +30,13 @@ import de.perdian.apps.podcastcentral.sources.feeds.FeedInputSource;
 public class HtmlFeedInputSource implements FeedInputSource {
 
     @Override
-    public FeedInput loadFeedInput(String data, String contentType, String sourceUrl) throws IOException {
+    public FeedInput loadFeedInput(String data, String contentType, URL sourceUrl) throws IOException {
         if ("text/html".equalsIgnoreCase(contentType)) {
             Document htmlDocument = Jsoup.parse(data);
             Element linkElement = htmlDocument.selectFirst("link[rel=\"alternate\"][type=\"application/rss+xml\"]");
             String feedUrl = linkElement == null ? null : linkElement.attr("href");
             if (StringUtils.isNotEmpty(feedUrl)) {
-                return new RssFeedInputSource().loadFeedInput(IOUtils.toString(new URL(feedUrl), "UTF-8"), "application/rss+xml", feedUrl);
+                return new RssFeedInputSource().loadFeedInput(IOUtils.toString(new URL(feedUrl), "UTF-8"), "application/rss+xml", new URL(feedUrl));
             }
         }
         return null;

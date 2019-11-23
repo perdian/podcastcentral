@@ -16,11 +16,12 @@
 package de.perdian.apps.podcastcentral.sources.feeds;
 
 import java.io.IOException;
+import java.net.URL;
 
 import de.perdian.apps.podcastcentral.model.FeedInput;
 
 public interface FeedInputSource {
 
-    FeedInput loadFeedInput(String data, String contentType, String sourceUrl) throws IOException;
+    FeedInput loadFeedInput(String data, String contentType, URL sourceUrl) throws IOException;
 
 }

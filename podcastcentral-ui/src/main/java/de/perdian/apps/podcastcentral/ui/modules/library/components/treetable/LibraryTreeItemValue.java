@@ -56,7 +56,7 @@ class LibraryTreeItemValue {
         this.setDownloadState(new ReadOnlyObjectWrapper<>(null));
         this.setDownloadProgress(new ReadOnlyObjectWrapper<>(null));
         this.setDownloadProgressLabel(new ReadOnlyStringWrapper(""));
-        this.setDescription(PropertiesHelper.map(feed.getDescription(), TextHelper::normalizeHtml, null));
+        this.setDescription(PropertiesHelper.map(feed.getDescription(), TextHelper::stripHtml, null));
     }
 
     LibraryTreeItemValue(Episode episode) {
@@ -67,7 +67,7 @@ class LibraryTreeItemValue {
         this.setDownloadState(episode.getDownloadState());
         this.setDownloadProgress(episode.getDownloadProgress());
         this.setDownloadProgressLabel(LibraryTreeItemValue.createDownloadProgressLabel(episode));
-        this.setDescription(PropertiesHelper.map(episode.getDescription(), TextHelper::normalizeHtml, null));
+        this.setDescription(PropertiesHelper.map(episode.getDescription(), TextHelper::stripHtml, null));
     }
 
     private static ObservableValue<String> createDownloadProgressLabel(Episode episode) {

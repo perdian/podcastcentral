@@ -32,6 +32,15 @@ public interface Localization {
         return "Adding feed";
     }
 
+    default String bytesOfBytesTransfered(long bytesWritten, long bytesTotal) {
+        NumberFormat fileSizeFormat = new DecimalFormat("#,##0");
+        StringBuilder progressMessage = new StringBuilder();
+        progressMessage.append(fileSizeFormat.format((double)bytesWritten / 1024)).append(" KiB");
+        progressMessage.append(" / ").append(fileSizeFormat.format((double)bytesTotal / 1024)).append(" KiB");
+        progressMessage.append(" transfered");
+        return progressMessage.toString();
+    }
+
     default String cancel() {
         return "Cancel";
     }
@@ -116,6 +125,10 @@ public interface Localization {
         return "Duration";
     }
 
+    default String episode() {
+        return "Episode";
+    }
+
     default String episodes() {
         return "Episodes";
     }
@@ -134,6 +147,10 @@ public interface Localization {
 
     default String exportingLibraryAsOpml() {
         return "Exporting library as OPML";
+    }
+
+    default String feed() {
+        return "Feed";
     }
 
     default String feedDetails() {
@@ -292,13 +309,8 @@ public interface Localization {
         return "Title";
     }
 
-    default String bytesOfBytesTransfered(long bytesWritten, long bytesTotal) {
-        NumberFormat fileSizeFormat = new DecimalFormat("#,##0");
-        StringBuilder progressMessage = new StringBuilder();
-        progressMessage.append(fileSizeFormat.format((double)bytesWritten / 1024)).append(" KiB");
-        progressMessage.append(" / ").append(fileSizeFormat.format((double)bytesTotal / 1024)).append(" KiB");
-        progressMessage.append(" transfered");
-        return progressMessage.toString();
+    default String unknown() {
+        return "Unknown";
     }
 
 }
