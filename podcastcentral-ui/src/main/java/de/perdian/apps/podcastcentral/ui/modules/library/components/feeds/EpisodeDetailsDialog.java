@@ -47,7 +47,9 @@ public class EpisodeDetailsDialog {
             });
         }
 
-        dialogStage.setScene(new Scene(episodeDetailsPane));
+        Scene dialogScene = new Scene(episodeDetailsPane);
+        dialogScene.getStylesheets().add("META-INF/stylesheets/podcastcentral.css");
+        dialogStage.setScene(dialogScene);
         dialogStage.sizeToScene();
         dialogStage.setResizable(false);
         dialogStage.showAndWait();

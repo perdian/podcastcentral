@@ -47,7 +47,9 @@ public class FeedDetailsDialog {
             });
         }
 
-        dialogStage.setScene(new Scene(feedDetailsPane));
+        Scene dialogScene = new Scene(feedDetailsPane);
+        dialogScene.getStylesheets().add("META-INF/stylesheets/podcastcentral.css");
+        dialogStage.setScene(dialogScene);
         dialogStage.sizeToScene();
         dialogStage.setResizable(false);
         dialogStage.showAndWait();

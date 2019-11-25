@@ -40,7 +40,9 @@ public class AddFeedDialog {
         }, localization);
         dialogPane.setMinSize(800, 700);
 
-        dialogStage.setScene(new Scene(dialogPane));
+        Scene dialogScene = new Scene(dialogPane);
+        dialogScene.getStylesheets().add("META-INF/stylesheets/podcastcentral.css");
+        dialogStage.setScene(dialogScene);
         dialogStage.sizeToScene();
         dialogStage.setResizable(false);
         dialogStage.showAndWait();
