@@ -31,9 +31,11 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.stage.Window;
 
 public class DeleteFeedsOrEpisodesActionEventHandler implements EventHandler<ActionEvent> {
 
+    private Supplier<Window> ownerSupplier = null;
     private Supplier<List<Feed>> feedsSupplier = null;
     private Supplier<List<Episode>> episodesSupplier = null;
     private Library library = null;
@@ -41,7 +43,8 @@ public class DeleteFeedsOrEpisodesActionEventHandler implements EventHandler<Act
     private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Localization localization = null;
 
-    public DeleteFeedsOrEpisodesActionEventHandler(Supplier<List<Feed>> feedsSupplier, Supplier<List<Episode>> episodesSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    public DeleteFeedsOrEpisodesActionEventHandler(Supplier<Window> ownerSupplier, Supplier<List<Feed>> feedsSupplier, Supplier<List<Episode>> episodesSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+        this.setOwnerSupplier(ownerSupplier);
         this.setFeedsSupplier(feedsSupplier);
         this.setEpisodesSupplier(episodesSupplier);
         this.setLibrary(library);
@@ -55,9 +58,11 @@ public class DeleteFeedsOrEpisodesActionEventHandler implements EventHandler<Act
         List<Feed> feeds = this.getFeedsSupplier().get();
         if (!feeds.isEmpty()) {
             Alert confirmationAlert = new Alert(AlertType.CONFIRMATION);
+            confirmationAlert.initOwner(this.getOwnerSupplier().get());
             confirmationAlert.setTitle(this.getLocalization().delete());
             confirmationAlert.setHeaderText(null);
             confirmationAlert.setContentText(this.getLocalization().reallyDeleteFeeds(feeds.size()));
+            confirmationAlert.getDialogPane().getScene().getStylesheets().add("META-INF/stylesheets/podcastcentral.css");
             if (!ButtonType.OK.equals(confirmationAlert.showAndWait().orElse(ButtonType.CANCEL))) {
                 return;
             }
@@ -77,6 +82,13 @@ public class DeleteFeedsOrEpisodesActionEventHandler implements EventHandler<Act
                 remainingEpisodesByFeedEntry.getKey().deleteEpisodes(remainingEpisodesByFeedEntry.getValue());
             }
         });
+    }
+
+    private Supplier<Window> getOwnerSupplier() {
+        return this.ownerSupplier;
+    }
+    private void setOwnerSupplier(Supplier<Window> ownerSupplier) {
+        this.ownerSupplier = ownerSupplier;
     }
 
     private Supplier<List<Feed>> getFeedsSupplier() {

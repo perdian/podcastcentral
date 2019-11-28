@@ -43,6 +43,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.stage.Window;
 
 class LibraryTreeTableContextMenu extends ContextMenu {
 
@@ -56,7 +57,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
     private final ObservableList<Episode> selectedEpisodesConsolidatedDownloading = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidatedDeletable = FXCollections.observableArrayList();
 
-    LibraryTreeTableContextMenu(Supplier<LibraryTreeTableSelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    LibraryTreeTableContextMenu(Supplier<Window> ownerSupplier, Supplier<LibraryTreeTableSelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setSelectionSupplier(selectionSupplier);
 
         MenuItem refreshFeedsMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
@@ -97,7 +98,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
 
         MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.TRASH));
         deleteMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeedsDeletable()).and(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDeletable())));
-        deleteMenuItem.setOnAction(new DeleteFeedsOrEpisodesActionEventHandler(this::getSelectedFeedsDeletable, this::getSelectedEpisodesConsolidatedDeletable, library, episodeDownloader, backgroundTaskExecutor, localization));
+        deleteMenuItem.setOnAction(new DeleteFeedsOrEpisodesActionEventHandler(ownerSupplier, this::getSelectedFeedsDeletable, this::getSelectedEpisodesConsolidatedDeletable, library, episodeDownloader, backgroundTaskExecutor, localization));
         this.getItems().add(deleteMenuItem);
 
     }

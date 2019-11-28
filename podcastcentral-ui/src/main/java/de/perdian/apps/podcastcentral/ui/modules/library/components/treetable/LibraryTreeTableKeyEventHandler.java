@@ -38,16 +38,19 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Window;
 
 class LibraryTreeTableKeyEventHandler implements EventHandler<KeyEvent> {
 
+    private Supplier<Window> ownerSupplier = null;
     private Supplier<LibraryTreeTableSelection> selectionSupplier = null;
     private Library library = null;
     private EpisodeDownloader episodeDownloader = null;
     private BackgroundTaskExecutor backgroundTaskExecutor = null;
     private Localization localization = null;
 
-    LibraryTreeTableKeyEventHandler(Supplier<LibraryTreeTableSelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    LibraryTreeTableKeyEventHandler(Supplier<Window> ownerSupplier, Supplier<LibraryTreeTableSelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+        this.setOwnerSupplier(ownerSupplier);
         this.setSelectionSupplier(selectionSupplier);
         this.setLibrary(library);
         this.setEpisodeDownloader(episodeDownloader);
@@ -59,9 +62,9 @@ class LibraryTreeTableKeyEventHandler implements EventHandler<KeyEvent> {
     public void handle(KeyEvent event) {
         if (event.getCode() == KeyCode.DELETE || event.getCode() == KeyCode.X || (event.getCode() == KeyCode.BACK_SPACE && event.isMetaDown())) {
             LibraryTreeTableSelection selection = this.getSelectionSupplier().get();
-            List<Feed> selectedFeeds = event.isShiftDown() ? selection.getSelectedFeeds() : Collections.emptyList();
+            List<Feed> selectedFeeds = selection.getSelectedEpisodesDirectly().isEmpty() || event.isShiftDown() ? selection.getSelectedFeeds() : Collections.emptyList();
             List<Episode> selectedEpisodes = selection.getSelectedEpisodesDirectly();
-            new DeleteFeedsOrEpisodesActionEventHandler(() -> selectedFeeds, () -> selectedEpisodes, this.getLibrary(), this.getEpisodeDownloader(), this.getBackgroundTaskExecutor(), this.getLocalization()).handle(new ActionEvent(event.getSource(), event.getTarget()));
+            new DeleteFeedsOrEpisodesActionEventHandler(this.getOwnerSupplier(), () -> selectedFeeds, () -> selectedEpisodes, this.getLibrary(), this.getEpisodeDownloader(), this.getBackgroundTaskExecutor(), this.getLocalization()).handle(new ActionEvent(event.getSource(), event.getTarget()));
             event.consume();
         } else if (event.getCode() == KeyCode.D) {
             List<Episode> downloadableEpisodes = this.getSelectionSupplier().get().getSelectedEpisodesConsolidated().stream().filter(episode -> !List.of(EpisodeDownloadState.COMPLETED, EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.DOWNLOADING).contains(episode.getDownloadState().getValue())).collect(Collectors.toList());
@@ -88,6 +91,13 @@ class LibraryTreeTableKeyEventHandler implements EventHandler<KeyEvent> {
                 event.consume();
             }
         }
+    }
+
+    private Supplier<Window> getOwnerSupplier() {
+        return this.ownerSupplier;
+    }
+    private void setOwnerSupplier(Supplier<Window> ownerSupplier) {
+        this.ownerSupplier = ownerSupplier;
     }
 
     private Supplier<LibraryTreeTableSelection> getSelectionSupplier() {
