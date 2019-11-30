@@ -28,7 +28,7 @@ class LibraryTreeTableSelectionHelper {
 
     static List<Feed> collectSelectedFeeds(List<TreeItem<LibraryTreeItemValue>> selectedItems) {
         return selectedItems.stream()
-            .map(item -> item.getValue() == null ? null : item.getValue().getFeed())
+            .map(item -> item == null || item.getValue() == null ? null : item.getValue().getFeed())
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
