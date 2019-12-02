@@ -16,12 +16,17 @@
 package de.perdian.apps.podcastcentral.ui.modules.library.components.toolbar;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
+import de.perdian.apps.podcastcentral.model.Episode;
+import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcastcentral.model.Library;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.AddFeedActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library.actions.DownloadEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.LibraryExportAsOpmlActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.LibraryImportFromOpmlActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.RefreshFeedsActionEventHandler;
@@ -46,6 +51,10 @@ public class LibraryToolbarPane extends BorderPane {
         refreshAllFeedsButton.disableProperty().bind(Bindings.isEmpty(library.getFeeds()));
         refreshAllFeedsButton.setOnAction(new RefreshFeedsActionEventHandler(library::getFeeds, Collections.emptySet(), backgroundTaskExecutor, localization));
 
+        Button downloadNewEpisodesButton = new Button(localization.downloadNewEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
+        downloadNewEpisodesButton.disableProperty().bind(Bindings.isEmpty(library.getFeeds()));
+        downloadNewEpisodesButton.setOnAction(new DownloadEpisodesActionEventHandler(() -> this.loadNewEpisodes(library), episodeDownloader, backgroundTaskExecutor, localization));
+
         HBox separatorPane = new HBox();
         HBox.setHgrow(separatorPane, Priority.ALWAYS);
 
@@ -55,11 +64,19 @@ public class LibraryToolbarPane extends BorderPane {
         exportButton.setOnAction(new LibraryExportAsOpmlActionEventHandler(this, library, backgroundTaskExecutor, localization));
 
         ToolBar buttonToolbar = new ToolBar();
-        buttonToolbar.getItems().addAll(addFeedButton, refreshAllFeedsButton);
+        buttonToolbar.getItems().addAll(addFeedButton, refreshAllFeedsButton, downloadNewEpisodesButton);
         buttonToolbar.getItems().addAll(separatorPane);
         buttonToolbar.getItems().addAll(importButton, exportButton);
         this.setCenter(buttonToolbar);
 
+    }
+
+    private List<Episode> loadNewEpisodes(Library library) {
+        return library.getFeeds().stream()
+            .flatMap(stream -> stream.getEpisodes().stream())
+            .filter(episode -> Boolean.FALSE.equals(episode.getRead().getValue()))
+            .filter(episode -> List.of(EpisodeDownloadState.CANCELLED, EpisodeDownloadState.ERRORED, EpisodeDownloadState.MISSING, EpisodeDownloadState.NEW).contains(episode.getDownloadState().getValue()))
+            .collect(Collectors.toList());
     }
 
 }
