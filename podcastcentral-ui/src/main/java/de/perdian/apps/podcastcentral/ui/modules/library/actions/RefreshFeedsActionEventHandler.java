@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import de.perdian.apps.podcastcentral.model.Feed;
@@ -48,10 +52,25 @@ public class RefreshFeedsActionEventHandler implements EventHandler<ActionEvent>
         List<Feed> feedList = new ArrayList<>(this.getFeedListSupplier().get());
         if (!feedList.isEmpty()) {
             this.getBackgroundTaskExecutor().execute(this.getLocalization().refreshingFeeds(), progress -> {
-                progress.updateProgress(0d, null);
-                for (int i = 0; i < feedList.size(); i++) {
-                    progress.updateProgress((double)(i+1) / (double)feedList.size(), this.getLocalization().refreshingFeed(feedList.get(i).getTitle().getValue()));
-                    this.handleRefreshFeed(feedList.get(i));
+                ExecutorService executorService = Executors.newFixedThreadPool(3);
+                try {
+                    progress.updateProgress(0d, null);
+                    AtomicInteger currentProgress = new AtomicInteger();
+                    for (int i = 0; i < feedList.size(); i++) {
+                        int currentIndex = i;
+                        executorService.submit(() -> {
+                            try {
+                                int currentProgressValue = currentProgress.incrementAndGet();
+                                progress.updateProgress((double)(currentProgressValue) / (double)feedList.size(), this.getLocalization().refreshingFeed(feedList.get(currentIndex).getTitle().getValue()));
+                                this.handleRefreshFeed(feedList.get(currentIndex));
+                            } catch (Exception e) {
+                                // Ignore error during refresh
+                            }
+                        });
+                    }
+                } finally {
+                    executorService.shutdown();
+                    executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
                 }
             });
         }
