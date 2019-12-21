@@ -60,6 +60,22 @@ class LibraryTreeTableContextMenu extends ContextMenu {
     LibraryTreeTableContextMenu(Supplier<Window> ownerSupplier, Supplier<LibraryTreeTableSelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
         this.setSelectionSupplier(selectionSupplier);
 
+        MenuItem downloadMenuItem = new MenuItem(localization.download(), new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
+        downloadMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedNotDownloaded()));
+        downloadMenuItem.setOnAction(new DownloadEpisodesActionEventHandler(this::getSelectedEpisodesConsolidatedNotDownloaded, episodeDownloader, backgroundTaskExecutor, localization));
+        this.getItems().add(downloadMenuItem);
+
+        MenuItem cancelDownloadsMenuItem = new MenuItem(localization.cancelDownloads(), new FontAwesomeIconView(FontAwesomeIcon.STOP));
+        cancelDownloadsMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDownloading()));
+        cancelDownloadsMenuItem.setOnAction(new CancelEpisodeDownloadsActionEventHandler(this::getSelectedEpisodesConsolidatedDownloading, episodeDownloader, backgroundTaskExecutor, localization));
+
+        MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.TRASH));
+        deleteMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeedsDeletable()).and(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDeletable())));
+        deleteMenuItem.setOnAction(new DeleteFeedsOrEpisodesActionEventHandler(ownerSupplier, this::getSelectedFeedsDeletable, this::getSelectedEpisodesConsolidatedDeletable, library, episodeDownloader, backgroundTaskExecutor, localization));
+        this.getItems().add(deleteMenuItem);
+
+        this.getItems().add(new SeparatorMenuItem());
+
         MenuItem refreshFeedsMenuItem = new MenuItem(localization.refresh(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
         refreshFeedsMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
         refreshFeedsMenuItem.setOnAction(new RefreshFeedsActionEventHandler(this::getSelectedFeeds, Collections.emptySet(), backgroundTaskExecutor, localization));
@@ -84,22 +100,6 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         episodesMenu.getItems().addAll(markEpisodesAsReadMenuItem, markEpisodesAsUnreadMenuItem, new SeparatorMenuItem(), refreshEpisodesMenuItem);
         episodesMenu.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidated()));
         this.getItems().add(episodesMenu);
-
-        this.getItems().add(new SeparatorMenuItem());
-
-        MenuItem downloadMenuItem = new MenuItem(localization.download(), new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
-        downloadMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedNotDownloaded()));
-        downloadMenuItem.setOnAction(new DownloadEpisodesActionEventHandler(this::getSelectedEpisodesConsolidatedNotDownloaded, episodeDownloader, backgroundTaskExecutor, localization));
-        this.getItems().add(downloadMenuItem);
-
-        MenuItem cancelDownloadsMenuItem = new MenuItem(localization.cancelDownloads(), new FontAwesomeIconView(FontAwesomeIcon.STOP));
-        cancelDownloadsMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDownloading()));
-        cancelDownloadsMenuItem.setOnAction(new CancelEpisodeDownloadsActionEventHandler(this::getSelectedEpisodesConsolidatedDownloading, episodeDownloader, backgroundTaskExecutor, localization));
-
-        MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.TRASH));
-        deleteMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeedsDeletable()).and(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDeletable())));
-        deleteMenuItem.setOnAction(new DeleteFeedsOrEpisodesActionEventHandler(ownerSupplier, this::getSelectedFeedsDeletable, this::getSelectedEpisodesConsolidatedDeletable, library, episodeDownloader, backgroundTaskExecutor, localization));
-        this.getItems().add(deleteMenuItem);
 
     }
 
