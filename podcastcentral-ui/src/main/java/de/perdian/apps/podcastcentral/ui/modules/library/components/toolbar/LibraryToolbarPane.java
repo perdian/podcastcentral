@@ -35,6 +35,7 @@ import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskE
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -47,13 +48,13 @@ public class LibraryToolbarPane extends BorderPane {
         Button addFeedButton = new Button(localization.addFeed(), new FontAwesomeIconView(FontAwesomeIcon.PLUS));
         addFeedButton.setOnAction(new AddFeedActionEventHandler(() -> AddFeedDialog.requestFeedInput(addFeedButton, localization), library, backgroundTaskExecutor, localization));
 
-        Button refreshAllFeedsButton = new Button(localization.refreshAllFeeds(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        refreshAllFeedsButton.disableProperty().bind(Bindings.isEmpty(library.getFeeds()));
-        refreshAllFeedsButton.setOnAction(new RefreshFeedsActionEventHandler(library::getFeeds, Collections.emptySet(), backgroundTaskExecutor, localization));
-
         Button downloadNewEpisodesButton = new Button(localization.downloadNewEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
         downloadNewEpisodesButton.disableProperty().bind(Bindings.isEmpty(library.getFeeds()));
         downloadNewEpisodesButton.setOnAction(new DownloadEpisodesActionEventHandler(() -> this.loadNewEpisodes(library), episodeDownloader, backgroundTaskExecutor, localization));
+
+        Button refreshAllFeedsButton = new Button(localization.refreshAllFeeds(), new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
+        refreshAllFeedsButton.disableProperty().bind(Bindings.isEmpty(library.getFeeds()));
+        refreshAllFeedsButton.setOnAction(new RefreshFeedsActionEventHandler(library::getFeeds, Collections.emptySet(), backgroundTaskExecutor, localization));
 
         HBox separatorPane = new HBox();
         HBox.setHgrow(separatorPane, Priority.ALWAYS);
@@ -64,7 +65,9 @@ public class LibraryToolbarPane extends BorderPane {
         exportButton.setOnAction(new LibraryExportAsOpmlActionEventHandler(this, library, backgroundTaskExecutor, localization));
 
         ToolBar buttonToolbar = new ToolBar();
-        buttonToolbar.getItems().addAll(addFeedButton, refreshAllFeedsButton, downloadNewEpisodesButton);
+        buttonToolbar.getItems().addAll(addFeedButton);
+        buttonToolbar.getItems().addAll(new Label(" "));
+        buttonToolbar.getItems().addAll(downloadNewEpisodesButton, refreshAllFeedsButton);
         buttonToolbar.getItems().addAll(separatorPane);
         buttonToolbar.getItems().addAll(importButton, exportButton);
         this.setCenter(buttonToolbar);
