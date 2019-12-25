@@ -41,14 +41,14 @@ public class ExceptionDialogBuilder {
         return this;
     }
 
-    private String getTitle() {
+    String getTitle() {
         return this.title;
     }
     private void setTitle(String title) {
         this.title = title;
     }
 
-    private Throwable getException() {
+    Throwable getException() {
         return this.exception;
     }
     private void setException(Throwable exception) {
