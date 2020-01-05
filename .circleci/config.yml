@@ -17,5 +17,3 @@ jobs:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}      
-      - store_test_results:
-          path: "*/target/surefire-reports"
