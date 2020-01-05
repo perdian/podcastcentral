@@ -1,5 +1,8 @@
 # PodcastCentral
 
+[![License](http://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Build](https://img.shields.io/circleci/build/github/perdian/podcastcentral/master)](https://circleci.com/gh/perdian/podcastcentral)
+
 The PodcastCentral scratches my personal itch of wanting to have a podcast management program (aka "Podcatcher") that focuses primarily on my special usecase for podcasts: Listening to them in the car.
 
 This means I don't really care about a fancy UI for *playing* podcasts but a fancy UI for *managing* podcasts and *downloading* podcasts.
