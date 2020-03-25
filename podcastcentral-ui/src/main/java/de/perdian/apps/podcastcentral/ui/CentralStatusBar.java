@@ -20,6 +20,7 @@ import org.controlsfx.control.StatusBar;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
+import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.application.Platform;
@@ -35,17 +36,20 @@ class CentralStatusBar extends StatusBar {
         episodeContentDownloaderLabel.setPadding(new Insets(0, 4, 0, 16));
         episodeContentDownloaderLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CHECK));
         episodeContentDownloaderLabel.setMaxHeight(Double.MAX_VALUE);
-        episodeContentDowloader.getDownloadingEpisodes().addListener((ListChangeListener.Change<?> change) -> {
+
+        ListChangeListener<Episode> updateLabelListener = change -> {
             Platform.runLater(() -> {
                 if (change.getList().isEmpty()) {
                     episodeContentDownloaderLabel.setText(localization.noDownloadsActive());
                     episodeContentDownloaderLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CHECK));
                 } else {
-                    episodeContentDownloaderLabel.setText(localization.downloadsActive(change.getList().size()));
+                    episodeContentDownloaderLabel.setText(localization.downloads(episodeContentDowloader.getDownloadingEpisodes().size() + episodeContentDowloader.getScheduledEpisodes().size()));
                     episodeContentDownloaderLabel.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
                 }
             });
-        });
+        };
+        episodeContentDowloader.getScheduledEpisodes().addListener(updateLabelListener);
+        episodeContentDowloader.getDownloadingEpisodes().addListener(updateLabelListener);
 
         this.setProgress(0);
         this.setText("");

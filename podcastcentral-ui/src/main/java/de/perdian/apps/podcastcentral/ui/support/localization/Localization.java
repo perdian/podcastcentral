@@ -113,8 +113,8 @@ public interface Localization {
         return "Downloads";
     }
 
-    default String downloadsActive(int value) {
-        return value + " downloads active";
+    default String downloads(int value) {
+        return value + " downloads";
     }
 
     default String downloadsScheduled(int value) {
