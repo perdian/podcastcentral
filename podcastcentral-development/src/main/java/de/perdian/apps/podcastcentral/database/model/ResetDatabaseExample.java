@@ -1,7 +1,5 @@
 package de.perdian.apps.podcastcentral.database.model;
 
-import de.perdian.apps.podcastcentral.database.model.DatabaseBackedLibrary;
-import de.perdian.apps.podcastcentral.database.model.DatabaseBackedLibraryBuilder;
 import de.perdian.apps.podcastcentral.model.Feed;
 import de.perdian.apps.podcastcentral.preferences.Preferences;
 import de.perdian.apps.podcastcentral.preferences.PreferencesFactory;
