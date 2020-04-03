@@ -3,7 +3,6 @@ package de.perdian.apps.podcastcentral.ui;
 import java.io.File;
 
 import de.perdian.apps.podcastcentral.preferences.PreferencesFactory;
-import de.perdian.apps.podcastcentral.ui.CentralApplicationLauncher;
 
 public class CentralApplicationLauncherDevelopment {
 
