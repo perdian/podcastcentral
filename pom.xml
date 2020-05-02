@@ -52,12 +52,8 @@
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
         <h2.version>1.4.200</h2.version>
         <hibernate.version>5.4.7.Final</hibernate.version>
-<!--
-        <java.version>13</java.version>
-        <javafx.version>13.0.1</javafx.version>
--->
-        <java.version>11</java.version>
-        <javafx.version>11.0.2</javafx.version>
+        <java.version>14</java.version>
+        <javafx.version>14.0.1</javafx.version>
         <javax.persistence.version>2.2</javax.persistence.version>
         <jaxen.version>1.2.0</jaxen.version>
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
