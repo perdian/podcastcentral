@@ -17,6 +17,7 @@ package de.perdian.apps.podcastcentral.ui.modules.library;
 
 import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcastcentral.model.Library;
+import de.perdian.apps.podcastcentral.preferences.Preferences;
 import de.perdian.apps.podcastcentral.ui.modules.library.components.toolbar.LibraryToolbarPane;
 import de.perdian.apps.podcastcentral.ui.modules.library.components.treetable.LibraryTreeTableView;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
@@ -26,11 +27,11 @@ import javafx.scene.layout.BorderPane;
 
 public class LibraryPane extends BorderPane {
 
-    public LibraryPane(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    public LibraryPane(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Preferences preferences, Localization localization) {
 
         this.setTop(new LibraryToolbarPane(library, episodeDownloader, backgroundTaskExecutor, localization));
 
-        LibraryTreeTableView libraryTreeTableView = new LibraryTreeTableView(library, episodeDownloader, backgroundTaskExecutor, localization);
+        LibraryTreeTableView libraryTreeTableView = new LibraryTreeTableView(library, episodeDownloader, backgroundTaskExecutor, preferences, localization);
         BorderPane libraryTreeTableViewPane = new BorderPane(libraryTreeTableView);
         libraryTreeTableViewPane.setPadding(new Insets(8, 8, 8, 8));
         this.setCenter(libraryTreeTableViewPane);

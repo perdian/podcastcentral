@@ -28,9 +28,11 @@ import de.perdian.apps.podcastcentral.model.Episode;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcastcentral.model.Feed;
 import de.perdian.apps.podcastcentral.model.Library;
+import de.perdian.apps.podcastcentral.preferences.Preferences;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.ChangeEpisodeReadStateActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.DeleteFeedsOrEpisodesActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.DownloadEpisodesActionEventHandler;
+import de.perdian.apps.podcastcentral.ui.modules.library.actions.ExportEpisodesToFilesystemActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.modules.library.actions.RefreshFeedsActionEventHandler;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
@@ -50,10 +52,11 @@ class LibraryTreeTableContextMenu extends ContextMenu {
     private final ObservableList<Feed> selectedFeedsDeletable = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidatedRead = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidatedUnread = FXCollections.observableArrayList();
+    private final ObservableList<Episode> selectedEpisodesConsolidatedDownloaded = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidatedNotDownloaded = FXCollections.observableArrayList();
     private final ObservableList<Episode> selectedEpisodesConsolidatedDeletable = FXCollections.observableArrayList();
 
-    LibraryTreeTableContextMenu(Supplier<Window> ownerSupplier, Supplier<LibraryTreeTableSelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    LibraryTreeTableContextMenu(Supplier<Window> ownerSupplier, Supplier<LibraryTreeTableSelection> selectionSupplier, Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Preferences preferences, Localization localization) {
         this.setSelectionSupplier(selectionSupplier);
 
         MenuItem downloadMenuItem = new MenuItem(localization.download(), new FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD));
@@ -65,6 +68,11 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         deleteMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeedsDeletable()).and(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDeletable())));
         deleteMenuItem.setOnAction(new DeleteFeedsOrEpisodesActionEventHandler(ownerSupplier, this::getSelectedFeedsDeletable, this::getSelectedEpisodesConsolidatedDeletable, library, episodeDownloader, backgroundTaskExecutor, localization));
         this.getItems().add(deleteMenuItem);
+
+        MenuItem exportToFileSystemMenuItem = new MenuItem(localization.exportToFilesystem(), new FontAwesomeIconView(FontAwesomeIcon.COPY));
+        exportToFileSystemMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDownloaded()));
+        exportToFileSystemMenuItem.setOnAction(new ExportEpisodesToFilesystemActionEventHandler(ownerSupplier, this::getSelectedEpisodesConsolidatedDownloaded, preferences, localization));
+        this.getItems().add(exportToFileSystemMenuItem);
 
         this.getItems().add(new SeparatorMenuItem());
 
@@ -99,6 +107,7 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         this.getSelectedFeedsDeletable().setAll(selection.getSelectedFeeds().stream().filter(feed -> feed.getEpisodes().stream().filter(episode -> List.of(EpisodeDownloadState.SCHEDULED, EpisodeDownloadState.CANCELLED).contains(episode.getDownloadState().getValue())).findAny().isEmpty()).collect(Collectors.toList()));
         this.getSelectedEpisodesConsolidatedRead().setAll(selection.getSelectedEpisodesConsolidated().stream().filter(episode -> Boolean.TRUE.equals(episode.getRead().getValue())).collect(Collectors.toList()));
         this.getSelectedEpisodesConsolidatedUnread().setAll(selection.getSelectedEpisodesConsolidated().stream().filter(episode -> !Boolean.TRUE.equals(episode.getRead().getValue())).collect(Collectors.toList()));
+        this.getSelectedEpisodesConsolidatedDownloaded().setAll(selection.getSelectedEpisodesConsolidated().stream().filter(episode -> List.of(EpisodeDownloadState.COMPLETED).contains(episode.getDownloadState().getValue())).collect(Collectors.toList()));
         this.getSelectedEpisodesConsolidatedNotDownloaded().setAll(selection.getSelectedEpisodesConsolidated().stream().filter(episode -> !List.of(EpisodeDownloadState.COMPLETED).contains(episode.getDownloadState().getValue())).collect(Collectors.toList()));
         this.getSelectedEpisodesConsolidatedDeletable().setAll(selection.getSelectedEpisodesConsolidated().stream().filter(episode -> !List.of(EpisodeDownloadState.DOWNLOADING, EpisodeDownloadState.SCHEDULED).contains(episode.getDownloadState().getValue())).collect(Collectors.toList()));
         super.show(anchor, screenX, screenY);
@@ -122,6 +131,9 @@ class LibraryTreeTableContextMenu extends ContextMenu {
     }
     private ObservableList<Episode> getSelectedEpisodesConsolidatedUnread() {
         return this.selectedEpisodesConsolidatedUnread;
+    }
+    public ObservableList<Episode> getSelectedEpisodesConsolidatedDownloaded() {
+        return this.selectedEpisodesConsolidatedDownloaded;
     }
     private ObservableList<Episode> getSelectedEpisodesConsolidatedNotDownloaded() {
         return this.selectedEpisodesConsolidatedNotDownloaded;

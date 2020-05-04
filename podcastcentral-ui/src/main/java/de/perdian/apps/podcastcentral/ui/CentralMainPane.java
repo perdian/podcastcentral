@@ -29,7 +29,7 @@ class CentralMainPane extends GridPane {
 
     public CentralMainPane(Central central, Localization localization) {
 
-        LibraryPane libraryPane = new LibraryPane(central.getLibrary(), central.getEpisodeContentDownloader(), central.getBackgroundTaskExecutor(), localization);
+        LibraryPane libraryPane = new LibraryPane(central.getLibrary(), central.getEpisodeContentDownloader(), central.getBackgroundTaskExecutor(), central.getPreferences(), localization);
         Tab libraryTab = new Tab(localization.library(), libraryPane);
         libraryTab.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PODCAST));
         libraryTab.setClosable(false);

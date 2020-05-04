@@ -61,6 +61,10 @@ public interface Localization {
         return "Cancelling episode downloads";
     }
 
+    default String cannotExportEpisodesToFilesystem() {
+        return "Cannot export episodes to filesystem";
+    }
+
     default String cannotLoadFeedFromUrl() {
         return "Cannot load feed from URL:";
     }
@@ -143,6 +147,14 @@ public interface Localization {
 
     default String exportOpml() {
         return "Export OPML";
+    }
+
+    default String exportToFilesystem() {
+        return "Export to filesystem";
+    }
+
+    default String exportToFilesystemCompleted() {
+        return "Export to filesystem completed!";
     }
 
     default String exportingLibraryAsOpml() {
@@ -291,6 +303,10 @@ public interface Localization {
 
     default String schedulingEpisodeDownloads() {
         return "Scheduling episode downloads";
+    }
+
+    default String selectTargetDirectory() {
+        return "Select target directory";
     }
 
     default String selectTargetFile() {

@@ -20,6 +20,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.podcastcentral.downloader.episodes.EpisodeDownloader;
 import de.perdian.apps.podcastcentral.model.EpisodeDownloadState;
 import de.perdian.apps.podcastcentral.model.Library;
+import de.perdian.apps.podcastcentral.preferences.Preferences;
 import de.perdian.apps.podcastcentral.ui.support.backgroundtasks.BackgroundTaskExecutor;
 import de.perdian.apps.podcastcentral.ui.support.localization.Localization;
 import javafx.geometry.Pos;
@@ -42,7 +43,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeItemValue> {
      * result.
      */
 
-    public LibraryTreeTableView(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Localization localization) {
+    public LibraryTreeTableView(Library library, EpisodeDownloader episodeDownloader, BackgroundTaskExecutor backgroundTaskExecutor, Preferences preferences, Localization localization) {
         super(LibraryTreeItemFactory.createLibraryRootItem(library));
 
         this.getColumns().add(LibraryTreeTableColumnFactory.createColumn(localization.title(), 400, 600, LibraryTreeItemValue::getTitle, TextFieldTreeTableCell::new, null));
@@ -55,7 +56,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeItemValue> {
         this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setRowFactory(new LibraryTreeTableRowFactory(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems())));
-        this.setContextMenu(new LibraryTreeTableContextMenu(() -> this.getScene().getWindow(), () -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), library, episodeDownloader, backgroundTaskExecutor, localization));
+        this.setContextMenu(new LibraryTreeTableContextMenu(() -> this.getScene().getWindow(), () -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), library, episodeDownloader, backgroundTaskExecutor, preferences, localization));
         this.setOnKeyPressed(new LibraryTreeTableKeyEventHandler(() -> this.getScene().getWindow(), () -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), library, episodeDownloader, backgroundTaskExecutor, localization));
         this.setOnMouseClicked(new LibraryTreeTableClickMouseEventHandler(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), episodeDownloader, backgroundTaskExecutor, localization));
 
