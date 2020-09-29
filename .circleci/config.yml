@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:14-buster
+      - image: circleci/openjdk:15-buster
     steps:
       - checkout
       - restore_cache:
