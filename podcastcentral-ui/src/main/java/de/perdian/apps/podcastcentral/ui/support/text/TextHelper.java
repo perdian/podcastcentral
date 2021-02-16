@@ -20,7 +20,7 @@ import org.jsoup.Jsoup;
 public class TextHelper {
 
     public static String stripHtml(String html) {
-        return Jsoup.parse(html).text();
+        return html == null ? null : Jsoup.parse(html).text();
     }
 
 }
