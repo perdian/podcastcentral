@@ -32,23 +32,23 @@
     </licenses>
 
     <properties>
-        <commons-lang3.version>3.11</commons-lang3.version>
-        <commons-io.version>2.8.0</commons-io.version>
-        <controlsfx.version>11.0.2</controlsfx.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <controlsfx.version>11.1.0</controlsfx.version>
         <dom4j.version>2.1.3</dom4j.version>
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
         <h2.version>1.4.200</h2.version>
-        <hibernate.version>5.4.21.Final</hibernate.version>
-        <java.version>15</java.version>
-        <javafx.version>15</javafx.version>
+        <hibernate.version>5.6.0.Final</hibernate.version>
+        <java.version>17</java.version>
+        <javafx.version>17.0.1</javafx.version>
         <javax.persistence.version>2.2</javax.persistence.version>
         <jaxen.version>1.2.0</jaxen.version>
-        <junit.jupiter.version>5.7.0</junit.jupiter.version>
-        <jsoup.version>1.13.1</jsoup.version>
-        <logback.version>1.2.3</logback.version>
-        <mockito.version>3.5.13</mockito.version>
-        <okhttp.version>4.9.0</okhttp.version>
-        <slf4j.version>1.7.28</slf4j.version>
+        <junit.jupiter.version>5.8.1</junit.jupiter.version>
+        <jsoup.version>1.14.3</jsoup.version>
+        <logback.version>1.2.6</logback.version>
+        <mockito.version>4.0.0</mockito.version>
+        <okhttp.version>4.9.2</okhttp.version>
+        <slf4j.version>1.7.32</slf4j.version>
     </properties>
 
     <dependencies>
@@ -164,6 +164,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>de.perdian.apps.podcastcentral.ui.CentralApplicationLauncher</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -185,18 +192,6 @@
             <id>generic-bundle</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <mainClass>de.perdian.apps.podcastcentral.ui.CentralApplicationLauncher</mainClass>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-shade-plugin</artifactId>
@@ -223,7 +218,7 @@
                     <plugin>
                         <groupId>de.perdian.maven.plugins</groupId>
                         <artifactId>macosappbundler-maven-plugin</artifactId>
-                        <version>1.9.0</version>
+                        <version>1.14.0</version>
                         <configuration>
                             <plist>
                                 <CFBundleName>PodcastCentral</CFBundleName>
