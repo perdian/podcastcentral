@@ -1,6 +1,5 @@
 .root {
-    -fx-font-family: Helvetica, Arial, SansSerif;
-    -fx-font-weight: bold;
+    -fx-font-family: Lato, Roboto, Helvetica, Arial, SansSerif;
 }
 
 .tree-table-view.podcastcentral-library .tree-table-row-cell.podcastcentral-feed {
@@ -18,4 +17,8 @@
 
 .tree-table-view.podcastcentral-library .tree-table-row-cell.podcastcentral-episode.podcastcentral-unread:selected  .text-field-tree-table-cell, .tree-table-view.podcastcentral-library .tree-table-row-cell.podcastcentral-episode.podcastcentral-unread:selected .label {
     -fx-text-fill: -fx-selection-bar-text
+}
+
+.text {
+    -fx-font-smoothing-type: gray;
 }
