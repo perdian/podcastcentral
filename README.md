@@ -29,7 +29,7 @@ For building it simply checkout the repository from GitHub and call the Maven pa
     $ git clone https://github.com/perdian/podcastcentral.git
     $ cd podcastcentral
     $ mvn clean package -Pgeneric-bundle
-    $ java -jar podcastcentral-ui/target/podcastcentral.jar
+    $ java -jar target/podcastcentral.jar
 
 ### macOS build
 
@@ -38,4 +38,4 @@ On macOS a special build can directly generate a macOS app:
     $ git clone https://github.com/perdian/podcastcentral.git
     $ cd podcastcentral
     $ mvn clean package -Pmacos-bundle
-    $ open podcastcentral-ui/target/PodcastCentral.app
+    $ open target/PodcastCentral.app
