@@ -3,5 +3,6 @@
 /.settings
 /.idea
 /target
+/tmp
 /dependency-reduced-pom.xml
 .DS_Store

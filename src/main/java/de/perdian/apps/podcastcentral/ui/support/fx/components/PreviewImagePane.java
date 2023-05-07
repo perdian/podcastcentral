@@ -17,7 +17,7 @@ package de.perdian.apps.podcastcentral.ui.support.fx.components;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -56,7 +56,7 @@ public class PreviewImagePane extends BorderPane {
 
         if (StringUtils.isNotEmpty(imageUrl)) {
             IMAGE_LOADER_THREADPOOL.execute(() -> {
-                try (InputStream imageStream = new BufferedInputStream(new URL(imageUrl).openStream())) {
+                try (InputStream imageStream = new BufferedInputStream(URI.create(imageUrl).toURL().openStream())) {
                     Image previewImage = new Image(imageStream, width, height, true, true);
                     Platform.runLater(() -> {
                         imageLabel.setText(null);

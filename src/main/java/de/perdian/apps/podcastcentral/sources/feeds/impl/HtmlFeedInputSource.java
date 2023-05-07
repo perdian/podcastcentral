@@ -16,6 +16,7 @@
 package de.perdian.apps.podcastcentral.sources.feeds.impl;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
@@ -36,7 +37,7 @@ public class HtmlFeedInputSource implements FeedInputSource {
             Element linkElement = htmlDocument.selectFirst("link[rel=\"alternate\"][type=\"application/rss+xml\"]");
             String feedUrl = linkElement == null ? null : linkElement.attr("href");
             if (StringUtils.isNotEmpty(feedUrl)) {
-                return new RssFeedInputSource().loadFeedInput(IOUtils.toString(new URL(feedUrl), "UTF-8"), "application/rss+xml", new URL(feedUrl));
+                return new RssFeedInputSource().loadFeedInput(IOUtils.toString(URI.create(feedUrl).toURL(), "UTF-8"), "application/rss+xml", URI.create(feedUrl).toURL());
             }
         }
         return null;

@@ -16,7 +16,7 @@
 package de.perdian.apps.podcastcentral.ui.modules.library.components.feeds;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -110,8 +110,7 @@ public class AddFeedPane extends GridPane {
             Clipboard clipboard = Clipboard.getSystemClipboard();
             String clipboardContent = clipboard.getString();
             try {
-                URL clipboardUrl = new URL(clipboardContent);
-                feedUrlField.setText(clipboardUrl.toString());
+                feedUrlField.setText(URI.create(clipboardContent).toURL().toString());
             } catch (MalformedURLException e) {
                 // Ignore invalID URL
             }

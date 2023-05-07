@@ -41,7 +41,7 @@ public class CentralApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        primaryStage.getIcons().add(new Image(CentralApplication.class.getClassLoader().getResourceAsStream("META-INF/icons/podcast.png")));
+        primaryStage.getIcons().add(new Image(Thread.currentThread().getContextClassLoader().getResourceAsStream("META-INF/icons/podcast.png")));
 
         Localization localization = new Localization() {};
 

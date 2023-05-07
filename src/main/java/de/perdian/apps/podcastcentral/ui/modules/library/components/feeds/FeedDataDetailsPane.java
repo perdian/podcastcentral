@@ -115,7 +115,7 @@ public class FeedDataDetailsPane extends GridPane {
         episodeTable.setEditable(false);
         episodeTable.setColumnResizePolicy(f -> false);
         episodeTable.setMinHeight(100);
-        episodeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        episodeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         VBox.setVgrow(episodeTable, Priority.ALWAYS);
         VBox.setMargin(episodeTable, new Insets(8, 0, 0, 0));
 

@@ -53,7 +53,7 @@ public class LibraryTreeTableView extends TreeTableView<LibraryTreeItemValue> {
         this.getColumns().add(LibraryTreeTableColumnFactory.createColumn(localization.progress(), 80, 80, LibraryTreeItemValue::getDownloadProgress, InternalDownloadProgressBarTreeTableCell::new, null));
         this.getColumns().add(LibraryTreeTableColumnFactory.createColumn(null, 50, 50, LibraryTreeItemValue::getDownloadProgressLabel, TextFieldTreeTableCell::new, "-fx-alignment: CENTER-RIGHT;"));
         this.getColumns().add(LibraryTreeTableColumnFactory.createColumn(localization.description(), 200, Double.MAX_VALUE, LibraryTreeItemValue::getDescription, TextFieldTreeTableCell::new, null));
-        this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
+        this.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         this.setSortMode(TreeSortMode.ONLY_FIRST_LEVEL);
         this.setRowFactory(new LibraryTreeTableRowFactory(() -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems())));
         this.setContextMenu(new LibraryTreeTableContextMenu(() -> this.getScene().getWindow(), () -> new LibraryTreeTableSelection(this.getSelectionModel().getSelectedItems()), library, episodeDownloader, backgroundTaskExecutor, preferences, localization));

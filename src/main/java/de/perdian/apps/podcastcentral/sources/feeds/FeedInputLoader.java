@@ -17,6 +17,7 @@ package de.perdian.apps.podcastcentral.sources.feeds;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
@@ -43,7 +44,7 @@ public class FeedInputLoader {
 
     public static FeedInput loadFeedInputFromUrl(String feedUrl) throws IOException {
         try {
-            URL feedUrlObject = new URL(feedUrl);
+            URL feedUrlObject = URI.create(feedUrl).toURL();
             if ("file".equalsIgnoreCase(feedUrlObject.getProtocol())) {
                 return FeedInputLoader.loadFeedInputFromFile(feedUrlObject);
             } else {
