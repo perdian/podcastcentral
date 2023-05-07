@@ -81,8 +81,16 @@ public interface Localization {
         return "Delete";
     }
 
+    default String deleteAllEpisodes() {
+        return "Delete all episodes";
+    }
+
     default String deletingEntries() {
         return "Deleting entries";
+    }
+
+    default String deletePodcast() {
+        return "Delete podcast";
     }
 
     default String deletingEpisodesFromFeed(int numberOfEpisodes, String feedName) {

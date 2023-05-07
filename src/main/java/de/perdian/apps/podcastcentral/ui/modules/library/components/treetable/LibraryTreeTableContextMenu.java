@@ -64,10 +64,15 @@ class LibraryTreeTableContextMenu extends ContextMenu {
         downloadMenuItem.setOnAction(new DownloadEpisodesActionEventHandler(this::getSelectedEpisodesConsolidatedNotDownloaded, episodeDownloader, backgroundTaskExecutor, localization));
         this.getItems().add(downloadMenuItem);
 
-        MenuItem deleteMenuItem = new MenuItem(localization.delete(), new FontAwesomeIconView(FontAwesomeIcon.TRASH));
-        deleteMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeedsDeletable()).and(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDeletable())));
-        deleteMenuItem.setOnAction(new DeleteFeedsOrEpisodesActionEventHandler(ownerSupplier, this::getSelectedFeedsDeletable, this::getSelectedEpisodesConsolidatedDeletable, library, episodeDownloader, backgroundTaskExecutor, localization));
-        this.getItems().add(deleteMenuItem);
+        MenuItem deletePodcastMenuItem = new MenuItem(localization.deletePodcast(), new FontAwesomeIconView(FontAwesomeIcon.TRASH));
+        deletePodcastMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeedsDeletable()).and(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDeletable())));
+        deletePodcastMenuItem.setOnAction(new DeleteFeedsOrEpisodesActionEventHandler(ownerSupplier, this::getSelectedFeedsDeletable, this::getSelectedEpisodesConsolidatedDeletable, library, episodeDownloader, backgroundTaskExecutor, localization));
+        this.getItems().add(deletePodcastMenuItem);
+
+        MenuItem deleteAllEpisodesMenuItem = new MenuItem(localization.deleteAllEpisodes(), new FontAwesomeIconView(FontAwesomeIcon.TRASH));
+        deleteAllEpisodesMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedFeeds()));
+        deleteAllEpisodesMenuItem.setOnAction(new DeleteFeedsOrEpisodesActionEventHandler(ownerSupplier, () -> Collections.emptyList(), this::getAllEpisodesForSelectedFeeds, library, episodeDownloader, backgroundTaskExecutor, localization));
+        this.getItems().add(deleteAllEpisodesMenuItem);
 
         MenuItem exportToFileSystemMenuItem = new MenuItem(localization.exportToFilesystem(), new FontAwesomeIconView(FontAwesomeIcon.COPY));
         exportToFileSystemMenuItem.disableProperty().bind(Bindings.isEmpty(this.getSelectedEpisodesConsolidatedDownloaded()));
@@ -140,6 +145,11 @@ class LibraryTreeTableContextMenu extends ContextMenu {
     }
     private ObservableList<Episode> getSelectedEpisodesConsolidatedDeletable() {
         return this.selectedEpisodesConsolidatedDeletable;
+    }
+    private List<Episode> getAllEpisodesForSelectedFeeds() {
+        return this.getSelectedFeeds().stream()
+            .flatMap(feed -> feed.getEpisodes().stream())
+            .toList();
     }
 
 }
