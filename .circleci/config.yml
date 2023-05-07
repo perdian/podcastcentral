@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: maven:3-openjdk-20
+      - image: maven:3-eclipse-temurin-20
     steps:
       - checkout
       - restore_cache:
