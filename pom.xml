@@ -37,7 +37,7 @@
         <controlsfx.version>11.1.0</controlsfx.version>
         <dom4j.version>2.1.4</dom4j.version>
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
-        <h2.version>2.1.214</h2.version>
+        <h2.version>2.2.220</h2.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <java.version>20</java.version>
         <javafx.version>20</javafx.version>
